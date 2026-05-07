@@ -1,0 +1,4 @@
+interface:
+  display_name: "Econ Work"
+  short_description: "Execute empirical econ workflow"
+  default_prompt: "Use $econ-work to execute this empirical or hybrid task. Lock the execution mode, follow plan labels and linked GitHub issue context when present, inspect realised outputs, write the interpretation brief, and only then move to any economist-facing note or figures."

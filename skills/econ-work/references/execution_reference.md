@@ -1,0 +1,172 @@
+# Execution reference
+
+Read this file only when you need a template or checklist during execution.
+
+## Interpretation brief template
+
+```md
+## Interpretation brief
+- Main finding:
+- Why it matters economically:
+- Best figure or table for the point:
+- Supporting observed facts:
+- Diagnostic explanation, if needed:
+- Important limitations:
+- Follow-up checks still worth doing now:
+- What belongs in the main text versus appendix:
+```
+
+## Note brief template
+
+```md
+## Note brief
+- Reader:
+- Note type:
+- Question the note answers:
+- One-sentence answer:
+- Why the note is worth reading:
+- Definitions that must appear before the findings:
+- Main sections in order:
+- Candidate headline figure:
+- Supporting figures or tables:
+- What belongs only in the appendix or execution note:
+- Terms that must not appear in the main text:
+- Claims that need especially careful wording:
+```
+
+## Surprise memo template
+
+```md
+## Surprise memo
+- Finding:
+- Why it is surprising:
+- Minimal validation already completed:
+- Plausible explanations:
+- Immediate follow-up checks:
+- Does this look important enough for a deeper second opinion?
+- Recommendation: continue in current workflow | ask user about GPT Pro escalation
+```
+
+## Output-consistency map minimum
+
+Keep at least:
+1. the canonical output ID or file backing each claim, table, or figure;
+2. the note, memo, table, or figure label that uses it;
+3. the key sample, benchmark, weighting, or specification note needed to keep the mapping honest; and
+4. whether the cited object is current, inherited, or inspected-only when that status matters.
+
+## Analysis surface simplification checklist
+
+Use this after output inspection and before interpretation, review bundle preparation, or closeout.
+
+```md
+## Analysis surface simplification
+- Refreshed outputs:
+- Inherited outputs still intentionally used:
+- Inspected-only outputs:
+- Stale or superseded outputs:
+- Support-only diagnostics:
+- Report inputs:
+- Duplicate scripts or execution paths:
+- Redundant diagnostics:
+- Unclear figure/table names:
+- Benchmark/comparison objects that must stay separate:
+- Destructive cleanup requested or approved: yes|no
+- Cleanup follow-up recommended:
+```
+
+Never delete, overwrite, or hide stale empirical evidence without explicit approval.
+
+## Verification ladder
+
+Run the levels that apply:
+1. input integrity;
+2. code and helper integrity;
+3. transformation integrity;
+4. realised-sample audit;
+5. grouping and denominator integrity;
+6. object comparability;
+7. output-specification integrity;
+8. text-figure and report-build integrity;
+9. interpretation discipline;
+10. reader-facing note integrity;
+11. reproducibility rerun status.
+
+## Review bundle minimum
+
+A compact economist review bundle should normally contain:
+- `review_context.md`;
+- `review_manifest.md` or equivalent;
+- `choice_register.md`;
+- `key_outputs/`;
+- `checks/`;
+- `build_info/`.
+
+Also include when relevant:
+- a model-spec ledger or equivalent stable specification surface;
+- an output-consistency map;
+- `interpretation_brief.md`;
+- `note_brief.md`;
+- the defended note, memo, or excerpt and relevant caption material;
+- `surprise_memo.md`.
+
+## Issue checkpoint comment
+
+Use this only when the work is issue-linked and the user asked for or approved an issue update.
+
+```md
+## Checkpoint
+- Objective:
+- Branch or worktree:
+- Execution mode: structure-only|full empirical rerun
+- Plan labels touched:
+- Outputs refreshed:
+- Outputs inspected only:
+- Empirical finding or diagnostic update:
+- What remains unresolved:
+- Recommended issue action: keep open|close|split follow-up|needs user decision
+```
+
+Do not include raw restricted data, confidential evidence, or long logs in issue comments. Link to plans, outputs, bundles, or commits instead.
+
+## Evidence pulse
+
+Use this inside closeouts for substantial empirical or hybrid work.
+
+```md
+## Evidence pulse
+- What changed:
+- What became more trustworthy:
+- What became weaker or remains unresolved:
+- Outputs refreshed:
+- Outputs inherited or inspected only:
+- Labels/issues/branches the next session should use:
+- Suggested next planning question:
+- Durable update target: closeout only|issue comment|project backbone|README dictionary|follow-up plan
+- Proposed project-backbone update, if any:
+- Project-backbone update approval status: not needed|drafted only|approved and applied
+```
+
+## Closeout format
+
+Use this as the completion gate for non-trivial `econ-work` runs. Do not declare the run complete until the applicable items are stated or explicitly marked not applicable.
+
+End with:
+1. objective completed;
+2. domain mode;
+3. execution mode;
+4. furthest stage reached;
+5. outputs refreshed versus inspected-only versus scaffolded;
+6. analysis-surface simplification status;
+7. files and artefacts changed;
+8. key findings taken into the interpretation brief;
+9. note brief status when reporting is in scope;
+10. surprise memo and GPT Pro escalation status, if any;
+11. choice-register updates;
+12. verification performed;
+13. review-bundle status;
+14. data blockers or rerun blockers, if any;
+15. evidence pulse;
+16. issue checkpoint status, if issue-linked;
+17. remaining risks or open questions; and
+18. recommended next command.
