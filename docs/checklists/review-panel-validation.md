@@ -7,7 +7,7 @@ Use this checklist after changing `econ-review`, the reviewer protocol, or custo
 - `skills/econ-review/SKILL.md` says direct invocation tries to run the subagent review panel.
 - `references/reviewer-protocol.md` contains the shared role catalogue, evidence rules, finding taxonomy, and JSON schema.
 - `.codex/agents/` contains one custom TOML agent per reviewer role.
-- `README.md` installs `econ-plan`, `econ-work`, and `econ-review`, but not a user-facing `econ-reviewer` skill.
+- `README.md` installs the three user-facing skills: `econ-plan`, `econ-work`, and `econ-review`.
 - `schemas/` documents maintainer-facing evidence manifest shapes.
 - `docs/validation/econometrics-panel-fixtures.md` covers role-selection scenarios.
 
@@ -52,7 +52,7 @@ Use this checklist after changing `econ-review`, the reviewer protocol, or custo
 - No private project names appear in examples.
 - No license file is added without an explicit license decision.
 - README explains both user-level and project-scoped reviewer-agent installation.
-- README makes clear that first-time installs use `econ-review`, not a separate `econ-reviewer` skill.
+- README makes clear that first-time installs use `econ-review` for review work.
 - README makes clear that econometrics-heavy reviewers are optional, not always-on.
 - Schema files for reviewer payloads, data construction, econometric evidence, and cross-language validation are valid JSON.
 - The original local Codex skill folders outside this repository were not edited.

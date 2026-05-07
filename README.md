@@ -23,7 +23,7 @@ The package is currently designed for Codex skills and Codex custom agents. The 
 - `econ-work`: executes empirical or hybrid work from a saved plan or clear request. It separates code execution, output inspection, interpretation, note preparation, and closeout.
 - `econ-review`: reviews empirical plans, results, bundles, notes, diffs, or mixed work surfaces. Direct invocation means "try to run the economist review panel" using the included Codex custom reviewer agents.
 
-This package does not install `econ-reviewer` as a separate user-facing skill. Reviewer lenses live as custom agents under `.codex/agents/`, with shared rules in `references/reviewer-protocol.md`.
+Reviewer lenses live as custom agents under `.codex/agents/`, with shared rules in `references/reviewer-protocol.md`.
 
 The review panel is evidence-triggered. Data cleaning, sample construction, and provenance reviews use the core data reviewers by default. Econometrics-heavy reviewers such as inference, design, dynamics, robustness, and cross-language validation are added only when the review surface calls for them.
 
@@ -42,11 +42,9 @@ skills/
 docs/
   examples/
     fake-review-bundle/
-  plans/
   validation/
   sharing-checklist.md
 schemas/
-CONTRIBUTING.md
 LICENSE
 README.md
 ```
@@ -91,10 +89,6 @@ For a small collaborator group, user-level installation is usually simplest: cop
 
 For a specific empirical project, you can instead keep the reviewer agents project-scoped by copying `.codex/agents/*.toml` into that project's `.codex/agents/` directory. This keeps the panel tied to one project. The shared protocol should still be installed at `~/.codex/references/econ-agent-workflows/reviewer-protocol.md`, or passed by the parent `econ-review` prompt.
 
-### Note on `econ-reviewer`
-
-This first shared version does not install `econ-reviewer` as a separate skill. Use `econ-review`; the reviewer lenses are packaged as custom agents.
-
 ## Review Panel Behavior
 
 Use `econ-review` directly for review work. It selects reviewer roles, tries to spawn the configured custom agents, merges their JSON findings, and presents a findings-first review.
@@ -109,6 +103,6 @@ If the custom agents are not installed or subagent tools are unavailable, `econ-
 
 This project is released under the MIT License. See `LICENSE`.
 
-For a first public or semi-public share, see `docs/sharing-checklist.md`. For contribution guidance, see `CONTRIBUTING.md`.
+For a first public or semi-public share, see `docs/sharing-checklist.md`.
 
 Before sharing outside a trusted collaborator group, re-audit the skill text for project-specific assumptions, confidential paths, or private workflow references.

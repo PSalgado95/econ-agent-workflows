@@ -13,7 +13,6 @@ Use this before making the repository public or sending it to new collaborators.
 ## Strongly Recommended
 
 - Add one small example review bundle that contains no real project data.
-- Add a short `CONTRIBUTING.md` if outside collaborators will propose changes.
 - Add a version tag or release note once the first shared version feels stable.
 - Add an install script only after the manual install instructions have been tested by another person.
 - Keep `econ-compound` out of the default package until it is ready.
