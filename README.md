@@ -2,6 +2,10 @@
 
 Small Codex workflows for economists, inspired by [Compound Engineering](https://github.com/EveryInc/compound-engineering-plugin).
 
+## Status
+
+Working beta. Shared for early feedback; expect rough edges.
+
 The goal was to take the plan/work/review discipline that Compound Engineering makes natural for software projects and adapt it to how economists work. This is not a replacement for Compound Engineering, and it is not affiliated with Every. If you want the general engineering workflow, use Compound Engineering directly. This repo is a small economics-specific adaptation.
 
 At this stage, the package is most developed for empirical projects: data cleaning, sample construction, estimation, tables, figures, notes, review bundles, and reproducibility handoffs. Some pieces may also be useful for structural work, model-building, calibration, simulation, or other economics workflows, but those paths are less tested.
@@ -45,37 +49,22 @@ README.md
 
 ## Installation
 
-Copy the skill folders into your local Codex skills directory, copy the reviewer agents into Codex's agent configuration, and copy the shared reviewer protocol into a stable Codex reference location.
+Simplest path: ask Codex to install the package from this repo.
 
-On Windows, this is typically:
+```text
+Install the economist workflows from https://github.com/PSalgado95/econ-agent-workflows.
 
-```powershell
-New-Item -ItemType Directory -Force $env:USERPROFILE\.codex\skills | Out-Null
-New-Item -ItemType Directory -Force $env:USERPROFILE\.codex\agents | Out-Null
-New-Item -ItemType Directory -Force $env:USERPROFILE\.codex\references\econ-agent-workflows | Out-Null
+Install these Codex skills:
+- skills/econ-plan
+- skills/econ-work
+- skills/econ-review
 
-Copy-Item -Recurse .\skills\econ-plan $env:USERPROFILE\.codex\skills\econ-plan
-Copy-Item -Recurse .\skills\econ-work $env:USERPROFILE\.codex\skills\econ-work
-Copy-Item -Recurse .\skills\econ-review $env:USERPROFILE\.codex\skills\econ-review
-
-Copy-Item .\.codex\agents\*.toml $env:USERPROFILE\.codex\agents\
-Copy-Item .\references\reviewer-protocol.md $env:USERPROFILE\.codex\references\econ-agent-workflows\reviewer-protocol.md
+Also install the reviewer agents from .codex/agents/ and the shared protocol at references/reviewer-protocol.md.
 ```
 
-On macOS or Linux, this is typically:
+Restart Codex after installation so the skills and reviewer agents are loaded.
 
-```bash
-mkdir -p ~/.codex/skills ~/.codex/agents ~/.codex/references/econ-agent-workflows
-
-cp -R skills/econ-plan ~/.codex/skills/econ-plan
-cp -R skills/econ-work ~/.codex/skills/econ-work
-cp -R skills/econ-review ~/.codex/skills/econ-review
-
-cp .codex/agents/*.toml ~/.codex/agents/
-cp references/reviewer-protocol.md ~/.codex/references/econ-agent-workflows/reviewer-protocol.md
-```
-
-Restart Codex after copying the folders so the skills and custom agents are loaded.
+Manual installation is just copying those same three pieces into your local Codex configuration: skills into your Codex skills folder, `.codex/agents/*.toml` into your Codex agents folder, and `references/reviewer-protocol.md` into a stable Codex reference location such as `~/.codex/references/econ-agent-workflows/reviewer-protocol.md`.
 
 ### User-Level vs Project-Scoped Agents
 
