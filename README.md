@@ -43,28 +43,31 @@ skills/
   econ-plan/
   econ-work/
   econ-review/
+install.py
 LICENSE
 README.md
 ```
 
 ## Installation
 
-Simplest path: ask Codex to install the package from this repo.
+This is a workflow package, not just a set of skills. `econ-review` needs the reviewer agents and shared protocol too.
+
+Simplest path: ask Codex to install the full package from this repo.
 
 ```text
-Install the economist workflows from https://github.com/PSalgado95/econ-agent-workflows.
+Install the full econ-agent-workflows package from https://github.com/PSalgado95/econ-agent-workflows.
 
-Install these Codex skills:
-- skills/econ-plan
-- skills/econ-work
-- skills/econ-review
+Clone or download the repo, run `python install.py --force` from the repo root, and confirm that it installs:
+- the three skills under skills/
+- the reviewer agents under .codex/agents/
+- the shared reviewer protocol under references/
 
-Also install the reviewer agents from .codex/agents/ and the shared protocol at references/reviewer-protocol.md.
+Do not stop after installing only the skills; econ-review's panel needs the reviewer agents.
 ```
 
 Restart Codex after installation so the skills and reviewer agents are loaded.
 
-Manual installation is just copying those same three pieces into your local Codex configuration: skills into your Codex skills folder, `.codex/agents/*.toml` into your Codex agents folder, and `references/reviewer-protocol.md` into a stable Codex reference location such as `~/.codex/references/econ-agent-workflows/reviewer-protocol.md`.
+Manual installation is the same three pieces: copy `skills/econ-plan`, `skills/econ-work`, and `skills/econ-review` into your Codex skills folder; copy `.codex/agents/*.toml` into your Codex agents folder; and copy `references/reviewer-protocol.md` into a stable Codex reference location such as `~/.codex/references/econ-agent-workflows/reviewer-protocol.md`.
 
 ### User-Level vs Project-Scoped Agents
 
