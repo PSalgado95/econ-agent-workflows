@@ -39,12 +39,6 @@ skills/
   econ-plan/
   econ-work/
   econ-review/
-docs/
-  examples/
-    fake-review-bundle/
-  validation/
-  sharing-checklist.md
-schemas/
 LICENSE
 README.md
 ```
@@ -102,7 +96,5 @@ If the custom agents are not installed or subagent tools are unavailable, `econ-
 ## Notes
 
 This project is released under the MIT License. See `LICENSE`.
-
-For a first public or semi-public share, see `docs/sharing-checklist.md`.
 
 Before sharing outside a trusted collaborator group, re-audit the skill text for project-specific assumptions, confidential paths, or private workflow references.
