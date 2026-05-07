@@ -39,6 +39,12 @@ Expected behavior:
 - checks lineage, keys, joins, filters, missingness, support, denominators, weights, timing alignment, and rerun status;
 - does not add inference or design reviewers unless the target also contains estimates, causal claims, dynamic objects, or promoted interpretation.
 
+You can also test the cleaning-heavy path with the included fake bundle:
+
+```text
+$econ-review surface:bundle tier:standard docs/examples/fake-review-bundle
+```
+
 ## Inference-Heavy Results Review
 
 ```text

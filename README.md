@@ -1,8 +1,10 @@
 # Econ Agent Workflows
 
-Codex skills for empirical economics workflows.
+Economist-friendly Codex workflows inspired by [Compound Engineering](https://github.com/EveryInc/compound-engineering-plugin).
 
-This package is organized around a simple research workflow:
+The goal is simple: take the planning, execution, review, and knowledge-preservation style of Compound Engineering and adapt it to how economists actually work. Right now the package is most developed for empirical projects: data cleaning, sample construction, estimation, tables, figures, notes, review bundles, and reproducibility handoffs. Some pieces may also be useful for structural work, model-building, calibration, simulation, or other economics workflows, but those paths are less tested.
+
+The package is organized around a simple research workflow:
 
 1. plan the empirical task;
 2. execute the code, checks, outputs, and interpretation work;
@@ -10,8 +12,6 @@ This package is organized around a simple research workflow:
 4. keep empirical traceability explicit throughout.
 
 The skills are meant for economists working with data, estimation, tables, figures, notes, replication material, and hybrid analysis-engineering projects.
-
-This project is largely inspired by the workflow discipline in [Compound Engineering](https://github.com/EveryInc/compound-engineering-plugin): plan first, execute carefully, review with dedicated lenses, and preserve knowledge so later work starts from a better baseline. This repository adapts that style to empirical economics rather than general software engineering.
 
 The package is currently designed for Codex skills and Codex custom agents. The architecture is intentionally portable: the same division between a parent review workflow, role-specific reviewers, and a shared reviewer protocol can be adapted for Claude Code or other agent runtimes, but those adapters are not packaged here yet.
 
@@ -39,10 +39,13 @@ skills/
   econ-review/
 docs/
   examples/
+    fake-review-bundle/
   plans/
   validation/
   sharing-checklist.md
 schemas/
+CONTRIBUTING.md
+LICENSE
 README.md
 ```
 
@@ -102,8 +105,8 @@ If the custom agents are not installed or subagent tools are unavailable, `econ-
 
 ## Notes
 
-No license file is included yet. Add one only after deciding how collaborators should be allowed to use, modify, and redistribute the package.
+This project is released under the MIT License. See `LICENSE`.
 
-For a first public or semi-public share, see `docs/sharing-checklist.md`.
+For a first public or semi-public share, see `docs/sharing-checklist.md`. For contribution guidance, see `CONTRIBUTING.md`.
 
 Before sharing outside a trusted collaborator group, re-audit the skill text for project-specific assumptions, confidential paths, or private workflow references.
