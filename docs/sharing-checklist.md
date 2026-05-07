@@ -20,7 +20,7 @@ Use this before making the repository public or sending it to new collaborators.
 
 ## Current Attribution
 
-This workflow package is inspired by Compound Engineering:
+This workflow package is inspired by Compound Engineering, but it is not affiliated with Every and does not replace the original project:
 
 https://github.com/EveryInc/compound-engineering-plugin
 

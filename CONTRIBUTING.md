@@ -1,6 +1,6 @@
 # Contributing
 
-This repository is a first-pass package of Codex skills and reviewer agents for empirical economics workflows.
+This repository is a first-pass package of Codex skills and reviewer agents for economics workflows. It is small and experimental; contributions should keep it economist-facing and avoid turning it into a general agent-engineering framework.
 
 ## Good Contributions
 

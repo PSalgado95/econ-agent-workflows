@@ -1,8 +1,10 @@
 # Econ Agent Workflows
 
-Economist-friendly Codex workflows inspired by [Compound Engineering](https://github.com/EveryInc/compound-engineering-plugin).
+Small Codex workflows for economists, inspired by [Compound Engineering](https://github.com/EveryInc/compound-engineering-plugin).
 
-The goal is simple: take the planning, execution, review, and knowledge-preservation style of Compound Engineering and adapt it to how economists actually work. Right now the package is most developed for empirical projects: data cleaning, sample construction, estimation, tables, figures, notes, review bundles, and reproducibility handoffs. Some pieces may also be useful for structural work, model-building, calibration, simulation, or other economics workflows, but those paths are less tested.
+The goal was to take the plan/work/review discipline that Compound Engineering makes natural for software projects and adapt it to how economists work. This is not a replacement for Compound Engineering, and it is not affiliated with Every. If you want the general engineering workflow, use Compound Engineering directly. This repo is a small economics-specific adaptation.
+
+At this stage, the package is most developed for empirical projects: data cleaning, sample construction, estimation, tables, figures, notes, review bundles, and reproducibility handoffs. Some pieces may also be useful for structural work, model-building, calibration, simulation, or other economics workflows, but those paths are less tested.
 
 The package is organized around a simple research workflow:
 
