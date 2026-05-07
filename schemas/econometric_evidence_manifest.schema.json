@@ -1,0 +1,43 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "econ-review econometric evidence manifest extension",
+  "type": "object",
+  "additionalProperties": true,
+  "properties": {
+    "estimand": {
+      "type": "object",
+      "additionalProperties": true,
+      "properties": {
+        "outcome": {"type": ["string", "null"]},
+        "treatment_or_exposure": {"type": ["string", "null"]},
+        "comparison_group": {"type": ["string", "null"]},
+        "unit": {"type": ["string", "null"]},
+        "timing": {"type": ["string", "null"]},
+        "target_population": {"type": ["string", "null"]},
+        "effect_scale": {"type": ["string", "null"]},
+        "aggregation": {"type": ["string", "null"]},
+        "parameter_label": {"type": ["string", "null"]}
+      }
+    },
+    "identification": {
+      "type": "object",
+      "additionalProperties": true,
+      "properties": {
+        "design_class": {"type": ["string", "null"]},
+        "source_of_variation": {"type": ["string", "null"]},
+        "identifying_assumptions": {"type": ["array", "null"], "items": {"type": "string"}},
+        "comparison_group": {"type": ["string", "null"]},
+        "primary_threats": {"type": ["array", "null"], "items": {"type": "string"}}
+      }
+    },
+    "sample": {"type": "object", "additionalProperties": true},
+    "estimator": {"type": "object", "additionalProperties": true},
+    "fixed_effects": {"type": "object", "additionalProperties": true},
+    "weights": {"type": "object", "additionalProperties": true},
+    "inference": {"type": "object", "additionalProperties": true},
+    "dynamics": {"type": "object", "additionalProperties": true},
+    "robustness_hierarchy": {"type": "object", "additionalProperties": true},
+    "output_automation": {"type": "object", "additionalProperties": true},
+    "cross_language_validation": {"type": "object", "additionalProperties": true}
+  }
+}

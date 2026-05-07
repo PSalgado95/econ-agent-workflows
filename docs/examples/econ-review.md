@@ -26,6 +26,31 @@ Expected behavior:
 - adds estimation, design, dynamics, reproducibility, or hybrid-implementation reviewers when the target implies those risks;
 - merges JSON reviewer payloads into findings with stable `F1`, `F2`, ... IDs.
 
+## Cleaning / Data Construction Review
+
+```text
+$econ-review surface:diff tier:standard cleaning/sample_build_changes
+```
+
+Expected behavior:
+
+- treats data construction as a first-class empirical trust surface;
+- selects provenance, specification, transformation/sample, and output consistency;
+- checks lineage, keys, joins, filters, missingness, support, denominators, weights, timing alignment, and rerun status;
+- does not add inference or design reviewers unless the target also contains estimates, causal claims, dynamic objects, or promoted interpretation.
+
+## Inference-Heavy Results Review
+
+```text
+$econ-review surface:results tier:promotion interpretation:yes outputs/headline_table_bundle
+```
+
+Expected behavior:
+
+- includes the core data reviewers;
+- adds estimation-practice and inference reviewers when coefficients, standard errors, p-values, confidence intervals, clustering, or significance language carry the claim;
+- adds design, dynamics, or robustness reviewers only when the method or promotion decision calls for them.
+
 ## Note-Facing Review
 
 ```text
@@ -35,8 +60,32 @@ $econ-review surface:note tier:promotion notes/results_note.tex
 Expected behavior:
 
 - reviews the note against its interpretation brief, note brief, cited outputs, checks, and captions;
-- includes claim discipline and the parent reader-facing note gate;
+- includes claim discipline, output perception when tables/figures drive interpretation, and the parent reader-facing note gate;
 - treats missing evidence or unclear benchmark boundaries as promotion risks.
+
+## Cross-Language Validation Planning
+
+```text
+$econ-review surface:bundle tier:promotion crosslang:plan review_bundle/
+```
+
+Expected behavior:
+
+- prepares a cross-language validation handoff;
+- does not claim validation has been run;
+- does not spawn a full equivalence audit over nonexistent scripts.
+
+## Cross-Language Validation Audit
+
+```text
+$econ-review surface:bundle tier:promotion crosslang:audit validation/cross_language_manifest.md
+```
+
+Expected behavior:
+
+- selects cross-language validation and software-equivalence reviewers;
+- checks object parity before numeric parity;
+- blocks equivalence claims when N, cluster counts, missing-value rules, weights, fixed effects, or omitted categories differ without explanation.
 
 ## Bundle Review
 

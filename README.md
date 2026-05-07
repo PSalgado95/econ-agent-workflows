@@ -19,6 +19,8 @@ The skills are meant for economists working with data, estimation, tables, figur
 
 This package does not install `econ-reviewer` as a separate user-facing skill. Reviewer lenses live as custom agents under `.codex/agents/`, with shared rules in `references/reviewer-protocol.md`.
 
+The review panel is evidence-triggered. Data cleaning, sample construction, and provenance reviews use the core data reviewers by default. Econometrics-heavy reviewers such as inference, design, dynamics, robustness, and cross-language validation are added only when the review surface calls for them.
+
 ## Folder Structure
 
 ```text
@@ -34,6 +36,8 @@ skills/
 docs/
   examples/
   plans/
+  validation/
+schemas/
 README.md
 ```
 
@@ -84,6 +88,10 @@ This first shared version does not install `econ-reviewer` as a separate skill. 
 ## Review Panel Behavior
 
 Use `econ-review` directly for review work. It selects reviewer roles, tries to spawn the configured custom agents, merges their JSON findings, and presents a findings-first review.
+
+For cleaning-heavy work, the default panel stays focused on provenance, specification, transformation/sample, and output consistency. If the target includes estimates, standard errors, causal claims, dynamic responses, table/figure interpretation, or cross-language validation, `econ-review` adds the relevant optional reviewers.
+
+Cross-language validation is opt-in. Use `crosslang:plan` to prepare a validation handoff, or `crosslang:audit` to audit an existing validation manifest.
 
 If the custom agents are not installed or subagent tools are unavailable, `econ-review` should say that the panel did not fully run. Quick or standard reviews may continue in a degraded mode with a warning. Promotion-grade reviews should not silently downgrade; they should stop or ask whether a degraded review is acceptable.
 

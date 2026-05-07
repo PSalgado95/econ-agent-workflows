@@ -1,0 +1,52 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "econ-review reviewer payload",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["reviewer", "surface", "findings", "open_questions", "diagnostic_gaps", "coverage_note"],
+  "properties": {
+    "reviewer": {"type": "string"},
+    "surface": {"enum": ["plan", "results", "bundle", "note", "diff", "mixed"]},
+    "findings": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["severity", "trust_effect", "issue_origin", "fix_class", "affected_labels", "issue_followup_type", "title", "why_it_matters", "evidence_paths", "recommended_action", "user_judgement_required", "safe_autofix"],
+        "properties": {
+          "severity": {"enum": ["P0", "P1", "P2", "P3"]},
+          "trust_effect": {"enum": ["baseline-defining", "promotion-blocking", "robustness-relevant", "documentation-only"]},
+          "issue_origin": {"enum": ["provenance", "specification", "transformation-and-sample", "estimation-practice", "inference", "output-consistency", "claim-discipline", "output-perception", "design", "dynamics", "robustness", "software-equivalence", "cross-language-validation", "reproducibility", "hybrid-implementation", "bundle"]},
+          "fix_class": {"enum": ["safe automatic", "gated", "manual", "advisory"]},
+          "affected_labels": {"type": "array", "items": {"type": "string"}},
+          "issue_followup_type": {"enum": ["none", "empirical problem", "implementation fix", "robustness extension", "note/paper follow-up"]},
+          "title": {"type": "string"},
+          "why_it_matters": {"type": "string"},
+          "evidence_paths": {"type": "array", "items": {"type": "string"}},
+          "recommended_action": {"type": "string"},
+          "user_judgement_required": {"type": "boolean"},
+          "safe_autofix": {"type": "boolean"}
+        }
+      }
+    },
+    "open_questions": {"type": "array", "items": {"type": "string"}},
+    "diagnostic_gaps": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["gap", "trust_effect", "issue_origin", "affected_labels", "why_it_matters", "evidence_paths", "recommended_action"],
+        "properties": {
+          "gap": {"type": "string"},
+          "trust_effect": {"enum": ["baseline-defining", "promotion-blocking", "robustness-relevant", "documentation-only"]},
+          "issue_origin": {"enum": ["provenance", "specification", "transformation-and-sample", "estimation-practice", "inference", "output-consistency", "claim-discipline", "output-perception", "design", "dynamics", "robustness", "software-equivalence", "cross-language-validation", "reproducibility", "hybrid-implementation", "bundle"]},
+          "affected_labels": {"type": "array", "items": {"type": "string"}},
+          "why_it_matters": {"type": "string"},
+          "evidence_paths": {"type": "array", "items": {"type": "string"}},
+          "recommended_action": {"type": "string"}
+        }
+      }
+    },
+    "coverage_note": {"type": "string"}
+  }
+}
