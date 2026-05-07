@@ -11,6 +11,10 @@ This package is organized around a simple research workflow:
 
 The skills are meant for economists working with data, estimation, tables, figures, notes, replication material, and hybrid analysis-engineering projects.
 
+This project is largely inspired by the workflow discipline in [Compound Engineering](https://github.com/EveryInc/compound-engineering-plugin): plan first, execute carefully, review with dedicated lenses, and preserve knowledge so later work starts from a better baseline. This repository adapts that style to empirical economics rather than general software engineering.
+
+The package is currently designed for Codex skills and Codex custom agents. The architecture is intentionally portable: the same division between a parent review workflow, role-specific reviewers, and a shared reviewer protocol can be adapted for Claude Code or other agent runtimes, but those adapters are not packaged here yet.
+
 ## Skills
 
 - `econ-plan`: turns an empirical or hybrid research task into a staged plan. It makes the reader, reporting class, bottleneck, evidence surface, execution stages, and review route explicit.
@@ -37,6 +41,7 @@ docs/
   examples/
   plans/
   validation/
+  sharing-checklist.md
 schemas/
 README.md
 ```
@@ -98,5 +103,7 @@ If the custom agents are not installed or subagent tools are unavailable, `econ-
 ## Notes
 
 No license file is included yet. Add one only after deciding how collaborators should be allowed to use, modify, and redistribute the package.
+
+For a first public or semi-public share, see `docs/sharing-checklist.md`.
 
 Before sharing outside a trusted collaborator group, re-audit the skill text for project-specific assumptions, confidential paths, or private workflow references.
