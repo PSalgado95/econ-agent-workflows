@@ -7,15 +7,28 @@ description: "Review empirical economics or hybrid analysis-engineering work. Us
 
 Review the current empirical object before trusting it, promoting it, or handing it to a co-author.
 
+## Direct invocation contract
+
+Direct invocation of `econ-review` is an explicit request to try the subagent review panel. The default path is:
+
+1. parse the review target, surface, tier, and mode;
+2. select the economist reviewer roles;
+3. spawn the selected reviewer agents in parallel when subagent tools and reviewer agents are available;
+4. validate their JSON payloads;
+5. merge, deduplicate, and assign stable finding IDs; and
+6. return a findings-first synthesis.
+
+Do not silently downgrade a panel review into a single-agent review. If subagents or configured reviewer agents are unavailable, use the fallback rules below and label the result as degraded.
+
 The object under review is:
 1. what is being estimated or described;
 2. how the realised sample was formed;
 3. what the canonical outputs actually show; and
 4. what the note or memo claims those outputs mean.
 
-Route pure software reviews to the current Compound Engineering review skill, such as `compound-engineering:ce-code-review` when available.
+Route pure software reviews to the current software-engineering review workflow when available.
 
-Keep this file as the review contract. Read `references/review_reference.md` only when you need the detailed surface read order, reviewer-role matrix, finding taxonomy, issue-ready templates, or headless output envelope.
+Keep this file as the parent review contract. Read `references/review_reference.md` when you need the detailed surface read order, reviewer-role matrix, custom-agent mapping, fallback rules, finding taxonomy, issue-ready templates, or headless output envelope. Reviewer agents use the shared protocol in `references/reviewer-protocol.md` from this package repository or the installed copy at `~/.codex/references/econ-agent-workflows/reviewer-protocol.md` when available. If the protocol is unavailable and the parent cannot pass the relevant protocol excerpt, treat the panel as degraded before dispatch.
 
 ## Input parsing
 
@@ -147,7 +160,7 @@ Decide:
 - whether a reader-facing note is in scope; and
 - the source-of-truth hierarchy.
 
-If the target is actually pure software, route to the current Compound Engineering review skill and stop.
+If the target is actually pure software, route to the current software-engineering review workflow and stop. If no such workflow is available, state the route mismatch and stop rather than forcing pure software review through the empirical panel.
 
 If a GitHub issue is named, treat it as coordination context only. Use the plan, outputs, checks, bundle, and note surfaces as the analytical record.
 
@@ -170,6 +183,17 @@ Always try to locate:
 
 If a required diagnostic surface is missing, treat that absence as review evidence.
 
+Before dispatch, build a compact evidence manifest for reviewers. Include:
+- review target and surface;
+- source-of-truth hierarchy;
+- discovered plan, workflow note, bundle, outputs, checks, ledgers, briefs, maps, and note paths;
+- missing diagnostic surfaces;
+- base ref or diff scope when relevant;
+- rerun or build-status evidence when visible; and
+- any known blind spots or unavailable files.
+
+Pass this evidence manifest to every reviewer prompt so child reviewers start from the same source map the parent found.
+
 ### Stage 2: Select the review panel
 
 Always include:
@@ -186,14 +210,34 @@ Use the role matrix in `references/review_reference.md` for additional condition
 
 Do not duplicate roles that are asking the same question.
 
+Before dispatch, announce the selected reviewer roles and the review tier. This makes it visible whether the run is a compact plan review, a standard results review, or a promotion-grade panel.
+
 ### Stage 3: Spawn reviewer subagents
 
-Spawn one `econ-reviewer` subagent per selected role in parallel and wait for all of them before synthesis.
+Spawn one custom reviewer agent per selected role in parallel and wait for all available reviewer agents before synthesis. Use the role-to-agent mapping in `references/review_reference.md`.
 
-Require:
-- JSON only;
-- evidence-led findings; and
-- no raw logs or long prose dumps.
+For each reviewer prompt, include:
+- assigned role;
+- review surface;
+- interpretation flag;
+- review tier;
+- plan path, base ref, and target when present;
+- evidence manifest from Stage 1;
+- the relevant surface read order;
+- the JSON output contract from the shared reviewer protocol; and
+- the instruction to return JSON only, with evidence-led findings, no raw logs, no file mutation, no artifact writes, and no issue updates.
+
+If a selected reviewer agent is not configured, treat that as a degraded panel and record the missing role in the artefact summary.
+
+Fallback rules:
+- `tier:quick`: a degraded single-thread review may proceed if the final output clearly says the panel did not run.
+- `tier:standard`: a degraded review may proceed only with an explicit warning and a list of missing roles.
+- `tier:promotion`: do not silently proceed in degraded mode. Ask the user whether to accept a degraded review, install/configure the missing agents, or stop. In `mode:headless`, stop with a degraded verdict rather than promoting the result.
+
+Subagent failure handling:
+- If a reviewer returns malformed JSON, discard or quarantine that payload and report the role as degraded.
+- If a reviewer returns findings without evidence paths, suppress those findings unless the issue is a visible bundle-metadata gap.
+- If all reviewer agents fail or are unavailable, do not call the result a panel review.
 
 ### Stage 4: Merge and deduplicate
 

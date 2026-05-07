@@ -1,4 +1,4 @@
 interface:
   display_name: "Econ Review"
-  short_description: "Review empirical econ artefacts"
-  default_prompt: "Use $econ-review to audit this empirical plan, bundle, results surface, or note. Assign stable finding IDs, classify trust-impact findings and fix routes, surface missing diagnostic artefacts, run the reader-facing note gate if reporting is in scope, and draft GitHub issue follow-ups only when requested."
+  short_description: "Run empirical econ review panel"
+  default_prompt: "Use $econ-review to audit this empirical plan, bundle, results surface, or note. Try to run the economist reviewer subagent panel, assign stable finding IDs, classify trust-impact findings and fix routes, surface missing diagnostic artefacts, run the reader-facing note gate if reporting is in scope, and draft GitHub issue follow-ups only when requested."

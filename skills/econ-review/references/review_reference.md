@@ -44,9 +44,43 @@ Add when relevant:
 - `bundle-auditor` when the target is the bundle itself.
 
 Typical panel size:
-- `surface:plan` -> 3 to 4 roles;
+- `surface:plan` -> 2 to 4 roles;
 - `surface:results` or `surface:diff` -> 4 to 6 roles;
 - `surface:note`, `surface:mixed`, or `surface:bundle` with interpretation or external handoff live -> 5 to 7 roles.
+
+## Custom reviewer agent mapping
+
+Use these project-scoped Codex custom agents when available:
+
+| Reviewer role | Custom agent name |
+| --- | --- |
+| `provenance-auditor` | `econ_provenance_reviewer` |
+| `specification-auditor` | `econ_specification_reviewer` |
+| `transformation-and-sample-auditor` | `econ_transformation_sample_reviewer` |
+| `output-consistency-auditor` | `econ_output_consistency_reviewer` |
+| `claim-discipline-auditor` | `econ_claim_discipline_reviewer` |
+| `estimation-practice-auditor` | `econ_estimation_practice_reviewer` |
+| `design-auditor` | `econ_design_reviewer` |
+| `dynamics-auditor` | `econ_dynamics_reviewer` |
+| `robustness-auditor` | `econ_robustness_reviewer` |
+| `reproducibility-auditor` | `econ_reproducibility_reviewer` |
+| `software-equivalence-auditor` | `econ_software_equivalence_reviewer` |
+| `hybrid-implementation-auditor` | `econ_hybrid_implementation_reviewer` |
+| `bundle-auditor` | `econ_bundle_reviewer` |
+
+Each reviewer agent must run read-only, use only its assigned lens, and return JSON matching the shared protocol. Prefer the protocol excerpt passed by the parent `econ-review` skill. If no excerpt is passed, use `~/.codex/references/econ-agent-workflows/reviewer-protocol.md` when available. Use `references/reviewer-protocol.md` only when the parent confirms the current checkout is this package repository. If the protocol is unavailable, treat the panel as degraded before dispatch.
+
+## Subagent fallback matrix
+
+Use fallback only when subagent tools or selected reviewer agents are unavailable.
+
+| Tier | Fallback behavior |
+| --- | --- |
+| `quick` | May run a degraded single-thread review if the final output clearly labels that the panel did not run. |
+| `standard` | May run a degraded review with an explicit warning and a list of missing reviewer roles. |
+| `promotion` | Must stop or ask for explicit user acceptance before degraded review. In `mode:headless`, stop with a degraded verdict rather than certifying promotion readiness. |
+
+Malformed reviewer payloads should be discarded or quarantined. Evidence-free findings should be suppressed unless the issue is a bundle-metadata gap visible in the bundle itself. Missing reviewer roles should appear in the artefact summary.
 
 ## Review tiers
 
@@ -152,6 +186,7 @@ Scope: <target>
 Surface: <surface>
 Mode: headless
 Reviewers: <reviewer-list>
+Panel status: full|degraded|not-run
 Artifact: <artifact-path>
 Verdict: <clean|issues-found|degraded>
 
