@@ -14,7 +14,7 @@ The parent should pass each reviewer:
 - `surface`: `plan`, `results`, `bundle`, `note`, `diff`, or `mixed`;
 - `interpretation`: `yes` or `no`;
 - `tier`: `quick`, `standard`, or `promotion`;
-- compact `evidence_manifest` with discovered evidence paths, missing diagnostic surfaces, source-of-truth hierarchy, review target, surface, base ref or diff scope when relevant, rerun/build-status evidence when visible, and known blind spots;
+- compact `evidence_manifest` with discovered evidence paths, missing diagnostic surfaces, current authority hierarchy, review target, surface, base ref or diff scope when relevant, rerun/build-status evidence when visible, and known blind spots;
 - data-construction evidence fields when the review surface touches raw-to-analysis construction, joins, filters, sample restrictions, missingness, supports, denominators, weights, or timing rules;
 - econometric evidence fields when realised estimates, model-based descriptives, causal claims, dynamic responses, or inferential claims are in scope;
 - `crosslang` state: `no`, `plan`, `audit`, or `yes`;
@@ -37,7 +37,7 @@ Read:
 
 1. the plan;
 2. the workflow note or methods note it points to;
-3. the source-of-truth files named in the plan;
+3. the current authority files named in the plan;
 4. proposed model-spec, sample-flow, output, and review-bundle surfaces if named.
 
 A plan review is about whether later review will be possible. It is not proof that realised outputs are correct.
@@ -93,7 +93,7 @@ Read:
 Read:
 
 1. diff scope;
-2. relevant source-of-truth files;
+2. relevant current authority files;
 3. outputs, checks, ledgers, maps, or notes that the diff is supposed to affect;
 4. changed estimator, inference, weight, sample, timing, or output-generation settings.
 
@@ -131,7 +131,7 @@ Use these fields when relevant:
 | `denominators_and_weights` | Denominator definitions, aggregation levels, exposure or population weights, weighting stage, weight normalisation, and nonpositive or extreme weights. |
 | `timing_alignment` | Date parsing, event timing, lags, leads, forecast horizons, treatment timing, data revisions, calendar/fiscal conversions, and window definitions. |
 | `intermediate_outputs` | Canonical intermediate dataset paths, manifests, row counts, variable counts, schema changes, and freshness/rerun status. |
-| `manual_steps` | Any hand edits, spreadsheet edits, judgment calls, or non-reproducible transformations that affect the empirical object. |
+| `manual_steps` | Any hand edits, spreadsheet edits, judgment calls, or non-reproducible transformations that affect the research object. |
 
 If cleaning work has no realised estimates, reviewers should still treat missing data-construction diagnostics as possible trust findings. They should not require econometric diagnostics merely because the project is empirical.
 
@@ -350,7 +350,7 @@ Main question: Can the object's lineage, inputs, and canonical outputs be traced
 
 Minimum duties:
 
-1. identify current source-of-truth files;
+1. identify current authority files;
 2. verify the raw-to-analysis lineage described by visible artefacts;
 3. verify whether outputs are `rerun`, `inspected-only`, `inherited`, `structure-only`, or `unknown`;
 4. verify canonical output locations and bundle freshness when relevant;
@@ -543,7 +543,7 @@ Minimum duties:
 
 Trigger: custom software interfaces, compiled code, APIs, services, manifests, hidden defaults, or non-standard execution machinery can affect analytical trust.
 
-Main question: Is there broader software machinery that could change the empirical object even if economist-facing artefacts look plausible?
+Main question: Is there broader software machinery that could change the research object even if economist-facing artefacts look plausible?
 
 Minimum duties:
 

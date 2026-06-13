@@ -1,11 +1,11 @@
 ---
 name: econ-work
-description: "Execute empirical economics or hybrid analysis-engineering work. Use when the task involves code changes, reruns, output inspection, interpretation, review-bundle preparation, GitHub issue-linked empirical work, or economist-facing note production from defended outputs. Work in order: execution, output inspection, interpretation brief, note brief, then note or figures."
+description: "Execute economics research, empirical economics, or hybrid analysis-engineering work. Use when the task involves code changes, reruns, output inspection, interpretation, review-bundle preparation, GitHub issue-linked research work, or economist-facing note production from defended outputs. Work in order: execution, output inspection, interpretation brief, note brief, then note or figures."
 ---
 
 # Economist Execution Workflow
 
-Execute the work without losing the empirical object, realised sample, audit trail, benchmark boundary, or reader-facing deliverable.
+Execute the work without losing the research object, realised sample, audit trail, benchmark boundary, or reader-facing deliverable.
 
 ## Direct invocation contract
 
@@ -48,7 +48,7 @@ Keep these distinctions explicit throughout the run:
 - project backbone versus dated execution plan;
 - plan labels versus incidental task names;
 - GitHub issue coordination versus analytical evidence;
-- the live empirical object versus any benchmark or comparison object;
+- the live research object versus any benchmark or comparison object;
 - rerun outputs versus pre-existing outputs being inspected;
 - audit outputs versus report inputs;
 - the execution note versus the reader-facing note;
@@ -142,7 +142,7 @@ Derive tasks from the actual work surface:
 - saved-plan stages, work units, labels, and stop conditions;
 - the user's concrete request when no saved plan exists;
 - required inputs, output families, report inputs, and review surfaces;
-- verification needs from the execution mode and empirical object; and
+- verification needs from the execution mode and research object; and
 - interpretation, note, bundle, or issue-update obligations when they are in scope.
 
 Do not impose a fixed universal checklist. A baseline rerun, output inspection, note rewrite, and bundle cleanup should produce different task lists. For trivial one-off work, a formal task list may be skipped, but the closeout must still state what was checked, what changed, and what remains uncertain.
@@ -153,7 +153,7 @@ Keep task statuses current as work progresses. Preserve plan labels when present
 
 ### Phase 0: Ingest the work surface
 
-Read the plan when present, then read the current workflow note and source-of-truth files.
+Read the plan when present, then read the current workflow note and current authority files.
 
 If a saved plan is present, treat it as a decision artifact, not a progress log. Read enough of it to understand scope, labels, stop conditions, review route, and non-goals. Do not rewrite the plan body to track execution progress. If reality diverges from the plan, record the divergence in the task tracker, working notes, closeout, review bundle, or a follow-up plan recommendation.
 
@@ -390,7 +390,7 @@ Review-tier routing:
 - changed sample construction, estimand, specification, weighting, clustering, inference, treatment timing, inclusion/exclusion rules, or headline output should not route to `tier:quick`.
 
 Before closing, write a compact evidence pulse:
-- what changed in the empirical object, sample, outputs, note surface, or review surface;
+- what changed in the research object, sample, outputs, note surface, or review surface;
 - what became more trustworthy;
 - what became weaker, unresolved, or newly risky;
 - which outputs were refreshed, inherited, inspected-only, or scaffolded;
@@ -404,10 +404,21 @@ Route durable lessons to the lightest appropriate surface:
 - dated follow-up plan when the next round needs planning; and
 - closeout only when the lesson is task-local.
 
+Old memos, exploratory reports, GPT bundles, and project briefs are not durable update targets by default. Treat them as leads unless they were explicitly reviewed or accepted for a defined purpose, and trace any claim back to the underlying source, data output, script, or review finding before relying on it.
+
+Add a reusable lesson checkpoint before the recommended next command:
+- `Reusable lesson checkpoint: none` when the run did not reveal a reusable lesson;
+- `Reusable lesson checkpoint: closeout-only` when the lesson is task-local and should stay in the closeout;
+- `Reusable lesson checkpoint: econ-compound candidate` when the run revealed a reusable economics research lesson that future `econ-plan`, `econ-work`, or `econ-review` should consult.
+
+If the checkpoint is `none`, keep it to one compact line and do not turn the closeout into a reflection exercise.
+
+When the checkpoint is `econ-compound candidate`, name the lesson in one sentence and recommend `econ-compound` with the relevant plan, review, output, note, source bundle, or closeout path. Do not silently write durable learning notes from `econ-work` unless the user explicitly asked for learning capture or the larger autonomous run explicitly includes compounding.
+
 Use the issue checkpoint comment and closeout formats in `references/execution_reference.md`.
 
 Completion gate:
-- this run is not complete until the closeout states objective, domain mode, execution mode, furthest stage reached, output status, analysis-surface simplification status, verification performed, interpretation/note status, review-bundle or review-route status, evidence pulse, blockers or residual risks, and recommended next command;
+- this run is not complete until the closeout states objective, domain mode, execution mode, furthest stage reached, output status, analysis-surface simplification status, verification performed, interpretation/note status, review-bundle or review-route status, evidence pulse, reusable lesson checkpoint, blockers or residual risks, and recommended next command;
 - a script run, a generated file, or one passing check is not enough to declare completion;
 - for trivial one-off work, use a compact closeout, but still state execution mode, what was checked or changed, output status, remaining risk, and next step.
 

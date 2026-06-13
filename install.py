@@ -10,7 +10,7 @@ import shutil
 from pathlib import Path
 
 
-SKILLS = ("econ-plan", "econ-work", "econ-review")
+SKILLS = ("econ-plan", "econ-work", "econ-review", "econ-compound")
 
 
 def is_within(path: Path, root: Path) -> bool:

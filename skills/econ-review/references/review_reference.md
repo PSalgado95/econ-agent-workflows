@@ -5,7 +5,7 @@ Read this file only when you need the detailed read order, reviewer matrix, taxo
 ## Surface-specific read order
 
 `plan`
-- review whether the plan names the baseline object, estimand, source-of-truth files, reporting class, note contract when relevant, audit outputs versus report inputs, review route, interpretation boundary, and minimum diagnostic surfaces needed for later trust review.
+- review whether the plan names the baseline object, estimand, current authority files, reporting class, note contract when relevant, audit outputs versus report inputs, review route, interpretation boundary, and minimum diagnostic surfaces needed for later trust review.
 
 `results`
 - workflow note or plan -> output specification or manifest -> canonical outputs -> checks -> data-construction evidence contract fields when present -> model-spec ledger when relevant -> econometric evidence contract fields when present -> output-consistency map when note-facing claims are in scope -> output-automation status when present -> interpretation brief when interpretation is in scope -> note brief when reporting is in scope -> choice register.

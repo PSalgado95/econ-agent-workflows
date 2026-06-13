@@ -15,7 +15,8 @@ The package is organized around a simple research workflow:
 1. plan the empirical task;
 2. execute the code, checks, outputs, and interpretation work;
 3. review the plan, outputs, bundle, or note before trusting or promoting results;
-4. keep empirical traceability explicit throughout.
+4. capture reusable research-learning notes only when they have bounded evidence; and
+5. keep empirical traceability explicit throughout.
 
 The skills are meant for economists working with data, estimation, tables, figures, notes, replication material, and hybrid analysis-engineering projects.
 
@@ -26,6 +27,7 @@ The package is currently designed for Codex skills and Codex custom agents. The 
 - `econ-plan`: turns an empirical or hybrid research task into a staged plan. It makes the reader, reporting class, bottleneck, evidence surface, execution stages, and review route explicit.
 - `econ-work`: executes empirical or hybrid work from a saved plan or clear request. It separates code execution, output inspection, interpretation, note preparation, and closeout.
 - `econ-review`: reviews empirical plans, results, bundles, notes, diffs, or mixed work surfaces. Direct invocation means "try to run the economist review panel" using the included Codex custom reviewer agents.
+- `econ-compound`: captures durable economics research lessons as bounded precedent, not live project state. It validates learning notes against evidence paths, scope, status, and stale/supersession rules.
 
 Reviewer lenses live as custom agents under `.codex/agents/`, with shared rules in `references/reviewer-protocol.md`.
 
@@ -43,6 +45,7 @@ skills/
   econ-plan/
   econ-work/
   econ-review/
+  econ-compound/
 install.py
 LICENSE
 README.md
@@ -58,7 +61,7 @@ Simplest path: ask Codex to install the full package from this repo.
 Install the full econ-agent-workflows package from https://github.com/PSalgado95/econ-agent-workflows.
 
 Clone or download the repo, run `python install.py --force` from the repo root, and confirm that it installs:
-- the three skills under skills/
+- the four skills under skills/
 - the reviewer agents under .codex/agents/
 - the shared reviewer protocol under references/
 
@@ -67,7 +70,7 @@ Do not stop after installing only the skills; econ-review's panel needs the revi
 
 Restart Codex after installation so the skills and reviewer agents are loaded.
 
-Manual installation is the same three pieces: copy `skills/econ-plan`, `skills/econ-work`, and `skills/econ-review` into your Codex skills folder; copy `.codex/agents/*.toml` into your Codex agents folder; and copy `references/reviewer-protocol.md` into a stable Codex reference location such as `~/.codex/references/econ-agent-workflows/reviewer-protocol.md`.
+Manual installation is the same three pieces: copy `skills/econ-plan`, `skills/econ-work`, `skills/econ-review`, and `skills/econ-compound` into your Codex skills folder; copy `.codex/agents/*.toml` into your Codex agents folder; and copy `references/reviewer-protocol.md` into a stable Codex reference location such as `~/.codex/references/econ-agent-workflows/reviewer-protocol.md`.
 
 ### User-Level vs Project-Scoped Agents
 

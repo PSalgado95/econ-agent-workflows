@@ -75,7 +75,7 @@ Use this after output inspection and before interpretation, review bundle prepar
 - Cleanup follow-up recommended:
 ```
 
-Never delete, overwrite, or hide stale empirical evidence without explicit approval.
+Never delete, overwrite, or hide stale research evidence without explicit approval.
 
 ## Verification ladder
 
@@ -142,7 +142,7 @@ Use this inside closeouts for substantial empirical or hybrid work.
 - Outputs inherited or inspected only:
 - Labels/issues/branches the next session should use:
 - Suggested next planning question:
-- Durable update target: closeout only|issue comment|project backbone|README dictionary|follow-up plan
+- Durable update target: none|closeout-only|econ-compound candidate|issue comment|project backbone|README dictionary|follow-up plan
 - Proposed project-backbone update, if any:
 - Project-backbone update approval status: not needed|drafted only|approved and applied
 ```
@@ -168,5 +168,13 @@ End with:
 14. data blockers or rerun blockers, if any;
 15. evidence pulse;
 16. issue checkpoint status, if issue-linked;
-17. remaining risks or open questions; and
-18. recommended next command.
+17. remaining risks or open questions;
+18. reusable lesson checkpoint; and
+19. recommended next command.
+
+Reusable lesson checkpoint format:
+- `Reusable lesson checkpoint: none` when the run did not reveal a reusable lesson. Keep this to one compact line.
+- `Reusable lesson checkpoint: closeout-only` when the lesson is task-local and should stay in the closeout.
+- `Reusable lesson checkpoint: econ-compound candidate` when the run revealed a reusable economics research lesson. Include one sentence plus the evidence path a later `econ-compound` run should read.
+
+Do not write durable learning notes from the closeout unless the user explicitly asked for learning capture or the larger autonomous run explicitly included compounding.

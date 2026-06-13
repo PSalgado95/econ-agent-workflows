@@ -1,7 +1,7 @@
 ---
 name: econ-plan
-description: "Build plans for empirical economics or hybrid analysis-engineering work. Use when a user wants an execution plan, scoping decision, workflow design, GitHub issue-linked plan, or project-brief-backed plan for data, estimation, output, interpretation, or economist-facing note tasks. Restate the empirical task plainly, force an explicit reporting-class decision, ask rather than infer when it is materially unclear whether a reader-facing note or figures are part of the deliverable, and hand off a stage-sequenced plan to econ-work."
-argument-hint: "[optional: empirical task, existing plan path, project brief path, GitHub issue, output/table/figure to plan around]"
+description: "Build plans for economics research, empirical economics, or hybrid analysis-engineering work. Use when a user wants an execution plan, scoping decision, workflow design, GitHub issue-linked plan, or project-brief-backed plan for sources, data, models, estimation, outputs, interpretation, or economist-facing note tasks. Restate the research task plainly, force an explicit reporting-class decision, ask rather than infer when it is materially unclear whether a reader-facing note or figures are part of the deliverable, and hand off a stage-sequenced plan to econ-work."
+argument-hint: "[optional: research task, existing plan path, project brief path, GitHub issue, output/table/figure to plan around]"
 ---
 
 # Economist Planning Workflow
@@ -33,7 +33,7 @@ Ask one decision at a time when possible. Include enough context, examples, or t
 <planning_input> #$ARGUMENTS </planning_input>
 
 If the input is empty, use the interaction method above and ask:
-"What would you like to plan? Please describe the empirical task and say whether you also want a reader-facing note or figures."
+"What would you like to plan? Please describe the economics research task and say whether you also want a reader-facing note or figures."
 
 If the input is present but unclear or underspecified, use Phase 0 only to check whether the missing answer is already explicit in local context. If it remains material after that read, ask one blocking clarifying question before writing or saving the plan.
 
@@ -43,22 +43,23 @@ Saved plan documents must use repo-relative paths for files, folders, scripts, o
 
 Unless the turn ends with one focused blocking question, the visible response must include these fields in this order:
 1. `Task restatement` - one plain-language paragraph saying what is in scope, out of scope, and what assumption would change the plan.
-2. `Classification` - `domain_mode`, `reporting_class`, `round_type`, and secondary lanes if any.
+2. `Classification` - `domain_mode`, `reporting_class`, `round_type`, `task_family`, and secondary lanes if any.
 3. `Decision frame` - final human reader, desired output, project backbone used or proposed, GitHub issue action, if any.
 4. `Central bottleneck` - the one constraint the plan is organised around.
 5. `Execution path` - the four `econ-work` stages, with the expected stop conditions.
-6. `Review and handoff` - saved plan path or explicit no-save reason, plan-review route or skip reason, and recommended next command.
+6. `Review and handoff` - saved plan path or explicit no-save reason, ordinary `econ-work` route, later `econ-review` surface, optional plan-review trigger if any, and recommended next command.
 7. `Open questions` - only non-blocking questions or deferred choices; material questions must be asked with the interaction method above before finalising.
 
 ## Core contract
 
 A ready plan must:
-- briefly restate the empirical task in plain language before committing to the plan;
+- briefly restate the research task in plain language before committing to the plan;
 - identify the decision problem, not just the topic;
 - identify the final human reader and output;
 - name any project-backbone document used, or say that none was found;
 - classify the reporting class explicitly as `coding-only`, `analysis-only`, `analysis-plus-note-report`, or `analysis-plus-note-report-plus-figures`;
 - classify the round as `current-evidence-cleanup`, `current-evidence-clarification`, or `new-empirical-work`;
+- classify `task_family` by the primary research object as `source_collection`, `data_construction`, `analysis`, or `writing`;
 - isolate one central bottleneck;
 - use sparse stable labels for important decisions, outputs, work units, and review findings;
 - hand off a four-stage execution path to `econ-work`:
@@ -80,7 +81,7 @@ If reporting is in scope, the plan must also lock the reader-facing note contrac
 - what belongs in the appendix or execution note rather than the main text.
 
 Always keep:
-- the live empirical object separate from any benchmark or comparison block; and
+- the live research object separate from any benchmark or comparison block; and
 - audit outputs separate from report inputs.
 
 ## Planning rules
@@ -111,7 +112,7 @@ Example:
 
 Use the interaction method above after a first repo read whenever the answer could materially change the plan.
 
-Favor asking early over guessing silently. A good `econ-plan` question is decision-relevant, answerable from the user's perspective, and includes the context needed to choose between options. It should clarify the empirical object, output surface, reader, rerun scope, benchmark treatment, or plan artifact. Do not bury a material decision in the final `Open questions` section.
+Favor asking early over guessing silently. A good `econ-plan` question is decision-relevant, answerable from the user's perspective, and includes the context needed to choose between options. It should clarify the research object, output surface, reader, rerun scope, benchmark treatment, or plan artifact. Do not bury a material decision in the final `Open questions` section.
 
 Ask when any of these are materially unclear:
 - the objective or decision problem;
@@ -140,7 +141,7 @@ If uncertainty remains after reasonable clarification, mark it explicitly as an 
 ## Domain routing
 
 Classify `domain_mode` before writing the plan:
-- `empirical` -> data, estimation, descriptive outputs, interpretation, reporting, benchmark comparison, or reproducibility;
+- `empirical` -> economics research work where sources, data, models, outputs, interpretation, reporting, benchmark comparison, or reproducibility matter;
 - `hybrid` -> both empirical integrity and software implementation integrity matter;
 - `software-handoff` -> pure app, API, UI, infra, tooling, refactor, or debugging work with no empirical, output, interpretation, or reporting stakes.
 
@@ -157,7 +158,7 @@ Read the request and find the active planning surface:
 - methods note;
 - benchmark note;
 - prior note or report; or
-- source-of-truth code or config.
+- current authority code or config.
 
 If the user references an existing plan, or there is an obvious recent matching plan:
 - read it;
@@ -212,6 +213,7 @@ Before building workstreams, lock:
 - `Reporting class`;
 - `Reader-facing note contract` when reporting is in scope;
 - `Round type`;
+- `Task family`;
 - secondary lanes, if any;
 - `Central bottleneck`.
 
@@ -225,6 +227,20 @@ Anti-sprawl rule:
 - for cleanup or clarification rounds, default to the smallest correct next round;
 - do not reopen broad adjacent branches unless the central bottleneck truly requires it.
 
+Task-family routing:
+- classify `task_family` by the primary research object of work, not by the output format;
+- keep `task_family` orthogonal to `domain_mode`, `round_type`, and `reporting_class`: an `analysis` or `data_construction` plan may still include a note, and a `writing` plan is used only when the note or memo is the primary object;
+- choose one primary family:
+  - `source_collection`: source discovery, evidence corpora, public documents, archives, PDFs, speeches, official records, or source inventories;
+  - `data_construction`: cleaning, standardisation, linkage, concordances, panel construction, table reconstruction, treatment/exposure construction, or measurement packages;
+  - `analysis`: descriptive analysis, estimation, robustness, output inspection, table/figure generation, or interpretation when the research object already exists;
+  - `writing`: note, memo, or paper-facing synthesis from defended or inspection-ready evidence;
+- add secondary layers only when they materially affect execution.
+
+For `data_construction`, use secondary layers such as `cleaning`, `linkage`, `panel_build`, and `measurement` when they materially affect the plan. When `measurement` is present, require the plan to lock the definition, authoritative table or formula, denominator, unit, timing, sample boundary, validation checks, and what the measure can and cannot support.
+
+Use `task_family: writing` only when the primary work is to build, revise, or package a note, memo, or paper-facing synthesis from already defended or inspection-ready evidence. Do not use it merely because a plan has a Stage 4 memo, and do not plan to draft from raw diagnostics, raw source logs, uncatalogued source piles, or unchecked outputs.
+
 ### Phase 2: Gather and classify local evidence
 
 Read local material before finalising the plan. Minimum local research normally includes:
@@ -234,6 +250,21 @@ Read local material before finalising the plan. Minimum local research normally 
 - prior plans or choice registers when relevant;
 - prior notes, reports, or bundles when relevant; and
 - benchmark or comparison material when the task is benchmark-facing.
+
+For broad, repeated, risky, or unclear economics research tasks, search repo-local research-learning notes before finalising:
+- `docs/research-learnings/`;
+- `.codex/research-learnings/`;
+- legacy `docs/solutions/` when present.
+
+Do not search learning notes for every small plan. Narrow the lookup by task family or likely category:
+- `source_collection` -> start with `source-provenance` and `interpretation-claims`;
+- `data_construction` -> start with `data-measurement` and `sample-linkage`;
+- `analysis` -> start with `specification-estimation`, `interpretation-claims`, and the specific category implied by the plan;
+- `writing` -> start with `interpretation-claims`, `writing-figures`, and `theory-models` only when the task depends on evidence-to-claim discipline or model exposition.
+
+Treat any note found as precedent, not authority. If a learning note conflicts with live project files, current outputs, or current review findings, mention the conflict and mark the note as `stale` or refresh-worthy rather than following it silently.
+
+Treat old memos, exploratory reports, GPT bundles, and project briefs as leads unless they were explicitly reviewed or accepted for a defined purpose. When a memo matters for the plan, trace the claim back to the underlying source, data output, script, or review finding before relying on it.
 
 Build a compact evidence map with these buckets:
 - `live and checked`;
@@ -245,14 +276,14 @@ Call out missing evidence or ambiguities before leaning on them.
 
 ### Phase 3: Add read-only investigation only when it clarifies the evidence map
 
-Use extra read-only investigation only when it materially clarifies source-of-truth files, benchmarks, selection risks, reproducibility, or hybrid implementation risks. Do not build a large planning apparatus by default.
+Use extra read-only investigation only when it materially clarifies current authority files, benchmarks, selection risks, reproducibility, or hybrid implementation risks. Do not build a large planning apparatus by default.
 
 ### Phase 4: Lock definitions, comparisons, and deliverables
 
 Before sequencing execution, make these explicit:
 - research question and estimand, or the descriptive object;
 - definition registry for terms that can drift;
-- source-of-truth files for the live object versus supporting or benchmark files;
+- current authority files for the live object versus supporting or benchmark files;
 - interpretation scope;
 - audit outputs;
 - report inputs.
@@ -275,9 +306,27 @@ Default note-format rule:
 - use Markdown only when the user explicitly wants it or the repo cannot render
   PDF.
 
+Task-family implementation surface rules:
+- for `source_collection`, specify source families or routes, query/source register fields, source or manifest identifiers, access blockers, negative-search rules, evidence sorting, copyright or excerpt handling, and review-packet logic when the corpus is large or multi-agent reading is likely;
+- for `data_construction`, specify output folders, table registry, raw/intermediate/final surfaces, row identifiers, join keys, concordances, provenance fields, and audit files for coverage, missingness, support, denominators, and merge integrity;
+- for `analysis`, specify the baseline object, sample and comparison rules, specification or descriptive-output surface, robustness grid when relevant, audit outputs, report inputs, and interpretation stop point before note writing;
+- for `writing`, specify reader, note type, claim budget, definitions before findings, source/output-to-claim traceability, and figure/text consistency checks when relevant.
+
+If execution depends on discovering sources, PDFs, APIs, archives, registers, datasets, or database exports, plan a query/source register with route, date, access mode, result count, reviewed count, blocker, not-found status, and next action. If execution instead starts from fixed local files, plan a file/table registry with source path, version or date, row/unit identifiers, provenance fields, transformations, and validation outputs.
+
+Define source/evidence categories appropriate to the task and state what each category can and cannot support. For public source-collection tasks, examples may include official sources, press, interest groups, metadata-only hits, blocked sources, and weak contextual sources. For data-construction tasks, categories may instead describe raw files, codebooks, APIs, derived tables, restricted registers, correspondence, or validation outputs. Do not hard-code L194 or public-debate categories as generic enums.
+
+For open-ended source discovery, large data construction, multi-wave measurement, or multi-agent reading, define pilot/tranche purpose, expansion triggers, stop-and-ask triggers, completion standard, and negative-evidence rule. For narrow one-off extraction, use a compact completion and stop rule instead.
+
+For large corpora, multi-source packages, or multi-agent reading, plan manifest-linked review batches with a lens, source IDs, coding fields to verify, synthesis question, overclaiming warnings, and expected output. Later agents should not use uncatalogued sources directly; new sources must first enter the source/query register and manifest.
+
+Include a copy-ready downstream `/goal`, GPT Pro, or autonomous-run prompt only when the user explicitly asks for it or when the task is itself a downstream package plan. Do not make downstream prompts a routine saved-plan section.
+
 ### Phase 5: Design the four-stage execution path for `econ-work`
 
 Every non-trivial plan must hand off the same stage sequence used by `econ-work`.
+
+Use the four `econ-work` functions as the handoff spine. For `source_collection` or `data_construction` plans, add domain-specific subphases inside the relevant stage, such as source-map preflight, seed collection, schema calibration, extraction, linkage, coding, or audit. Do not create a separate workflow that `econ-work` cannot recognise.
 
 `Stage 1: Code and run checks`
 - likely files or entrypoints;
@@ -313,7 +362,7 @@ Use `writing-clear-prose` only for non-note prose or for local sentence-level po
 
 ### Phase 6: Write ordered execution stages
 
-Use the lightest structure that still protects the object. For most empirical tasks, one ordered section per stage is enough.
+Use the lightest structure that still protects the object. For most economics research tasks, one ordered section per stage is enough.
 
 Use stable labels sparingly:
 - prefer domain labels already present in the repo, such as case IDs, issue numbers, branch names, output filenames, or fixed vocabulary fields;
@@ -355,13 +404,14 @@ At minimum specify:
 - whether a compact review bundle is required; and
 - which findings should trigger a stop-and-ask moment or a GPT Pro escalation question.
 
-Use `econ-review` by default for empirical and hybrid work.
+Use `econ-review` by default after empirical and hybrid work has realised outputs, bundles, notes, diffs, or mixed surfaces to review.
 
-Plan reviewability gate:
-- for substantive empirical or hybrid plans, the default next step is `econ-review surface:plan mode:headless plan:<saved-plan>`;
-- the plan-review verdict is about whether later empirical review is possible, not whether realised outputs are correct;
-- direct `econ-work` is acceptable only for narrow or trivial plans, or when the user explicitly wants to skip plan review;
-- when plan review is skipped, state the skip reason in the plan and final route.
+Review route:
+- the ordinary next step after a saved plan is `econ-work` on the saved plan;
+- the plan should name the outputs, checks, manifests, interpretation briefs, note briefs, or review bundles that `econ-work` should leave ready for later `econ-review`;
+- use `econ-review surface:plan` only when the saved plan is unusually large, risky, ambiguous, or intended for multi-agent execution;
+- the optional plan-review verdict is about whether later empirical review will be possible, not whether realised outputs are correct;
+- when optional plan review is not used, do not call it a skipped review; state the later `econ-review` surface expected after work, or say why no later review is needed.
 
 ### Phase 8: Save a durable plan
 

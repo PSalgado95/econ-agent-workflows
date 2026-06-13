@@ -10,6 +10,7 @@ updated: YYYY-MM-DD
 domain_mode: empirical|hybrid|software-handoff
 round_type: current-evidence-cleanup|current-evidence-clarification|new-empirical-work
 reporting_class: coding-only|analysis-only|analysis-plus-note-report|analysis-plus-note-report-plus-figures
+task_family: source_collection|data_construction|analysis|writing
 note_type: none|results-note|measurement-note|benchmark-note|decision-memo|other
 ---
 
@@ -47,6 +48,13 @@ note_type: none|results-note|measurement-note|benchmark-note|decision-memo|other
 - Desired final output:
 - Final human reader:
 
+## Task family
+- Primary family: source_collection|data_construction|analysis|writing
+- Secondary layers:
+- Why this family fits:
+- Sections included because relevant:
+- Sections omitted because irrelevant:
+
 ## Central bottleneck
 
 ## Scope boundaries
@@ -67,7 +75,7 @@ note_type: none|results-note|measurement-note|benchmark-note|decision-memo|other
 | --- | --- | --- | --- | --- |
 |  |  |  |  |  |
 
-## Live evidence and source-of-truth surfaces
+## Live evidence and current authority surfaces
 
 ## Research question, estimand, or descriptive object
 
@@ -78,6 +86,53 @@ note_type: none|results-note|measurement-note|benchmark-note|decision-memo|other
 ## Audit outputs and report inputs
 - Audit outputs:
 - Report inputs:
+
+## Implementation surface contract
+- Include for `source_collection`, `data_construction`, or complex `analysis`; omit when irrelevant.
+- Base output directory:
+- Output tree or file registry:
+- Table/schema registry:
+- Stable identifiers and join keys:
+- Provenance fields required:
+- Audit outputs:
+- Report inputs:
+
+## Source, provenance, and access plan
+- Include when source discovery, external data collection, archives, APIs, registers, PDFs, or database exports are part of the task; omit when execution starts from fixed local inputs.
+- Source families, data routes, or file/table routes:
+- Query/source register or file/table registry fields:
+- Access modes:
+- Access blockers:
+- Copyright, confidentiality, or redistribution constraints:
+- Negative-evidence rule:
+- Next action when a route is blocked:
+
+## Evidence sorting and claim rules
+- Include when interpretation depends on mixed source quality, constructed measures, or source-backed claims; omit for narrow execution-only plans.
+- Task-specific source/evidence categories:
+- Claim classes:
+- What each category can support:
+- What each category cannot support:
+- Source/output-to-claim traceability rule:
+
+## Pilot, expansion, and stopping logic
+- Include for open-ended source discovery, large data construction, multi-wave measurement, or multi-agent reading; omit for narrow one-off tasks.
+- Pilot or tranche purpose:
+- Schema/access/calibration rule:
+- Expansion triggers:
+- Stop-and-ask triggers:
+- Completion standard:
+- Negative-evidence rule:
+
+## Review packet contract
+- Include only for large corpora, multi-source packages, external review bundles, or multi-agent reading.
+- Batch or lens definitions:
+- Required manifest IDs, source IDs, or output IDs:
+- Coding fields to verify:
+- Synthesis question:
+- Overclaiming warnings:
+- Expected output format:
+- Rule for adding new evidence:
 
 ## Ordered execution stages
 
@@ -137,9 +192,21 @@ note_type: none|results-note|measurement-note|benchmark-note|decision-memo|other
 
 ## Risks and dependencies
 
-## Review route and plan-reviewability gate
-- Default next step: `econ-review surface:plan mode:headless plan:<saved-plan>` for substantive empirical/hybrid plans
-- Skip reason, if direct `econ-work` is recommended:
+## Review route
+- Default next step: `econ-work` on the saved plan
+- Later `econ-review` surface expected after work: results|bundle|note|mixed|diff|none
+- Artefacts `econ-work` should leave ready for later review:
+- Optional pre-work plan review trigger, if any:
+```
+
+Optional insertion block. Add this only when relevant learning notes were actually consulted and changed the plan:
+
+```md
+## Prior research lessons consulted
+- Lesson:
+- Evidence path:
+- How it shapes this plan:
+- Reuse boundary or stale-note caution:
 ```
 
 ## Minimum quality check before saving
@@ -149,19 +216,23 @@ Confirm that the saved plan makes these explicit:
 - project backbone used or reason none was used;
 - issue coordination when issue-linked;
 - reader contract;
-- `domain_mode`, `round_type`, and `reporting_class`;
+- `domain_mode`, `round_type`, `reporting_class`, and `task_family`;
 - note contract when reporting is in scope;
+- task-family sections included or explicitly omitted;
 - sparse labels for nontrivial decisions, outputs, and work units;
 - `F1`, `F2`, ... reserved for review findings;
 - origin trace for nontrivial decisions/outputs;
+- prior research lessons consulted, with reuse boundary or stale-note caution, when such lessons shaped the plan;
 - central bottleneck;
 - live object versus benchmark block;
 - audit outputs versus report inputs;
 - stage order;
 - stop conditions;
 - review route;
+- ordinary route is `econ-work` next unless an optional plan-review trigger is named;
+- source/data/measurement plans specify required registries, identifiers, and audits;
+- ordinary analysis/writing plans omit irrelevant source/corpus machinery;
 - material plan-shaping questions asked with the blocking question tool or explicitly resolved;
-- plan-reviewability gate or explicit skip reason;
 - all file, folder, script, output, and evidence references use repo-relative paths;
 - user-named files, issues, outputs, datasets, registers, or documents were inspected or explicitly marked unavailable;
 - decisions include rationale, not only tasks.

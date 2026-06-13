@@ -5,7 +5,7 @@ description: "Review empirical economics or hybrid analysis-engineering work. Us
 
 # Economist Review Workflow
 
-Review the current empirical object before trusting it, promoting it, or handing it to a co-author.
+Review the current research object before trusting it, promoting it, or handing it to a co-author.
 
 ## Direct invocation contract
 
@@ -30,7 +30,7 @@ The object under review is:
 5. what the canonical outputs actually show; and
 6. what the note or memo claims those outputs mean.
 
-Route pure software reviews to the current software-engineering review workflow when available. Keep `econ-review` focused on empirical trust, hybrid empirical/software handoff, and economist-facing reproducibility.
+Route pure software reviews to the current software-engineering review workflow when available. Keep `econ-review` focused on research trust, hybrid empirical/software handoff, and economist-facing reproducibility.
 
 Keep this file as the parent review contract. Read `references/review_reference.md` when you need the detailed surface read order, reviewer-role matrix, custom-agent mapping, fallback rules, finding taxonomy, cross-language validation trigger, issue-ready templates, or headless output envelope. Reviewer agents use the shared protocol in `references/reviewer-protocol.md` from this package repository or the installed copy at `~/.codex/references/econ-agent-workflows/reviewer-protocol.md` when available. If the protocol is unavailable and the parent cannot pass the relevant protocol excerpt, treat the panel as degraded before dispatch.
 
@@ -196,7 +196,9 @@ Decide:
 - whether interpretation is in scope;
 - whether a reader-facing note is in scope;
 - whether cross-language validation is explicitly requested or directly targeted; and
-- the source-of-truth hierarchy.
+- the current authority hierarchy.
+
+In that hierarchy, old memos, exploratory reports, GPT bundles, and project briefs are leads unless they were explicitly reviewed or accepted for a defined purpose. Treat live project evidence and current review findings as stronger than old learning notes or intermediate writeups.
 
 If the target is actually pure software, route to the current software-engineering review workflow and stop. If no such workflow is available, state the route mismatch and stop rather than forcing pure software review through the empirical panel.
 
@@ -232,7 +234,7 @@ Before dispatch, build a compact evidence manifest for reviewers. Include:
 - review tier;
 - interpretation flag;
 - cross-language validation state;
-- source-of-truth hierarchy;
+- current authority hierarchy;
 - discovered plan, workflow note, bundle, outputs, checks, ledgers, briefs, maps, note paths, build metadata, and validation manifests;
 - missing diagnostic surfaces;
 - base ref or diff scope when relevant;
@@ -356,7 +358,7 @@ Whenever the target includes a note, note-facing bundle, or interpretation-beari
 Check that:
 
 1. the first paragraph tells the reader what the note studies, what the main answer is, and why the note exists;
-2. the empirical object, sample boundary, estimand, and main comparison are defined before decompositions, benchmark bridges, or implementation details;
+2. the research object, sample boundary when empirical, estimand when relevant, and main comparison are defined before decompositions, benchmark bridges, or implementation details;
 3. the main text can be understood without repo knowledge;
 4. internal workflow nouns do not carry the main narrative;
 5. figures appear in a sensible order, with the headline figure first;
@@ -398,8 +400,9 @@ Default output shape:
 4. `Reader-facing note register` when relevant;
 5. `Cross-language validation handoff` when explicitly requested and not yet run;
 6. `Documentation / cleanup`;
-7. `Open questions`; and
-8. `Artefact summary`.
+7. `Reusable review lesson` when relevant;
+8. `Open questions`; and
+9. `Artefact summary`.
 
 For each finding include:
 
@@ -416,6 +419,8 @@ For each finding include:
 - whether user judgement is required.
 
 For `surface:plan`, make clear that the verdict is about reviewability, not realised-output certification.
+
+Add `Reusable review lesson: none|closeout-only|econ-compound candidate` when the review reveals a possible economics research lesson. Use `none` as the compact default. Use `closeout-only` when the lesson is task-local and should stay in the review finding or residual summary. Good `econ-compound candidate` examples include repeated overclaiming from weak sources, a sample-accounting diagnostic that should become standard, a model-output equivalence rule, a manifest or handoff practice, or a note-facing claim-discipline rule. If the lesson is a candidate, provide the one-sentence lesson and evidence path so a later `econ-compound` run can write the durable note. Do not write durable learning notes from `econ-review` unless the user explicitly asked for learning capture.
 
 If `issues:yes` was supplied or the user explicitly asked to file/draft GitHub issues:
 
