@@ -1,0 +1,4 @@
+interface:
+  display_name: "GPT Pro Handoff"
+  short_description: "Prepare lean GPT Pro handoff packages."
+  default_prompt: "Use $gpt-pro-handoff to prepare a GPT Pro analysis package from this workspace."

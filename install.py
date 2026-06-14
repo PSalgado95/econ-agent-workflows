@@ -10,7 +10,13 @@ import shutil
 from pathlib import Path
 
 
-SKILLS = ("econ-plan", "econ-work", "econ-review", "econ-compound")
+SKILLS = (
+    ("econ-plan", "econ-plan"),
+    ("econ-work", "econ-work"),
+    ("econ-review", "econ-review"),
+    ("econ-compound", "econ-compound"),
+    ("auxiliary/gpt-pro-handoff", "gpt-pro-handoff"),
+)
 
 
 def is_within(path: Path, root: Path) -> bool:
@@ -77,11 +83,11 @@ def main() -> int:
 
     messages: list[str] = []
 
-    for skill in SKILLS:
+    for source_name, installed_name in SKILLS:
         messages.append(
             copy_tree(
-                repo / "skills" / skill,
-                skills_dir / skill,
+                repo / "skills" / source_name,
+                skills_dir / installed_name,
                 force=args.force,
                 root=codex_home,
             )
