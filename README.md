@@ -39,17 +39,21 @@ Use `crosslang:plan` to prepare the validation handoff or `crosslang:audit` to c
 ```text
 .codex/
   agents/
-    econ-*-reviewer.toml
+    econ-*-reviewer.toml      # Codex reviewer agents (source of truth)
 references/
-  reviewer-protocol.md
-skills/
+  reviewer-protocol.md        # shared reviewer protocol (source of truth)
+skills/                       # skills (source of truth)
   econ-plan/
   econ-work/
   econ-review/
   econ-compound/
   auxiliary/
     gpt-pro-handoff/
-install.py
+claude/                       # generated Claude Code package (do not hand-edit)
+  skills/  commands/  agents/  references/
+install.py                    # Codex installer
+build_claude.py               # regenerates claude/ from the Codex sources
+install_claude.py             # installs the generated claude/ package
 LICENSE
 README.md
 ```
@@ -71,3 +75,25 @@ from the repo root. Confirm it installs the core skills, auxiliary helper skills
 Restart Codex afterward so the skills and reviewer agents load.
 
 **Manual install**: copy the core skill folders and auxiliary skill folders into your Codex skills folder, copy `.codex/agents/*.toml` into your Codex agents folder, and copy `references/reviewer-protocol.md` into a stable reference location such as `~/.codex/references/econ-agent-workflows/reviewer-protocol.md`.
+
+### Claude Code
+
+The skills are authored for Codex, and a ready-to-install Claude Code package is generated under `claude/`. Install it from the repo root:
+
+```text
+python install_claude.py --force
+```
+
+This installs into `~/.claude`: the skills, `/econ-plan` / `/econ-work` / `/econ-review` / `/econ-compound` / `/gpt-pro-handoff` slash commands, the reviewer subagents, and the shared protocol. Restart Claude Code afterward. To update, pull the repo and re-run the same command.
+
+On Claude Code the reviewer lenses run as subagents dispatched through the Task tool, and they default to the Sonnet model (promote a review to Opus manually when the task is critical).
+
+### Editing the skills (maintainers)
+
+**Codex is the single source of truth.** Edit the Codex sources (`skills/`, `.codex/agents/`, `references/`), then regenerate the Claude Code package and commit it:
+
+```text
+python build_claude.py
+```
+
+Never hand-edit anything under `claude/`; every generated file says so in a banner and will be overwritten on the next build.

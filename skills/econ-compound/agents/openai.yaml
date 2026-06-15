@@ -1,0 +1,4 @@
+interface:
+  display_name: "Econ Compound"
+  short_description: "Capture or search durable economics research lessons"
+  default_prompt: "Use $econ-compound to capture, search, or refresh a durable economics research lesson. Classify the request as capture, search, or refresh first. In search mode, do not write a note. Only write or update a durable learning note when I explicitly ask for learning capture or an autonomous run includes compounding; validate against references/learning_schema.md and run scripts/validate_learning_note.py; and never let a learning note replace current plans, data, outputs, notes, or review findings."
