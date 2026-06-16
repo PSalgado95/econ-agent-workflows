@@ -12,7 +12,8 @@ updated: YYYY-MM-DD
 domain_mode: empirical|hybrid|software-handoff
 round_type: current-evidence-cleanup|current-evidence-clarification|new-empirical-work
 reporting_class: coding-only|analysis-only|analysis-plus-note-report|analysis-plus-note-report-plus-figures
-task_family: source_collection|data_construction|analysis|writing
+task_family: source_collection|data_construction|model_computation|analysis|writing
+code_role: none|exploratory|analysis-pipeline|shared-collaborator|replication-facing|library-tool
 note_type: none|results-note|measurement-note|benchmark-note|decision-memo|other
 ---
 
@@ -51,11 +52,17 @@ note_type: none|results-note|measurement-note|benchmark-note|decision-memo|other
 - Final human reader:
 
 ## Task family
-- Primary family: source_collection|data_construction|analysis|writing
+- Primary family: source_collection|data_construction|model_computation|analysis|writing
 - Secondary layers:
 - Why this family fits:
 - Sections included because relevant:
 - Sections omitted because irrelevant:
+
+## Code role
+- Role: none|exploratory|analysis-pipeline|shared-collaborator|replication-facing|library-tool
+- Why this role fits:
+- Code paths or entrypoints expected:
+- Maturity expected now:
 
 ## Central bottleneck
 
@@ -90,7 +97,7 @@ note_type: none|results-note|measurement-note|benchmark-note|decision-memo|other
 - Report inputs:
 
 ## Implementation surface contract
-- Include for `source_collection`, `data_construction`, or complex `analysis`; omit when irrelevant.
+- Include for `source_collection`, `data_construction`, `model_computation`, or complex `analysis`; omit when irrelevant.
 - Base output directory:
 - Output tree or file registry:
 - Table/schema registry:
@@ -98,6 +105,18 @@ note_type: none|results-note|measurement-note|benchmark-note|decision-memo|other
 - Provenance fields required:
 - Audit outputs:
 - Report inputs:
+
+## Research code quality contract
+- Include when `code_role` is not `none`; omit when no code is in scope.
+- Code role: none|exploratory|analysis-pipeline|shared-collaborator|replication-facing|library-tool
+- Code paths or entrypoints expected:
+- Always-on floor required:
+- Object-defining invariants that should become assertions:
+- Named tests expected now:
+- Ad hoc debug/test code that must not remain in tracked research code:
+- Notebook-to-script boundary:
+- Research-computing checks, if `task_family: model_computation`:
+- Performance scope: off|explicitly-requested|profiled-bottleneck|library-tool
 
 ## Source, provenance, and access plan
 - Include when source discovery, external data collection, archives, APIs, registers, PDFs, or database exports are part of the task; omit when execution starts from fixed local inputs.
@@ -218,7 +237,7 @@ Confirm that the saved plan makes these explicit:
 - project backbone used or reason none was used;
 - issue coordination when issue-linked;
 - reader contract;
-- `domain_mode`, `round_type`, `reporting_class`, and `task_family`;
+- `domain_mode`, `round_type`, `reporting_class`, `task_family`, and `code_role`;
 - note contract when reporting is in scope;
 - task-family sections included or explicitly omitted;
 - sparse labels for nontrivial decisions, outputs, and work units;
@@ -233,6 +252,7 @@ Confirm that the saved plan makes these explicit:
 - review route;
 - ordinary route is `econ-work` next unless an optional plan-review trigger is named;
 - source/data/measurement plans specify required registries, identifiers, and audits;
+- research-code plans specify `code_role` and the research code quality contract when code is in scope;
 - ordinary analysis/writing plans omit irrelevant source/corpus machinery;
 - material plan-shaping questions asked with the blocking question tool or explicitly resolved;
 - all file, folder, script, output, and evidence references use repo-relative paths;

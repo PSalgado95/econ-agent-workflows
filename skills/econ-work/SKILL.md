@@ -53,6 +53,7 @@ Keep these distinctions explicit throughout the run:
 - audit outputs versus report inputs;
 - the execution note versus the reader-facing note;
 - observed facts versus diagnostic explanations versus limitations;
+- research code role and maturity expected now;
 - surprising findings that justify escalation versus routine diagnostics that do not.
 
 Default order:
@@ -92,6 +93,11 @@ Every non-trivial run must be classified before major edits or reruns:
 - required inputs are present, usable, and the rerun is authorised;
 - allowed work includes the full code and empirical path, including regenerated outputs that the plan treats as current.
 
+`full computational run`
+- required model, simulation, calibration, numerical, or research-tool inputs are present and the run is authorised;
+- allowed work includes the full computational path, including refreshed model objects, diagnostics, benchmarks, or generated outputs that the plan treats as current;
+- required checks should match the computational object rather than forcing empirical-rerun language.
+
 If the task is note-only or bundle-only and does not regenerate outputs, keep it in `structure-only` and say clearly that existing outputs were interpreted or repackaged rather than rerun.
 
 If the mode is `structure-only`, closeout must name the missing inputs or the exact reason the rerun stayed out of scope.
@@ -101,7 +107,7 @@ If the mode is `structure-only`, closeout must name the missing inputs or the ex
 Use `request_user_input` when the next step could materially change:
 - the baseline, estimand, or main output;
 - benchmark treatment;
-- whether the run should remain `structure-only` or become a `full empirical rerun`;
+- whether the run should remain `structure-only` or become a `full empirical rerun` or `full computational run`;
 - whether a destructive overwrite is acceptable;
 - whether a new empirical branch should be opened;
 - whether the task really includes a reader-facing note or figures; or
@@ -167,6 +173,7 @@ Identify:
 - current choice register;
 - live object versus benchmark block;
 - outputs in scope;
+- code role when code is in scope;
 - whether reporting is in scope;
 - whether a review bundle already exists; and
 - which inputs are required for a real rerun.
@@ -194,7 +201,7 @@ If a GitHub issue is named, treat it as coordination context:
 Before major edits or reruns:
 1. name the exact required inputs by file name, pattern, manifest, or known artefact signature;
 2. verify that those actual inputs are present and usable;
-3. classify the run as `structure-only` or `full empirical rerun`; and
+3. classify the run as `structure-only`, `full empirical rerun`, or `full computational run`; and
 4. record the result in the execution outline or working notes.
 
 A directory such as `raw/` is never enough proof by itself.
@@ -204,6 +211,13 @@ Before promoting a run from `structure-only` to `full empirical rerun`, re-check
 - rerun scope and authorised workstream;
 - which outputs are stale or inherited versus which will be regenerated now;
 - whether the active output specification still matches the intended run; and
+- the stable entrypoint that will regenerate the intended surface.
+
+Before promoting a run from `structure-only` to `full computational run`, re-check:
+- actual model, calibration, simulation, or numerical inputs;
+- authorised computational scope;
+- which model objects, diagnostics, benchmarks, or outputs are stale or inherited versus refreshed now;
+- whether the active computational object still matches the intended research question; and
 - the stable entrypoint that will regenerate the intended surface.
 
 ### Phase 2: Set execution posture
@@ -233,9 +247,13 @@ For each code unit:
 6. run the unit's verification before moving on.
 
 Mandatory checks inside Stage 1:
+- research-code-quality floor whenever code is written or changed: descriptive names, visible entrypoints, named object-defining parameters, no stale debug/test fragments in tracked research code, and separation of analytical logic from formatting when practical;
+- object-defining assertions or equivalents for row counts, keys, merge cardinality, denominators, weights, dimensions, convergence, residuals, accounting identities, or other invariants relevant to the task;
 - helper-behaviour checks whenever a helper or rule directly defines probabilities, bins, sample keys, denominator rules, matching rules, timing rules, or any other object-defining parameter;
 - output-specification-first checks whenever the main output family changes;
 - model-spec-ledger refreshes whenever realised estimates or model-based descriptives are in scope and the realised model surface changed materially.
+
+For `full computational run`, also use checks appropriate to the computational object, such as dimensions, convergence, residuals, feasibility, mass conservation, market clearing, deterministic simulation checks, small transparent benchmark cases, or comparison to a known baseline or analytical limit.
 
 Stage 1 close condition:
 - code changes were made or deliberately skipped with reason;
@@ -364,7 +382,9 @@ Run the relevant checks from `references/execution_reference.md`.
 At minimum, cover the levels that apply:
 - input integrity;
 - code and helper integrity;
+- research-code-quality floor;
 - transformation integrity;
+- computational-object integrity;
 - realised-sample audit;
 - grouping and denominator integrity;
 - object comparability;
@@ -374,7 +394,7 @@ At minimum, cover the levels that apply:
 - reader-facing note integrity; and
 - reproducibility rerun status.
 
-For hybrid work, add targeted software checks such as tests, lint, interface checks, and manifest synchronisation where those surfaces matter for analytical trust.
+For hybrid work, add targeted software checks such as assertions, named tests, lint, interface checks, and manifest synchronisation where those surfaces matter for analytical trust. Scale named tests by code role: local invariants may use inline assertions, while collaborator-facing, replication-facing, library-like, or recurring-bug surfaces should use named tests.
 
 ### Phase 8: Review bundle and closeout
 
@@ -418,7 +438,7 @@ When the checkpoint is `econ-compound candidate`, name the lesson in one sentenc
 Use the issue checkpoint comment and closeout formats in `references/execution_reference.md`.
 
 Completion gate:
-- this run is not complete until the closeout states objective, domain mode, execution mode, furthest stage reached, output status, analysis-surface simplification status, verification performed, interpretation/note status, review-bundle or review-route status, evidence pulse, reusable lesson checkpoint, blockers or residual risks, and recommended next command;
+- this run is not complete until the closeout states objective, domain mode, execution mode, code role when code is in scope, furthest stage reached, output status, analysis-surface simplification status, verification performed, interpretation/note status, review-bundle or review-route status, evidence pulse, reusable lesson checkpoint, blockers or residual risks, and recommended next command;
 - a script run, a generated file, or one passing check is not enough to declare completion;
 - for trivial one-off work, use a compact closeout, but still state execution mode, what was checked or changed, output status, remaining risk, and next step.
 
@@ -429,6 +449,8 @@ Completion gate:
 - Do not write the note directly from raw diagnostics without an interpretation brief and, when reporting is in scope, a note brief.
 - Do not declare success on the basis of one passing run alone.
 - Do not leave the baseline, estimand, or execution mode implicit.
+- Do not leave the code role implicit when code is being changed or reviewed.
+- Do not leave scratch debug prints, temporary plots, stale commented-out code, or ad hoc test fragments in tracked research code.
 - Do not treat folder existence as proof that required data are present.
 - Do not change the output surface without updating the corresponding specification, manifest, and checks in the same unit.
 - Do not let pre-existing outputs be mistaken for rerun outputs after a `structure-only` pass.

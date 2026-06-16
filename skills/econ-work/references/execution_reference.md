@@ -82,15 +82,36 @@ Never delete, overwrite, or hide stale research evidence without explicit approv
 Run the levels that apply:
 1. input integrity;
 2. code and helper integrity;
-3. transformation integrity;
-4. realised-sample audit;
-5. grouping and denominator integrity;
-6. object comparability;
-7. output-specification integrity;
-8. text-figure and report-build integrity;
-9. interpretation discipline;
-10. reader-facing note integrity;
-11. reproducibility rerun status.
+3. research-code-quality floor;
+4. transformation integrity;
+5. computational-object integrity;
+6. realised-sample audit;
+7. grouping and denominator integrity;
+8. object comparability;
+9. output-specification integrity;
+10. text-figure and report-build integrity;
+11. interpretation discipline;
+12. reader-facing note integrity;
+13. reproducibility rerun status.
+
+## Research code quality checklist
+
+Use when code is written, changed, or reviewed as part of the research object.
+
+```md
+## Research code quality
+- Code role: none|exploratory|analysis-pipeline|shared-collaborator|replication-facing|library-tool
+- Entry point or rerun path:
+- Object-defining parameters named:
+- Assertions or equivalent invariant checks added/refreshed:
+- Named tests added/refreshed, if warranted by code role:
+- Temporary debug/test fragments removed from tracked research code:
+- Analytical logic separated from formatting/report rendering where practical:
+- Notebook-only logic promoted or intentionally left as exploration:
+- Performance scope: off|explicitly-requested|profiled-bottleneck|library-tool
+```
+
+For `task_family: model_computation`, add computational checks such as dimensions, convergence, residuals, feasibility, mass conservation, market clearing, deterministic simulation checks, small transparent benchmarks, or comparison to a known baseline or analytical limit.
 
 ## Review bundle minimum
 
@@ -118,7 +139,8 @@ Use this only when the work is issue-linked and the user asked for or approved a
 ## Checkpoint
 - Objective:
 - Branch or worktree:
-- Execution mode: structure-only|full empirical rerun
+- Execution mode: structure-only|full empirical rerun|full computational run
+- Code role: none|exploratory|analysis-pipeline|shared-collaborator|replication-facing|library-tool
 - Plan labels touched:
 - Outputs refreshed:
 - Outputs inspected only:
@@ -155,22 +177,24 @@ End with:
 1. objective completed;
 2. domain mode;
 3. execution mode;
-4. furthest stage reached;
-5. outputs refreshed versus inspected-only versus scaffolded;
-6. analysis-surface simplification status;
-7. files and artefacts changed;
-8. key findings taken into the interpretation brief;
-9. note brief status when reporting is in scope;
-10. surprise memo and GPT Pro escalation status, if any;
-11. choice-register updates;
-12. verification performed;
-13. review-bundle status;
-14. data blockers or rerun blockers, if any;
-15. evidence pulse;
-16. issue checkpoint status, if issue-linked;
-17. remaining risks or open questions;
-18. reusable lesson checkpoint; and
-19. recommended next command.
+4. code role when code is in scope;
+5. furthest stage reached;
+6. outputs refreshed versus inspected-only versus scaffolded;
+7. analysis-surface simplification status;
+8. files and artefacts changed;
+9. key findings taken into the interpretation brief;
+10. note brief status when reporting is in scope;
+11. surprise memo and GPT Pro escalation status, if any;
+12. choice-register updates;
+13. verification performed;
+14. research-code-quality checks when code is in scope;
+15. review-bundle status;
+16. data or computational blockers, if any;
+17. evidence pulse;
+18. issue checkpoint status, if issue-linked;
+19. remaining risks or open questions;
+20. reusable lesson checkpoint; and
+21. recommended next command.
 
 Reusable lesson checkpoint format:
 - `Reusable lesson checkpoint: none` when the run did not reveal a reusable lesson. Keep this to one compact line.

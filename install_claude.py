@@ -3,7 +3,7 @@
 
 Run build_claude.py first (Codex is the source of truth). This script copies the
 committed claude/ tree into ~/.claude: skills, slash commands, reviewer
-subagents, and the shared reviewer protocol.
+subagents, and shared references.
 """
 
 from __future__ import annotations
@@ -76,9 +76,9 @@ def main() -> int:
     skills_dir = claude_home / "skills"
     commands_dir = claude_home / "commands"
     agents_dir = claude_home / "agents"
-    protocol_dir = claude_home / "references" / "econ-agent-workflows"
+    references_dir = claude_home / "references" / "econ-agent-workflows"
 
-    for directory in (skills_dir, commands_dir, agents_dir, protocol_dir):
+    for directory in (skills_dir, commands_dir, agents_dir, references_dir):
         directory.mkdir(parents=True, exist_ok=True)
 
     messages: list[str] = []
@@ -98,14 +98,15 @@ def main() -> int:
             copy_file(agent, agents_dir / agent.name, force=args.force, root=claude_home)
         )
 
-    messages.append(
-        copy_file(
-            package / "references" / "econ-agent-workflows" / "reviewer-protocol.md",
-            protocol_dir / "reviewer-protocol.md",
-            force=args.force,
-            root=claude_home,
+    for reference in sorted((package / "references" / "econ-agent-workflows").glob("*.md")):
+        messages.append(
+            copy_file(
+                reference,
+                references_dir / reference.name,
+                force=args.force,
+                root=claude_home,
+            )
         )
-    )
 
     print("econ-agent-workflows install (Claude Code)")
     print(f"Claude home: {claude_home}")

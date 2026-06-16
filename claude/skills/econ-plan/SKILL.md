@@ -1,7 +1,6 @@
 ---
 name: econ-plan
 description: "Build plans for economics research, empirical economics, or hybrid analysis-engineering work. Use when a user wants an execution plan, scoping decision, workflow design, GitHub issue-linked plan, or project-brief-backed plan for sources, data, models, estimation, outputs, interpretation, or economist-facing note tasks. Restate the research task plainly, force an explicit reporting-class decision, ask rather than infer when it is materially unclear whether a reader-facing note or figures are part of the deliverable, and hand off a stage-sequenced plan to econ-work."
-argument-hint: "[optional: research task, existing plan path, project brief path, GitHub issue, output/table/figure to plan around]"
 ---
 
 <!-- GENERATED FROM CODEX SOURCE - DO NOT EDIT. Edit the Codex sources (skills/, .codex/agents/, references/) and run build_claude.py. -->
@@ -20,7 +19,7 @@ A valid direct invocation must do one of two things before the turn is complete:
 
 Writing or refreshing a saved markdown plan is required for every direct invocation that does not end with a blocking question. The saved file is the planning artifact; the chat response is only the summary and handoff. An inline-only plan is not a valid completion for direct invocation. Do not use a no-save path unless file creation is genuinely blocked by missing write access, missing workspace location, or a failed file operation. State the blocker and exact no-save reason if no plan file is written.
 
-For direct software invocations, still produce the `econ-plan` artifact. Use `domain_mode: hybrid` when the task touches empirical workflow, reproducibility, outputs, data pipelines, or research repo structure; otherwise use `domain_mode: software-handoff`. Keep `domain_mode` separate from `reporting_class`.
+For direct software-like invocations, separate research computing from pure software. Use `domain_mode: hybrid` when code correctness is part of an economics research object, including empirical workflow, reproducibility, data pipelines, model solving, simulation, calibration, estimation machinery, outputs, or research repo structure. Use `domain_mode: software-handoff` only for pure app, API, UI, infrastructure, general tooling, refactor, or debugging work with no economics research stakes; route that work to the current software-engineering workflow rather than `econ-work`. Keep `domain_mode` separate from `reporting_class`.
 
 Keep this file as the workflow contract. Read `references/plan_template.md` only when writing or refreshing the saved plan file. Read `references/project_brief_template.md` only when the user approves creating a project-backbone document.
 
@@ -45,7 +44,7 @@ Saved plan documents must use repo-relative paths for files, folders, scripts, o
 
 Unless the turn ends with one focused blocking question, the visible response must include these fields in this order:
 1. `Task restatement` - one plain-language paragraph saying what is in scope, out of scope, and what assumption would change the plan.
-2. `Classification` - `domain_mode`, `reporting_class`, `round_type`, `task_family`, and secondary lanes if any.
+2. `Classification` - `domain_mode`, `reporting_class`, `round_type`, `task_family`, `code_role`, and secondary lanes if any.
 3. `Decision frame` - final human reader, desired output, project backbone used or proposed, GitHub issue action, if any.
 4. `Central bottleneck` - the one constraint the plan is organised around.
 5. `Execution path` - the four `econ-work` stages, with the expected stop conditions.
@@ -61,7 +60,8 @@ A ready plan must:
 - name any project-backbone document used, or say that none was found;
 - classify the reporting class explicitly as `coding-only`, `analysis-only`, `analysis-plus-note-report`, or `analysis-plus-note-report-plus-figures`;
 - classify the round as `current-evidence-cleanup`, `current-evidence-clarification`, or `new-empirical-work`;
-- classify `task_family` by the primary research object as `source_collection`, `data_construction`, `analysis`, or `writing`;
+- classify `task_family` by the primary research object as `source_collection`, `data_construction`, `model_computation`, `analysis`, or `writing`;
+- classify `code_role` as `none`, `exploratory`, `analysis-pipeline`, `shared-collaborator`, `replication-facing`, or `library-tool`;
 - isolate one central bottleneck;
 - use sparse stable labels for important decisions, outputs, work units, and review findings;
 - hand off a four-stage execution path to `econ-work`:
@@ -144,10 +144,10 @@ If uncertainty remains after reasonable clarification, mark it explicitly as an 
 
 Classify `domain_mode` before writing the plan:
 - `empirical` -> economics research work where sources, data, models, outputs, interpretation, reporting, benchmark comparison, or reproducibility matter;
-- `hybrid` -> both empirical integrity and software implementation integrity matter;
-- `software-handoff` -> pure app, API, UI, infra, tooling, refactor, or debugging work with no empirical, output, interpretation, or reporting stakes.
+- `hybrid` -> research-object integrity and software implementation integrity both matter, including data pipelines, reproducibility, custom interfaces, model computation, simulation, calibration, estimation machinery, or reusable research tooling;
+- `software-handoff` -> pure app, API, UI, infrastructure, general tooling, refactor, or debugging work with no economics research-object, output, interpretation, reproducibility, or reporting stakes.
 
-If the task touches sample construction, variable definitions, outputs, interpretation, note writing, reproducibility, data pipelines, or research repo structure, keep it in the economist workflow. For direct invocations, never stop at `software-handoff`; instead, produce the best `econ-plan` planning artifact.
+If the task touches sample construction, variable definitions, model computation, simulation, calibration or estimation machinery, outputs, interpretation, note writing, reproducibility, data pipelines, or research repo structure, keep it in the economist workflow. If it is pure software, mark `software-handoff` and route away instead of forcing an econ execution plan.
 
 ## Workflow
 
@@ -216,6 +216,7 @@ Before building workstreams, lock:
 - `Reader-facing note contract` when reporting is in scope;
 - `Round type`;
 - `Task family`;
+- `Code role`, when code is in scope;
 - secondary lanes, if any;
 - `Central bottleneck`.
 
@@ -235,9 +236,18 @@ Task-family routing:
 - choose one primary family:
   - `source_collection`: source discovery, evidence corpora, public documents, archives, PDFs, speeches, official records, or source inventories;
   - `data_construction`: cleaning, standardisation, linkage, concordances, panel construction, table reconstruction, treatment/exposure construction, or measurement packages;
+  - `model_computation`: model solving, simulation, numerical methods, calibration routines, estimation machinery, computational economics objects, or reusable research tooling whose correctness is a research concern;
   - `analysis`: descriptive analysis, estimation, robustness, output inspection, table/figure generation, or interpretation when the research object already exists;
   - `writing`: note, memo, or paper-facing synthesis from defended or inspection-ready evidence;
 - add secondary layers only when they materially affect execution.
+
+Classify `code_role` whenever code is in scope:
+- `none`: no code is being written, changed, inspected, or used as evidence;
+- `exploratory`: scratch code for local inspection;
+- `analysis-pipeline`: code that creates data, outputs, tables, figures, estimates, model objects, or diagnostics used by the project;
+- `shared-collaborator`: code another collaborator is expected to read, rerun, or edit;
+- `replication-facing`: code supporting an external replication, review bundle, or publication-facing handoff;
+- `library-tool`: reusable research machinery, model code, helper packages, APIs, or command-line tools whose behavior other work depends on.
 
 For `data_construction`, use secondary layers such as `cleaning`, `linkage`, `panel_build`, and `measurement` when they materially affect the plan. When `measurement` is present, require the plan to lock the definition, authoritative table or formula, denominator, unit, timing, sample boundary, validation checks, and what the measure can and cannot support.
 
@@ -311,6 +321,7 @@ Default note-format rule:
 Task-family implementation surface rules:
 - for `source_collection`, specify source families or routes, query/source register fields, source or manifest identifiers, access blockers, negative-search rules, evidence sorting, copyright or excerpt handling, and review-packet logic when the corpus is large or multi-agent reading is likely;
 - for `data_construction`, specify output folders, table registry, raw/intermediate/final surfaces, row identifiers, join keys, concordances, provenance fields, and audit files for coverage, missingness, support, denominators, and merge integrity;
+- for `model_computation`, specify model objects, solver or simulation entrypoints, calibration or estimation machinery, computational checks, benchmark cases, convergence or residual evidence, deterministic rerun expectations, and whether the likely execution mode is `full computational run`;
 - for `analysis`, specify the baseline object, sample and comparison rules, specification or descriptive-output surface, robustness grid when relevant, audit outputs, report inputs, and interpretation stop point before note writing;
 - for `writing`, specify reader, note type, claim budget, definitions before findings, source/output-to-claim traceability, and figure/text consistency checks when relevant.
 
@@ -333,7 +344,8 @@ Use the four `econ-work` functions as the handoff spine. For `source_collection`
 `Stage 1: Code and run checks`
 - likely files or entrypoints;
 - expected generated objects;
-- whether the task is probably `structure-only` or a `full empirical rerun`;
+- whether the task is probably `structure-only`, `full empirical rerun`, or `full computational run`;
+- `code_role` and the research-code-quality floor `econ-work` must satisfy;
 - helper, manifest, or interface checks; and
 - stop conditions if required inputs are absent or stale.
 

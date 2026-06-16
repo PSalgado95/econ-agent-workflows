@@ -17,6 +17,7 @@ The parent should pass each reviewer:
 - compact `evidence_manifest` with discovered evidence paths, missing diagnostic surfaces, current authority hierarchy, review target, surface, base ref or diff scope when relevant, rerun/build-status evidence when visible, and known blind spots;
 - data-construction evidence fields when the review surface touches raw-to-analysis construction, joins, filters, sample restrictions, missingness, supports, denominators, weights, or timing rules;
 - econometric evidence fields when realised estimates, model-based descriptives, causal claims, dynamic responses, or inferential claims are in scope;
+- research-code-quality evidence fields when code, scripts, notebooks, diffs, computational routines, helper functions, tests, or code-generated outputs are in scope;
 - `crosslang` state: `no`, `plan`, `audit`, or `yes`;
 - optional `plan` path;
 - optional `base` ref;
@@ -95,7 +96,8 @@ Read:
 1. diff scope;
 2. relevant current authority files;
 3. outputs, checks, ledgers, maps, or notes that the diff is supposed to affect;
-4. changed estimator, inference, weight, sample, timing, or output-generation settings.
+4. changed estimator, inference, weight, sample, timing, or output-generation settings;
+5. changed code entrypoints, assertions, tests, notebooks, helper functions, or computational routines when code quality is in scope.
 
 ### `mixed`
 
@@ -315,6 +317,22 @@ When outputs or note-facing claims are in scope, require evidence for:
 
 `output-perception-auditor` should not make code-correctness claims. It should state what is visible and what evidence is missing or underused.
 
+## Research Code Quality Contract
+
+When code is part of the review surface, require evidence for:
+
+- code role: `none`, `exploratory`, `analysis-pipeline`, `shared-collaborator`, `replication-facing`, or `library-tool`;
+- relevant code paths, notebooks, scripts, helper modules, entrypoints, and generated outputs;
+- object-defining assertions or equivalent invariant checks;
+- named tests when the code role warrants them;
+- temporary debug prints, scratch plots, commented-out code, or ad hoc test fragments left in tracked research code;
+- notebook-only logic that should be promoted before review, reuse, or handoff;
+- separation between analytical logic and plotting, formatting, or report rendering when practical;
+- model-computation checks when the object is a solver, simulation, calibration routine, numerical method, estimation machine, or reusable research tool;
+- performance scope and any profiling, runtime, memory, scale, or bottleneck evidence when performance is claimed.
+
+The code-quality question is whether the research code is readable, checkable, rerunnable, safely modifiable, and reviewable. It is not whether the sample rule, estimator, inference choice, or substantive claim is correct; those belong to the empirical lenses.
+
 ## Cross-Language Validation Contract
 
 Cross-language validation is opt-in. The parent may select `cross-language-validation-auditor` only when one of these is true:
@@ -455,6 +473,23 @@ Minimum duties:
 4. identify unexploited strengths: design features, falsifications, or diagnostics that would strengthen the paper if surfaced;
 5. avoid code-correctness claims unless the visible output directly contradicts another evidence surface.
 
+### `code-quality-auditor`
+
+Trigger: code, notebooks, scripts, diffs, computational routines, helper functions, tests, or code-generated outputs are part of the review surface.
+
+Main question: Can the research code be read, checked, rerun, safely modified, and handed to another researcher without hiding the research object?
+
+Minimum duties:
+
+1. verify that entrypoints and rerun paths are visible enough for the claimed surface;
+2. verify that object-defining parameters, filters, merges, denominators, timing rules, weights, dimensions, convergence criteria, or model identities are not buried in opaque code;
+3. verify assertions or equivalent invariant checks for object-defining facts when relevant;
+4. verify named tests when the code role, reuse, replication, or recurring-bug risk warrants them;
+5. flag temporary debug prints, scratch plots, commented-out code, or ad hoc test fragments left in tracked research code;
+6. flag notebook-only logic when the code role requires a durable script or module boundary;
+7. suppress style nits unless they affect readability, rerun safety, reviewability, or safe modification;
+8. avoid performance findings unless performance is explicitly in scope or supported by profiling, runtime, memory, scale, or bottleneck evidence.
+
 ### `design-auditor`
 
 Trigger: IV, DiD, event study, RCT, RD, treatment design, synthetic control, selection-on-observables, or other causal or quasi-experimental work.
@@ -587,6 +622,7 @@ Use `diagnostic_gaps` for missing required surfaces such as:
 - horizon ledger when dynamic outputs are in scope;
 - output-consistency map when relevant;
 - output-automation status when promoted outputs or in-text numbers are in scope;
+- research-code-quality evidence when code is part of the review surface;
 - interpretation brief when interpretation is in scope;
 - build metadata or rerun-status notes when reproducibility is part of trust;
 - cross-language validation manifest when `crosslang:audit` is requested.
@@ -615,6 +651,7 @@ Issue origin:
 - `output-consistency`;
 - `claim-discipline`;
 - `output-perception`;
+- `code-quality`;
 - `design`;
 - `dynamics`;
 - `robustness`;
@@ -685,7 +722,7 @@ Allowed values:
 
 - `severity`: `P0`, `P1`, `P2`, `P3`;
 - `trust_effect`: `baseline-defining`, `promotion-blocking`, `robustness-relevant`, `documentation-only`;
-- `issue_origin`: `provenance`, `specification`, `transformation-and-sample`, `estimation-practice`, `inference`, `output-consistency`, `claim-discipline`, `output-perception`, `design`, `dynamics`, `robustness`, `software-equivalence`, `cross-language-validation`, `reproducibility`, `hybrid-implementation`, `bundle`;
+- `issue_origin`: `provenance`, `specification`, `transformation-and-sample`, `estimation-practice`, `inference`, `output-consistency`, `claim-discipline`, `output-perception`, `code-quality`, `design`, `dynamics`, `robustness`, `software-equivalence`, `cross-language-validation`, `reproducibility`, `hybrid-implementation`, `bundle`;
 - `fix_class`: `safe automatic`, `gated`, `manual`, `advisory`;
 - `issue_followup_type`: `none`, `empirical problem`, `implementation fix`, `robustness extension`, `note/paper follow-up`;
 - `affected_labels`: array of strings;
@@ -728,4 +765,5 @@ Minimum skeleton:
 - Do not recommend promotion without saying what remains baseline, companion, or robustness.
 - Do not restore `selection-auditor` as a default reviewer.
 - Do not silently turn default review into cross-language validation.
+- Do not turn code-quality review into style nits or broad refactoring advice without a research-trust consequence.
 - If evidence is missing, report the missing evidence as a diagnostic gap instead of filling it with intuition.

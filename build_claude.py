@@ -13,8 +13,8 @@ What it does:
   claude/commands/<name>.md;
 - turns each .codex/agents/*.toml reviewer into a Claude subagent under
   claude/agents/<name>.md;
-- copies the shared reviewer protocol into
-  claude/references/econ-agent-workflows/reviewer-protocol.md.
+- copies shared root references into
+  claude/references/econ-agent-workflows/.
 """
 
 from __future__ import annotations
@@ -158,17 +158,19 @@ def main() -> int:
     for toml_path in sorted((repo / ".codex" / "agents").glob("*.toml")):
         agent_msgs.append(build_agent(toml_path, agents_out))
 
-    protocol = repo / "references" / "reviewer-protocol.md"
-    write(
-        out / "references" / "econ-agent-workflows" / "reviewer-protocol.md",
-        with_banner(substitute(protocol.read_text(encoding="utf-8"))),
-    )
+    reference_msgs = []
+    for reference in sorted((repo / "references").glob("*.md")):
+        write(
+            out / "references" / "econ-agent-workflows" / reference.name,
+            with_banner(substitute(reference.read_text(encoding="utf-8"))),
+        )
+        reference_msgs.append(reference.name)
 
     print("build_claude: generated claude/")
     print(f"- skills:   {', '.join(skill_msgs)}")
     print(f"- commands: {', '.join(command_msgs)}")
     print(f"- agents:   {len(agent_msgs)} reviewer subagents")
-    print("- protocol: claude/references/econ-agent-workflows/reviewer-protocol.md")
+    print(f"- references: {', '.join(reference_msgs)}")
     print("\nReview the generated tree, then run install_claude.py to install it.")
     return 0
 

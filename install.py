@@ -53,7 +53,7 @@ def copy_file(source: Path, destination: Path, *, force: bool, root: Path) -> st
 
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(
-        description="Install econ-agent-workflows skills, reviewer agents, and shared protocol."
+        description="Install econ-agent-workflows skills, reviewer agents, and shared references."
     )
     parser.add_argument(
         "--codex-home",
@@ -64,7 +64,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument(
         "--force",
         action="store_true",
-        help="Replace existing installed copies of these skills, agents, and protocol.",
+        help="Replace existing installed copies of these skills, agents, and shared references.",
     )
     return parser.parse_args()
 
@@ -76,9 +76,9 @@ def main() -> int:
 
     skills_dir = codex_home / "skills"
     agents_dir = codex_home / "agents"
-    protocol_dir = codex_home / "references" / "econ-agent-workflows"
+    references_dir = codex_home / "references" / "econ-agent-workflows"
 
-    for directory in (skills_dir, agents_dir, protocol_dir):
+    for directory in (skills_dir, agents_dir, references_dir):
         directory.mkdir(parents=True, exist_ok=True)
 
     messages: list[str] = []
@@ -103,14 +103,15 @@ def main() -> int:
             )
         )
 
-    messages.append(
-        copy_file(
-            repo / "references" / "reviewer-protocol.md",
-            protocol_dir / "reviewer-protocol.md",
-            force=args.force,
-            root=codex_home,
+    for reference in sorted((repo / "references").glob("*.md")):
+        messages.append(
+            copy_file(
+                reference,
+                references_dir / reference.name,
+                force=args.force,
+                root=codex_home,
+            )
         )
-    )
 
     print("econ-agent-workflows install")
     print(f"Codex home: {codex_home}")

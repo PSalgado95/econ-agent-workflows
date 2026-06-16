@@ -1,6 +1,6 @@
 # Review reference
 
-Read this file only when you need the detailed read order, reviewer matrix, taxonomy, cross-language validation trigger, issue-ready template, or headless envelope.
+Read this file only when you need the detailed read order, reviewer matrix, taxonomy, research-code-quality trigger, cross-language validation trigger, issue-ready template, or headless envelope.
 
 ## Surface-specific read order
 
@@ -55,6 +55,7 @@ Add when relevant:
 - `inference-auditor` for p-values, confidence intervals, significance stars, clustered designs, small/uneven clusters, IV/RD/RCT, event studies, local projections, dynamic outputs, multiple outcomes/treatments/horizons, or promotion-grade causal work;
 - `claim-discipline-auditor` whenever interpretation is in scope;
 - `output-perception-auditor` for table/figure-heavy `surface:results`, note-facing outputs, Blindspot-style review, `surface:mixed`, or promotion-grade interpretation where visible anomalies or missed empirical opportunities matter;
+- `code-quality-auditor` when code, notebooks, scripts, diffs, computational routines, helper functions, tests, or code-generated outputs are part of the review surface;
 - `dynamics-auditor` for macro, time-series, local projections, dynamic panels, impulse responses, event-time plots, cumulative responses, distributed lags, or other horizon estimators;
 - `design-auditor` for IV, DiD, event studies, RCTs, RD, treatment designs, synthetic control, selection-on-observables, or other causal or quasi-experimental work;
 - `robustness-auditor` when promotion, baseline placement, sensitivity evidence, multiplicity, heterogeneity, mechanism interpretation, or specification-search discipline is at stake;
@@ -80,6 +81,7 @@ Do not duplicate roles that are asking the same question. The intended split is:
 - `dynamics-auditor`: are timing and horizon objects coherent?
 - `robustness-auditor`: is the baseline/robustness hierarchy honest?
 - `output-perception-auditor`: what visible output feature or absence is being missed?
+- `code-quality-auditor`: can the research code be read, checked, rerun, and safely modified?
 
 ## Custom reviewer agent mapping
 
@@ -93,6 +95,7 @@ Use these project-scoped Codex custom agents when available:
 | `output-consistency-auditor` | `econ_output_consistency_reviewer` |
 | `claim-discipline-auditor` | `econ_claim_discipline_reviewer` |
 | `output-perception-auditor` | `econ_output_perception_reviewer` |
+| `code-quality-auditor` | `econ_code_quality_reviewer` |
 | `estimation-practice-auditor` | `econ_estimation_practice_reviewer` |
 | `inference-auditor` | `econ_inference_reviewer` |
 | `design-auditor` | `econ_design_reviewer` |
@@ -244,6 +247,29 @@ data_construction_evidence:
 
 Cleaning-heavy reviews should not be escalated into econometric review unless the target also contains realised estimates, causal/inferential claims, dynamic objects, or promotion-grade result interpretation.
 
+## Research-code-quality evidence manifest checklist
+
+When code is part of the review surface, the parent should include these fields or list them as missing diagnostic surfaces:
+
+```yaml
+research_code_quality:
+  code_role: none|exploratory|analysis-pipeline|shared-collaborator|replication-facing|library-tool|unknown
+  code_paths:
+  notebooks:
+  entrypoints:
+  generated_outputs:
+  assertions_or_invariants:
+  named_tests:
+  debug_or_scratch_fragments:
+  notebook_only_logic:
+  analytical_logic_vs_formatting_boundary:
+  model_computation_checks:
+  performance_scope: off|explicitly-requested|profiled-bottleneck|library-tool|unknown
+  performance_evidence:
+```
+
+Select `code-quality-auditor` for code-bearing reviews. Do not select it for a pure note review only because prose interpretation is in scope. If a note cites code-generated outputs and the code is not part of the review target, record that boundary in the evidence manifest rather than expanding the panel silently.
+
 ## Cross-language validation behaviour
 
 Default: `crosslang:no`.
@@ -323,6 +349,7 @@ Issue origin:
 - `output-consistency`;
 - `claim-discipline`;
 - `output-perception`;
+- `code-quality`;
 - `design`;
 - `dynamics`;
 - `robustness`;

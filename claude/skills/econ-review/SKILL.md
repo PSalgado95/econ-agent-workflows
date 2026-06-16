@@ -34,7 +34,7 @@ The object under review is:
 
 Route pure software reviews to the current software-engineering review workflow when available. Keep `econ-review` focused on research trust, hybrid empirical/software handoff, and economist-facing reproducibility.
 
-Keep this file as the parent review contract. Read `references/review_reference.md` when you need the detailed surface read order, reviewer-role matrix, custom-agent mapping, fallback rules, finding taxonomy, cross-language validation trigger, issue-ready templates, or headless output envelope. Reviewer agents use the shared protocol in `references/reviewer-protocol.md` from this package repository or the installed copy at `~/.claude/references/econ-agent-workflows/reviewer-protocol.md` when available. If the protocol is unavailable and the parent cannot pass the relevant protocol excerpt, treat the panel as degraded before dispatch.
+Keep this file as the parent review contract. Read `references/review_reference.md` when you need the detailed surface read order, reviewer-role matrix, custom-agent mapping, fallback rules, finding taxonomy, research-code-quality trigger, cross-language validation trigger, issue-ready templates, or headless output envelope. Reviewer agents use the shared protocol in `references/reviewer-protocol.md` from this package repository or the installed copy at `~/.claude/references/econ-agent-workflows/reviewer-protocol.md` when available. Use `references/research-code-quality.md` or the installed copy when code is part of the review surface and the `code-quality-auditor` needs the research-code-quality contract. If the protocol is unavailable and the parent cannot pass the relevant protocol excerpt, treat the panel as degraded before dispatch.
 
 ## Input parsing
 
@@ -225,7 +225,8 @@ Always try to locate:
 - the interpretation brief when interpretation is in scope;
 - the note brief when reporting is in scope;
 - build info or rerun-status notes;
-- the review bundle when present; and
+- the review bundle when present;
+- code paths, notebooks, entrypoints, assertions, tests, and computational checks when code is part of the review surface; and
 - cross-language validation manifest/comparison outputs only when explicitly requested or directly targeted.
 
 If a required diagnostic surface is missing, treat that absence as review evidence.
@@ -241,13 +242,16 @@ Before dispatch, build a compact evidence manifest for reviewers. Include:
 - missing diagnostic surfaces;
 - base ref or diff scope when relevant;
 - rerun or build-status evidence when visible;
-- known blind spots or unavailable files; and
-- a `data_construction_evidence` block when the review touches raw-to-analysis construction, joins, filters, missingness, sample restrictions, supports, denominators, weights, or timing rules; and
-- an `econometric_evidence` block when relevant.
+- known blind spots or unavailable files;
+- a `data_construction_evidence` block when the review touches raw-to-analysis construction, joins, filters, missingness, sample restrictions, supports, denominators, weights, or timing rules;
+- an `econometric_evidence` block when relevant; and
+- a `research_code_quality` block when code, notebooks, scripts, diffs, computational routines, helper functions, tests, or code-generated outputs are in scope.
 
 The `data_construction_evidence` block should include known values and paths for source lineage, unit and keys, joins and merges, filters and drops, missingness, support and overlap, denominators and weights, timing alignment, intermediate outputs, manual steps, and rerun status. This block is the core evidence surface for cleaning-heavy work, even when no regression or inferential output exists.
 
 The `econometric_evidence` block should include known values and paths for estimand, identification, sample, estimator, fixed effects, weights, inference, dynamics, robustness hierarchy, output automation, and cross-language validation. Do not invent values; unknown fields should remain missing or `unknown`.
+
+The `research_code_quality` block should include known values and paths for code role, code paths, notebooks, entrypoints, generated outputs, assertions or invariants, named tests, debug or scratch fragments, notebook-only logic, analytical logic versus formatting boundaries, model-computation checks, performance scope, and performance evidence. Do not invent values; unknown fields should remain missing or `unknown`.
 
 Pass this evidence manifest to every reviewer prompt so child reviewers start from the same source map the parent found.
 
@@ -265,7 +269,7 @@ For any surface other than `plan`, default the economist core to:
 
 Add `claim-discipline-auditor` whenever interpretation is in scope. For `surface:note`, note-facing bundle review, and interpretation-bearing `surface:mixed`, it is compulsory.
 
-Use the role matrix in `references/review_reference.md` for additional conditional reviewers such as estimation-practice, inference, output-perception, dynamics, design, robustness, reproducibility, software-equivalence, cross-language-validation, hybrid-implementation, or bundle review.
+Use the role matrix in `references/review_reference.md` for additional conditional reviewers such as estimation-practice, inference, output-perception, code-quality, dynamics, design, robustness, reproducibility, software-equivalence, cross-language-validation, hybrid-implementation, or bundle review.
 
 Special cross-language rule:
 
@@ -291,6 +295,7 @@ For each reviewer prompt, include:
 - evidence manifest from Stage 1;
 - the relevant surface read order;
 - the relevant method guardrails from the shared reviewer protocol when a method is visible;
+- the research-code-quality contract when `code-quality-auditor` is selected;
 - the JSON output contract from the shared reviewer protocol; and
 - the instruction to return JSON only, with evidence-led findings, no raw logs, no file mutation, no artifact writes, no validation-script creation, and no issue updates.
 
