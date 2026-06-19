@@ -21,7 +21,7 @@ The skills were built and tested for Codex, but the loop is conceptually portabl
 - **`econ-plan`** turns a research or analysis-engineering task into a staged plan. It surfaces the material planning decisions, classifies the task family, and hands a four-stage execution path to `econ-work`.
 - **`econ-work`** executes from a saved plan or a clear request. It keeps code changes, output inspection, interpretation, note preparation, review-bundle preparation, and closeout separate.
 - **`econ-review`** reviews plans, outputs, bundles, notes, diffs, or mixed evidence surfaces. It audits the evidence and runs an economist review panel using the included reviewer agents.
-- **`econ-lfg`** runs the autonomous loop for bounded tasks: plan, work, review, revise fixable or agent-owned findings, targeted re-review, then deliver or pause for a researcher-level decision.
+- **`econ-lfg`** runs the autonomous loop for bounded tasks: plan, work, review, revise fixable or agent-owned findings, write decision memos for researcher-level choices, targeted re-review, then deliver or pause.
 - **`econ-compound`** saves durable research lessons as bounded precedent, validating each note against its evidence paths, scope, status, and rules for staleness and supersession.
 
 ## Review Panel

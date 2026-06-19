@@ -9,6 +9,8 @@ Run an autonomous economics workflow without losing the research object, evidenc
 
 `econ-lfg` is not a replacement for `econ-plan`, `econ-work`, or `econ-review`. It orchestrates them under a goal-backed contract, then owns the review-resolution loop before final delivery.
 
+Read `references/review_resolution_reference.md` before classifying review findings, deciding whether to fix directly, writing a Pedro-level decision memo, or choosing the targeted re-review surface.
+
 ## Direct invocation contract
 
 Use this workflow only when the user explicitly asks for hands-off or one-prompt execution of a bounded economics or hybrid research task. Do not auto-route ordinary planning, work, review, or brainstorming requests here.
@@ -114,25 +116,46 @@ Capture:
 
 ### Stage 4: Review-resolution pass
 
-Do not deliver immediately after review. Classify each retained finding:
+Do not deliver immediately after review. Use `references/review_resolution_reference.md` to classify each retained finding. Review findings are evidence for the loop, not orders to change the research object.
+
+For every retained finding, inspect its finding ID, fix class, trust or promotion effect, issue origin, affected labels, evidence path, missing diagnostic surfaces, and authority source. Then assign exactly one route token:
 
 - `fix-now`: safe automatic, mechanical, or agent-owned revision that should be handled before delivery;
 - `revise-plan-choice`: review evidence shows an agent-owned planning default should change;
-- `ask-user`: the fix would override a researcher-anchored choice or Class A economics decision;
+- `ask-user`: the fix would override a researcher-anchored choice or touch the Pedro-level trigger list;
 - `defer-with-rationale`: legitimate follow-up outside the prompt or not needed for the requested output;
 - `advisory-only`: useful note that does not affect trust, promotion, or the requested output.
 
 Apply this policy:
 - Fix `fix-now` findings through `econ-work` or a bounded local revision pass.
 - Revise `revise-plan-choice` findings when the new path remains inside the initial prompt's intent.
-- Pause for `ask-user` findings and state the evidence conflict, choices, and recommended conservative path.
+- Pause for `ask-user` findings and write a decision memo when the decision is non-trivial.
 - Record `defer-with-rationale` and `advisory-only` findings in the final closeout; do not hide them.
+
+Codex may fix directly without asking Pedro for path repairs, stale cross-references, stale or missing metadata, stale or missing bundle manifests, package file-list checks already in scope, validators or checks named by the plan or review, output-consistency repairs that align wording with accepted evidence, missing diagnostics already required by the saved plan, and agent-owned choices such as diagnostic order, figure priority, note framing, implementation route, or review-bundle organisation.
+
+Pedro must decide when a finding or proposed fix would change any of these:
+
+- research question or decision problem;
+- estimand or descriptive target;
+- identification strategy;
+- baseline specification;
+- sample boundary, source universe, inclusion or exclusion rule, or variable definition;
+- benchmark treatment or comparison target;
+- estimator, inference, weighting, clustering, timing, horizon, or robustness hierarchy when it changes the research object;
+- main output family or output promotion;
+- note scope, claim budget, or substantive interpretation;
+- destructive overwrite, expensive rerun, access-sensitive action, or external handoff decision.
+
+When a non-trivial Pedro-level decision blocks progress, write an economist-facing HTML decision memo before asking. When the installed runtime provides them, prefer the `econ-html-memo` skill for the memo shape and validation, and the `econ-writing` skill for prose discipline. If those skills are unavailable in the runtime, use the fallback memo contract in `references/review_resolution_reference.md` rather than failing on a dangling dependency. The memo must say what decision arose, what the outputs or review findings show, what the agent recommends and why, what changes under each choice, what stays unchanged, and what the agent will do next after Pedro decides.
+
+Write runtime decision memos to the active research workspace. If the saved plan names a memo, note, or output directory, use it. Otherwise write to `docs/decision-memos/<YYYY-MM-DD>-<slug>.html` under the current task workspace. Do not write runtime decision memos into this package/source repo unless the task is explicitly about this repo.
 
 If revisions materially change the plan's assumptions, record that divergence in the work closeout or a follow-up plan recommendation. Do not rewrite the saved plan as a progress log.
 
 ### Stage 5: Targeted re-review
 
-After revisions, run targeted `econ-review` on changed or previously problematic surfaces.
+After `fix-now` or `revise-plan-choice` revisions, run targeted `econ-review` on changed or previously problematic surfaces. Cite the fixed finding IDs, changed surfaces, affected labels, and previous evidence paths.
 
 Escalate to broader review only when revisions changed the baseline, sample, estimand, specification, inference, benchmark treatment, note argument, or primary output family.
 
@@ -151,8 +174,9 @@ Deliver a compact final closeout with:
 - outputs refreshed, inherited, inspected-only, or scaffolded;
 - interpretation brief, note brief, note, figure, or bundle status;
 - review tier, surface, and panel status;
-- review findings fixed;
-- review findings deferred or advisory;
+- review findings fixed, with finding IDs and targeted re-review result;
+- review findings deferred or advisory, with finding IDs and rationale;
+- decision memo path, when one was written;
 - blockers or user decisions, if any;
 - verification performed;
 - remaining risks;
