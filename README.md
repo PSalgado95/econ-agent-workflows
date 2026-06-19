@@ -2,7 +2,7 @@
 
 Agentic workflows for economists, inspired by [Compound Engineering](https://github.com/EveryInc/compound-engineering-plugin).
 
-These skills adapt a plan -> work -> review -> compound loop to economic research. They help a coding agent turn a research task into a staged plan, run code and checks, inspect and interpret outputs, review the resulting evidence, and save lessons that should carry into future projects.
+These skills adapt a plan -> work -> review -> revise -> compound loop to economic research. They help a coding agent turn a research task into a staged plan, run code and checks, inspect and interpret outputs, review the resulting evidence, revise in response to review findings, and save lessons that should carry into future projects.
 
 This is still a beta. Most of the development so far has come from empirical work: data cleaning, sample construction, estimation, tables, figures, notes, review bundles, and reproducibility handoffs. The same loop should also adapt to more theory-based settings, including structural and theory-based work, calibration, simulation, etc.
 
@@ -13,13 +13,15 @@ The skills were built and tested for Codex, but the loop is conceptually portabl
 1. **Plan** the research task: who reads the output, what is being estimated or built, what evidence will exist, and how it will be reviewed.
 2. **Work** through it: run code, inspect outputs, interpret results, prepare notes, and close out while keeping those steps distinct.
 3. **Review** the result before trusting or promoting it: a plan, a set of outputs, a bundle, a note, a diff, or a mix.
-4. **Compound** a reusable lesson, but only when there is bounded evidence for it.
+4. **Revise** fixable or agent-owned review findings before delivery, while pausing before overriding researcher-anchored choices.
+5. **Compound** a reusable lesson, but only when there is bounded evidence for it.
 
 ## Core Skills
 
 - **`econ-plan`** turns a research or analysis-engineering task into a staged plan. It surfaces the material planning decisions, classifies the task family, and hands a four-stage execution path to `econ-work`.
 - **`econ-work`** executes from a saved plan or a clear request. It keeps code changes, output inspection, interpretation, note preparation, review-bundle preparation, and closeout separate.
 - **`econ-review`** reviews plans, outputs, bundles, notes, diffs, or mixed evidence surfaces. It audits the evidence and runs an economist review panel using the included reviewer agents.
+- **`econ-lfg`** runs the autonomous loop for bounded tasks: plan, work, review, revise fixable or agent-owned findings, targeted re-review, then deliver or pause for a researcher-level decision.
 - **`econ-compound`** saves durable research lessons as bounded precedent, validating each note against its evidence paths, scope, status, and rules for staleness and supersession.
 
 ## Review Panel
@@ -49,6 +51,7 @@ skills/                       # skills (source of truth)
   econ-plan/
   econ-work/
   econ-review/
+  econ-lfg/
   econ-compound/
   auxiliary/
     gpt-pro-handoff/
@@ -87,7 +90,7 @@ The skills are authored for Codex, and a ready-to-install Claude Code package is
 python install_claude.py --force
 ```
 
-This installs into `~/.claude`: the skills, `/econ-plan` / `/econ-work` / `/econ-review` / `/econ-compound` / `/gpt-pro-handoff` slash commands, the reviewer subagents, and the shared references. Restart Claude Code afterward. To update, pull the repo and re-run the same command.
+This installs into `~/.claude`: the skills, `/econ-plan` / `/econ-work` / `/econ-review` / `/econ-lfg` / `/econ-compound` / `/gpt-pro-handoff` slash commands, the reviewer subagents, and the shared references. Restart Claude Code afterward. To update, pull the repo and re-run the same command.
 
 On Claude Code the reviewer lenses run as subagents dispatched through the Task tool, and they default to the Sonnet model (promote a review to Opus manually when the task is critical).
 

@@ -29,6 +29,7 @@ SKILLS = (
     ("econ-plan", "econ-plan"),
     ("econ-work", "econ-work"),
     ("econ-review", "econ-review"),
+    ("econ-lfg", "econ-lfg"),
     ("econ-compound", "econ-compound"),
     ("auxiliary/gpt-pro-handoff", "gpt-pro-handoff"),
 )
@@ -47,7 +48,7 @@ READ_ONLY_TOOLS = "Read, Grep, Glob"
 def substitute(text: str) -> str:
     """Rewrite Codex-runtime references to their Claude Code equivalents."""
     # Skill/command invocation syntax: $econ-review -> /econ-review, etc.
-    text = re.sub(r"\$(econ-(?:plan|work|review|compound)|gpt-pro-handoff)", r"/\1", text)
+    text = re.sub(r"\$(econ-(?:plan|work|review|lfg|compound)|gpt-pro-handoff)", r"/\1", text)
     # User-prompt tool.
     text = text.replace("request_user_input", "AskUserQuestion")
     # Installed protocol/reference location (handles the deeper path too).
