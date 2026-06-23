@@ -16,6 +16,7 @@ SKILLS = (
     ("econ-review", "econ-review"),
     ("econ-lfg", "econ-lfg"),
     ("econ-compound", "econ-compound"),
+    ("create-project", "create-project"),
     ("auxiliary/gpt-pro-handoff", "gpt-pro-handoff"),
 )
 

@@ -1,0 +1,5 @@
+interface:
+  display_name: "Create Project"
+  short_description: "Start a sparse economics research project repo"
+  default_prompt: "Use $create-project to initialise a sparse economics research project in the current folder. Keep tracked starter files minimal, put working plans and notes under scratch/docs, put raw agent clutter under scratch/agents, ask before mutating a non-empty folder, and create a private GitHub repo only after safety checks."
+

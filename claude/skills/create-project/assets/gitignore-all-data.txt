@@ -1,0 +1,32 @@
+# Local data roots
+data/raw/
+data/processed/
+
+# Local scratch and agent clutter
+scratch/
+.cache/
+cache/
+tmp/
+temp/
+
+# Local logs
+logs/
+output/logs/
+
+# Python local tooling
+.venv/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+
+# R local state
+.Rhistory
+.RData
+.Ruserdata
+.Rproj.user/
+
+# Machine-specific files
+.DS_Store
+Thumbs.db
+Desktop.ini
+

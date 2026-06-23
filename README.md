@@ -23,6 +23,7 @@ The skills were built and tested for Codex, but the loop is conceptually portabl
 - **`econ-review`** reviews plans, outputs, bundles, notes, diffs, or mixed evidence surfaces. It audits the evidence and runs an economist review panel using the included reviewer agents.
 - **`econ-lfg`** runs the autonomous loop for bounded tasks: plan, work, review, revise fixable or agent-owned findings, write decision memos for researcher-level choices, targeted re-review, then deliver or pause.
 - **`econ-compound`** saves durable research lessons as bounded precedent, validating each note against its evidence paths, scope, status, and rules for staleness and supersession.
+- **`create-project`** starts a sparse economics research project in the current folder. It creates a local scaffold, brief starter control files, and a private GitHub repository while routing working notes and agent clutter to `scratch/`.
 
 ## Review Panel
 
@@ -53,6 +54,7 @@ skills/                       # skills (source of truth)
   econ-review/
   econ-lfg/
   econ-compound/
+  create-project/
   auxiliary/
     gpt-pro-handoff/
 claude/                       # generated Claude Code package (do not hand-edit)
@@ -90,7 +92,7 @@ The skills are authored for Codex, and a ready-to-install Claude Code package is
 python install_claude.py --force
 ```
 
-This installs into `~/.claude`: the skills, `/econ-plan` / `/econ-work` / `/econ-review` / `/econ-lfg` / `/econ-compound` / `/gpt-pro-handoff` slash commands, the reviewer subagents, and the shared references. Restart Claude Code afterward. To update, pull the repo and re-run the same command.
+This installs into `~/.claude`: the skills, `/econ-plan` / `/econ-work` / `/econ-review` / `/econ-lfg` / `/econ-compound` / `/create-project` / `/gpt-pro-handoff` slash commands, the reviewer subagents, and the shared references. Restart Claude Code afterward. To update, pull the repo and re-run the same command.
 
 On Claude Code the reviewer lenses run as subagents dispatched through the Task tool, and they default to the Sonnet model (promote a review to Opus manually when the task is critical).
 
