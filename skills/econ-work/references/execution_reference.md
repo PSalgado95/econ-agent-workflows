@@ -33,7 +33,7 @@ The note brief is a delta on `interpretation_brief.md`: start from that brief an
 
 ## Surprise memo
 
-The surprise memo is human-facing: render it as HTML via the `econ-html-memo` skill and design system when installed, or as plain standalone HTML under the same content discipline when it is not. Use the content checklist below in either case. When the finding is escalated to `gpt-pro-handoff`, that package may carry the same content; the memo itself stays human-facing.
+The surprise memo is a local human-facing output: render it as HTML via the `econ-html-memo` skill and design system when installed, or as plain standalone HTML under the same content discipline when it is not. Use the content checklist below in either case. It records the result, evidence boundary, and next research decision without initiating another workflow.
 
 ```md
 ## Surprise memo
@@ -42,8 +42,8 @@ The surprise memo is human-facing: render it as HTML via the `econ-html-memo` sk
 - Minimal validation already completed:
 - Plausible explanations:
 - Immediate follow-up checks:
-- Does this look important enough for a deeper second opinion?
-- Recommendation: continue in current workflow | ask user about GPT Pro escalation
+- Which research decision or local check is now required?
+- Recommendation: continue in current workflow | pause for researcher decision
 ```
 
 ## Output-consistency map minimum
@@ -193,7 +193,7 @@ Use this as the completion gate for `econ-work` runs. The run is complete only w
 3. furthest stage reached;
 4. outputs by provenance status (`refreshed`/`inherited`/`inspected-only`/`scaffolded`/`stale`) and role tag (`support-only`/`report-input`), named by file;
 5. verification performed and what it proved;
-6. interpretation and note status: interpretation brief, note brief, note or figures, and surprise memo with any GPT Pro escalation;
+6. interpretation and note status: interpretation brief, note brief, note or figures, and surprise memo with any unresolved research decision;
 7. review route and bundle status, plus the issue checkpoint when the work is issue-linked;
 8. blockers, risks, and open questions, plus choice-register updates and any durable residual sink (see below);
 9. reusable lesson checkpoint (one line, format below);

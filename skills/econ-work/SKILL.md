@@ -89,7 +89,7 @@ Read the realised outputs, not just the scripts that made them: sample accountin
 
 Stop and answer: the main finding; what actually matters in the data; what to visualise; what follow-up is immediately implied. Build `interpretation_brief.md` (template in the reference), tagging claims as observed fact / diagnostic explanation / limitation / open question. When reporting is in scope, build `note_brief.md` after it, as a delta on the interpretation brief, from defended report inputs, never from raw diagnostics; if revising an existing note, diagnose the old note first.
 
-If the run turns up a genuinely surprising finding, write a surprise memo (HTML via `econ-html-memo` when installed, plain standalone HTML under the same content discipline otherwise) and ask (blocking) whether to escalate when the finding is material, not explained by a quick definitional or sample check, and worth a deeper second opinion. If the user accepts, prepare the package with `$gpt-pro-handoff` (lean mode: surprise memo plus the decisive outputs).
+If the run turns up a genuinely surprising finding, write a surprise memo (HTML via `econ-html-memo` when installed, plain standalone HTML under the same content discipline otherwise). Keep it as a normal local user-facing output: state the minimal validation already completed, plausible explanations, decisive missing evidence, and the research decision or next local check needed to continue.
 
 *Close when:* the interpretation brief exists, the note brief exists when reporting is in scope, and the main finding, figure priority, and main-text-vs-appendix split are explicit.
 
@@ -103,7 +103,7 @@ Only after Stage 3. Draft from the note brief, interpretation brief, output-cons
 
 Run the verification ladder in `references/execution_reference.md`, covering only the rungs that apply; scale named tests by code role. Build or refresh the review bundle (minimum structure in the reference) only when the closeout routes to `econ-review` on a bundle or mixed surface, or the work goes to a coauthor or external reviewer — otherwise skip it. Default review target: empirical or hybrid work → `econ-review` (apply its escalation triggers; when in doubt, the stricter tier); pure software → the Compound Engineering review skill.
 
-Fill the closeout in `references/execution_reference.md`; the run is complete only when it is filled — a script run, a generated file, or one passing check is not completion. Route any durable lesson to the lightest surface (issue comment when issue-linked and approved; a drafted project-backbone update applied only on approval; a dated follow-up plan; or closeout-only). Old memos, exploratory reports, and GPT bundles are leads, not authority, until traced to the underlying source, output, script, or review finding.
+Fill the closeout in `references/execution_reference.md`; the run is complete only when it is filled — a script run, a generated file, or one passing check is not completion. Route any durable lesson to the lightest surface (issue comment when issue-linked and approved; a drafted project-backbone update applied only on approval; a dated follow-up plan; or closeout-only). Old memos, exploratory reports, and externally supplied packages are leads, not authority, until traced to the underlying source, output, script, or review finding.
 
 ## Internal return to `econ-lfg`
 

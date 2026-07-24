@@ -68,7 +68,7 @@ Pause for the researcher when the finding or proposed fix would change any of th
 - estimator, inference, weighting, clustering, timing, horizon, or robustness hierarchy when it changes the research object;
 - main output family or output promotion;
 - note scope, claim budget, or substantive interpretation;
-- destructive overwrite, expensive rerun, access-sensitive action, or external handoff decision.
+- destructive overwrite, expensive rerun, access-sensitive action, or release/sharing decision.
 
 These are decision blockers even when the review finding is persuasive. A review finding can justify presenting the decision clearly; it cannot itself decide the economics.
 

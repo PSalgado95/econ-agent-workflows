@@ -67,7 +67,7 @@ Write or refresh the scope memo using `references/scope_memo_template.md`, then 
 
 - **→ $econ-plan** when the direction is firm: hand over the saved memo as the planning surface;
 - **→ parked** when it should not proceed: the memo is saved with its kill criteria and open unknowns, and nothing chains onward;
-- **→ $gpt-pro-handoff** when the blocker is literature or needs a deep external dive: prepare the package from the memo.
+- **→ blocked evidence** when literature, access, or missing evidence prevents a sound direction: keep the memo as the local user-facing output, name the exact gap, and ask only for the decision or evidence needed to resume.
 
 *Close when:* the memo is saved and the receipt names the exit ramp.
 

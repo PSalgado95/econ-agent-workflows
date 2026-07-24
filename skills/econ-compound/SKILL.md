@@ -25,7 +25,7 @@ Route elsewhere when appropriate:
 - pure software-only lessons -> current Compound Engineering compound skill;
 - writing-style preferences -> a personal writing-preference skill (such as `econ-writing`) when installed; otherwise record the preference in the closeout;
 - project-state updates -> current plan, issue, project backbone, note, or review finding, only with user approval;
-- old memos, exploratory reports, GPT bundles, or project briefs -> use as leads only unless they were explicitly reviewed or accepted for a defined purpose;
+- old memos, exploratory reports, externally supplied packages, or project briefs -> use as leads only unless they were explicitly reviewed or accepted for a defined purpose;
 - one-off closeout facts -> closeout only, not a durable learning note.
 
 Vocabulary route: when a captured lesson locks a project-specific definition — an estimand, sample rule, denominator, or benchmark treatment — offer, with the researcher's approval, to add or refresh the matching entry in the project's `DEFINITIONS.md`. The glossary takes definitions and boundaries only, never file paths or current parameter values; the learning note keeps the evidence and reuse boundary.
@@ -52,7 +52,7 @@ Good candidates:
 - a theory, model, notation, or calibration exposition pattern worth reusing;
 - a claim-budget or interpretation rule surfaced by work or review;
 - a figure, note, memo, or paper-facing synthesis pattern;
-- a reproducibility, manifest, review-package, or GPT Pro handoff lesson;
+- a reproducibility, manifest, or review-package lesson;
 - a workflow practice that future plan/work/review runs should consult.
 
 Bad candidates:
@@ -93,7 +93,7 @@ Use these statuses:
 
 Use `scope: project` by default. Use `scope: repo` only when the lesson recurs across tasks in the repo. Use `scope: general` only with user confirmation or evidence from multiple projects.
 
-When the evidence is an old memo, exploratory report, GPT bundle, or project brief, trace the lesson to the underlying source, data output, script, or review finding before making it durable. The old artifact can orient the search; it is not authority by itself unless it is the reviewed object.
+When the evidence is an old memo, exploratory report, externally supplied package, or project brief, trace the lesson to the underlying source, data output, script, or review finding before making it durable. The old artifact can orient the search; it is not authority by itself unless it is the reviewed object.
 
 ## Storage
 

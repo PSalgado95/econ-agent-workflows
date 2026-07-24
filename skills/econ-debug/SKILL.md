@@ -63,7 +63,7 @@ Localise the anomaly to the subsystem that produced it, then investigate there:
 - **data construction** → transformation and sample diagnostics: recompute row counts before and after each merge and filter, missingness and support, key uniqueness, denominator and weight construction.
 - **specification or estimation** → the model specification and estimator settings: fixed effects, clustering, absorbed terms, reference categories, standardisation, optimiser tolerances, and whether the realised specification matches the intended one.
 - **software convention** → cross-package defaults: a default that differs between Stata, R, Python, or a solver (degrees-of-freedom corrections, small-sample adjustments, base levels, NA handling, integer vs float division). Reach for the `software-equivalence` lens — rebuild the disputed object in a second language and compare — when a convention gap is plausible.
-- **genuine economics** → the number may be real and surprising. Do not fix it away: write a surprise memo and offer escalation (below).
+- **genuine economics** → the number may be real and surprising. Do not fix it away: write a surprise memo and return the evidence boundary and next research decision to the user.
 
 If two or three hypotheses point at different subsystems and none confirms, that divergence is itself a signal that the problem is a design choice, not a localised slip — route to `econ-plan` rather than forcing a fix.
 
@@ -79,13 +79,13 @@ Asking a good blocking question is part of the job, not an interruption. Use the
 
 - **Fix applied** → hand the changed surface to a targeted `econ-review` scoped to what changed (the edited script, the refreshed outputs, the affected audits), not a full re-review.
 - **Design problem discovered** → the anomaly is a wrong baseline, estimand, sample definition, or benchmark, not a coding slip. Route back to `econ-plan`; a fix cannot repair a definition.
-- **Genuine surprising finding** → the number is real. Route to the surprise-memo path in `econ-work`: write the memo (HTML via `econ-html-memo` when installed, plain standalone HTML under the same content discipline otherwise) and offer escalation with `$gpt-pro-handoff` when the finding is material and worth a deeper second opinion.
+- **Genuine surprising finding** → the number is real. Route to the surprise-memo path in `econ-work`: write the memo (HTML via `econ-html-memo` when installed, plain standalone HTML under the same content discipline otherwise), state the minimal validation and open explanation, and ask only for the research decision or local check needed to continue.
 
 ## Hard stops
 
 - Do not apply or propose a fix before the full causal chain from cause to symptom is explained with no gaps.
 - Do not fix a number without first reproducing it minimally, and do not close without refreshing the sample counts, missingness, and merge diagnostics the change touched.
-- Do not "fix away" a result that is actually a genuine, correctly computed finding — write the surprise memo and offer escalation instead.
+- Do not "fix away" a result that is actually a genuine, correctly computed finding — write the surprise memo and report it locally instead.
 - Do not treat an intended baseline or a deliberate sample restriction as a bug — when in doubt, ask first.
 - Do not change more than one thing at a time while hunting the cause; shotgun edits hide which change mattered.
 - Do not route a pure software fault with no research object here; it belongs to `compound-engineering:ce-debug`.

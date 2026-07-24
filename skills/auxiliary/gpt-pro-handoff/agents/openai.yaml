@@ -1,4 +1,4 @@
 interface:
   display_name: "GPT Pro Handoff"
-  short_description: "Prepare lean GPT Pro handoff packages."
-  default_prompt: "Use $gpt-pro-handoff to prepare a GPT Pro analysis package from this workspace."
+  short_description: "Explicit user-requested GPT Pro packages only"
+  default_prompt: "I explicitly request $gpt-pro-handoff in this current user turn. Prepare the bounded GPT Pro handoff package I describe from this workspace."
