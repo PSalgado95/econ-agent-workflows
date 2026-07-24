@@ -1,0 +1,17 @@
+{
+  "case": "wrapped-valid",
+  "selected_role": "inference",
+  "run_id": "fixture-run",
+  "evidence_manifest": {
+    "E1": "results/table.tex"
+  },
+  "process": {
+    "status": "completed"
+  },
+  "raw_output": "Reviewer result follows:\n{\"schema_version\":\"econ-reviewer-output/v1\",\"run_id\":\"fixture-run\",\"role\":\"inference\",\"status\":\"completed\",\"evidence_reviewed\":[\"E1\"],\"findings\":[],\"open_questions\":[],\"diagnostic_gaps\":[],\"coverage_note\":\"The supplied inference output was reviewed.\"}\nEnd reviewer result.",
+  "expected": {
+    "terminal_state": "completed",
+    "reason": null,
+    "salvaged": true
+  }
+}

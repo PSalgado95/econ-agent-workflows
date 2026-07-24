@@ -1,0 +1,58 @@
+{
+  "case": "valid",
+  "selected_role": "inference",
+  "run_id": "fixture-run",
+  "evidence_manifest": {
+    "E1": "results/table.tex"
+  },
+  "process": {
+    "status": "completed"
+  },
+  "raw_output": {
+    "schema_version": "econ-reviewer-output/v1",
+    "run_id": "fixture-run",
+    "role": "inference",
+    "status": "completed",
+    "evidence_reviewed": [
+      "E1"
+    ],
+    "findings": [
+      {
+        "severity": "P2",
+        "trust_effect": "robustness-relevant",
+        "issue_origin": "inference",
+        "finding_type": "finding",
+        "fix_class": "manual",
+        "affected_labels": [
+          "baseline"
+        ],
+        "issue_followup_type": "empirical-problem",
+        "title": "Cluster count is not reported",
+        "why_it_matters": "Finite-sample reliability cannot be assessed.",
+        "evidence_refs": [
+          "E1"
+        ],
+        "evidence_locations": [
+          {
+            "evidence_id": "E1",
+            "path": "results/table.tex",
+            "locator": "line 12",
+            "quote": "SE = 0.10"
+          }
+        ],
+        "recommended_action": "Report the number of clusters.",
+        "user_judgement_required": true,
+        "safe_autofix": false,
+        "confidence": 100
+      }
+    ],
+    "open_questions": [],
+    "diagnostic_gaps": [],
+    "coverage_note": "The supplied inference output was reviewed."
+  },
+  "expected": {
+    "terminal_state": "completed",
+    "reason": null,
+    "salvaged": false
+  }
+}
