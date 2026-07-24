@@ -1,0 +1,977 @@
+{
+  "schema_version": "reviewer-responsibility-crosswalk/v1",
+  "source_inventory": [
+    "econ-bundle-reviewer.toml",
+    "econ-claim-discipline-reviewer.toml",
+    "econ-code-quality-reviewer.toml",
+    "econ-cross-language-validation-reviewer.toml",
+    "econ-design-reviewer.toml",
+    "econ-dynamics-reviewer.toml",
+    "econ-estimation-practice-reviewer.toml",
+    "econ-hybrid-implementation-reviewer.toml",
+    "econ-inference-reviewer.toml",
+    "econ-output-consistency-reviewer.toml",
+    "econ-output-perception-reviewer.toml",
+    "econ-provenance-reviewer.toml",
+    "econ-reproducibility-reviewer.toml",
+    "econ-robustness-reviewer.toml",
+    "econ-software-equivalence-reviewer.toml",
+    "econ-specification-reviewer.toml",
+    "econ-transformation-sample-reviewer.toml"
+  ],
+  "excluded_metadata": [
+    "registered agent name",
+    "registered agent description syntax",
+    "model reasoning override",
+    "declared sandbox mode",
+    "runtime-relative fallback path"
+  ],
+  "canonical_destinations": [
+    "provenance",
+    "specification",
+    "transformation-and-sample",
+    "estimation-practice",
+    "inference",
+    "output-consistency",
+    "claim-discipline",
+    "output-perception",
+    "code-quality",
+    "design",
+    "dynamics",
+    "robustness",
+    "software-equivalence",
+    "reproducibility",
+    "bundle",
+    "common-protocol"
+  ],
+  "folds": {
+    "cross-language-validation": {
+      "persona_created": false,
+      "required_destinations": [
+        "software-equivalence",
+        "transformation-and-sample",
+        "reproducibility"
+      ],
+      "allocation": "Software equivalence owns comparison design, independent paths, tolerances, object-before-numeric parity, and discrepancy classification. Transformation and sample joins when construction or realised-sample parity is material. Reproducibility joins when rerun, input-version, build, or environment parity is material."
+    },
+    "hybrid-implementation": {
+      "persona_created": false,
+      "required_destinations": [
+        "code-quality",
+        "estimation-practice",
+        "transformation-and-sample",
+        "reproducibility",
+        "output-consistency"
+      ],
+      "allocation": "Code quality owns transparency, interface defaults, parameter plumbing, tests, and hidden machinery. Estimation practice owns estimator and numerical validity. Transformation and sample, reproducibility, and output consistency join when the custom path can change their objects."
+    }
+  },
+  "obligations": [
+    {
+      "obligation_id": "COMMON-001",
+      "source_agents": [
+        "econ-bundle-reviewer.toml",
+        "econ-claim-discipline-reviewer.toml",
+        "econ-code-quality-reviewer.toml",
+        "econ-cross-language-validation-reviewer.toml",
+        "econ-design-reviewer.toml",
+        "econ-dynamics-reviewer.toml",
+        "econ-estimation-practice-reviewer.toml",
+        "econ-hybrid-implementation-reviewer.toml",
+        "econ-inference-reviewer.toml",
+        "econ-output-consistency-reviewer.toml",
+        "econ-output-perception-reviewer.toml",
+        "econ-provenance-reviewer.toml",
+        "econ-reproducibility-reviewer.toml",
+        "econ-robustness-reviewer.toml",
+        "econ-software-equivalence-reviewer.toml",
+        "econ-specification-reviewer.toml",
+        "econ-transformation-sample-reviewer.toml"
+      ],
+      "obligation": "Review only the assigned target.",
+      "destinations": [
+        "common-protocol:Reviewer responsibilities"
+      ]
+    },
+    {
+      "obligation_id": "COMMON-002",
+      "source_agents": [
+        "econ-bundle-reviewer.toml",
+        "econ-claim-discipline-reviewer.toml",
+        "econ-code-quality-reviewer.toml",
+        "econ-cross-language-validation-reviewer.toml",
+        "econ-design-reviewer.toml",
+        "econ-dynamics-reviewer.toml",
+        "econ-estimation-practice-reviewer.toml",
+        "econ-hybrid-implementation-reviewer.toml",
+        "econ-inference-reviewer.toml",
+        "econ-output-consistency-reviewer.toml",
+        "econ-output-perception-reviewer.toml",
+        "econ-provenance-reviewer.toml",
+        "econ-reproducibility-reviewer.toml",
+        "econ-robustness-reviewer.toml",
+        "econ-software-equivalence-reviewer.toml",
+        "econ-specification-reviewer.toml",
+        "econ-transformation-sample-reviewer.toml"
+      ],
+      "obligation": "Review through exactly the assigned lens and do not take over another reviewer's remit.",
+      "destinations": [
+        "common-protocol:Reviewer responsibilities",
+        "common-protocol:Parent-only responsibilities"
+      ]
+    },
+    {
+      "obligation_id": "COMMON-003",
+      "source_agents": [
+        "econ-bundle-reviewer.toml",
+        "econ-claim-discipline-reviewer.toml",
+        "econ-code-quality-reviewer.toml",
+        "econ-cross-language-validation-reviewer.toml",
+        "econ-design-reviewer.toml",
+        "econ-dynamics-reviewer.toml",
+        "econ-estimation-practice-reviewer.toml",
+        "econ-hybrid-implementation-reviewer.toml",
+        "econ-inference-reviewer.toml",
+        "econ-output-consistency-reviewer.toml",
+        "econ-output-perception-reviewer.toml",
+        "econ-provenance-reviewer.toml",
+        "econ-reproducibility-reviewer.toml",
+        "econ-robustness-reviewer.toml",
+        "econ-software-equivalence-reviewer.toml",
+        "econ-specification-reviewer.toml",
+        "econ-transformation-sample-reviewer.toml"
+      ],
+      "obligation": "Prefer the protocol and evidence manifest supplied by the parent.",
+      "destinations": [
+        "common-protocol:Trust boundary",
+        "common-protocol:Reviewer responsibilities",
+        "subagent-template:Substitution rules"
+      ]
+    },
+    {
+      "obligation_id": "COMMON-004",
+      "source_agents": [
+        "econ-bundle-reviewer.toml",
+        "econ-claim-discipline-reviewer.toml",
+        "econ-code-quality-reviewer.toml",
+        "econ-cross-language-validation-reviewer.toml",
+        "econ-design-reviewer.toml",
+        "econ-dynamics-reviewer.toml",
+        "econ-estimation-practice-reviewer.toml",
+        "econ-hybrid-implementation-reviewer.toml",
+        "econ-inference-reviewer.toml",
+        "econ-output-consistency-reviewer.toml",
+        "econ-output-perception-reviewer.toml",
+        "econ-provenance-reviewer.toml",
+        "econ-reproducibility-reviewer.toml",
+        "econ-robustness-reviewer.toml",
+        "econ-software-equivalence-reviewer.toml",
+        "econ-specification-reviewer.toml",
+        "econ-transformation-sample-reviewer.toml"
+      ],
+      "obligation": "Return exactly one JSON object conforming to the shared protocol, with no prose outside JSON.",
+      "destinations": [
+        "common-protocol:Reviewer responsibilities",
+        "common-protocol:Output boundary",
+        "reviewer-output-schema:econ-reviewer-output/v1"
+      ]
+    },
+    {
+      "obligation_id": "COMMON-005",
+      "source_agents": [
+        "econ-bundle-reviewer.toml",
+        "econ-claim-discipline-reviewer.toml",
+        "econ-code-quality-reviewer.toml",
+        "econ-cross-language-validation-reviewer.toml",
+        "econ-design-reviewer.toml",
+        "econ-dynamics-reviewer.toml",
+        "econ-estimation-practice-reviewer.toml",
+        "econ-hybrid-implementation-reviewer.toml",
+        "econ-inference-reviewer.toml",
+        "econ-output-consistency-reviewer.toml",
+        "econ-output-perception-reviewer.toml",
+        "econ-provenance-reviewer.toml",
+        "econ-reproducibility-reviewer.toml",
+        "econ-robustness-reviewer.toml",
+        "econ-software-equivalence-reviewer.toml",
+        "econ-specification-reviewer.toml",
+        "econ-transformation-sample-reviewer.toml"
+      ],
+      "obligation": "Do not mutate files or repository state.",
+      "destinations": [
+        "common-protocol:Preventive execution boundary"
+      ]
+    },
+    {
+      "obligation_id": "COMMON-006",
+      "source_agents": [
+        "econ-bundle-reviewer.toml",
+        "econ-claim-discipline-reviewer.toml",
+        "econ-code-quality-reviewer.toml",
+        "econ-cross-language-validation-reviewer.toml",
+        "econ-design-reviewer.toml",
+        "econ-dynamics-reviewer.toml",
+        "econ-estimation-practice-reviewer.toml",
+        "econ-hybrid-implementation-reviewer.toml",
+        "econ-inference-reviewer.toml",
+        "econ-output-consistency-reviewer.toml",
+        "econ-output-perception-reviewer.toml",
+        "econ-provenance-reviewer.toml",
+        "econ-reproducibility-reviewer.toml",
+        "econ-robustness-reviewer.toml",
+        "econ-software-equivalence-reviewer.toml",
+        "econ-specification-reviewer.toml",
+        "econ-transformation-sample-reviewer.toml"
+      ],
+      "obligation": "Do not create or update issues.",
+      "destinations": [
+        "common-protocol:Preventive execution boundary"
+      ]
+    },
+    {
+      "obligation_id": "COMMON-007",
+      "source_agents": [
+        "econ-code-quality-reviewer.toml",
+        "econ-inference-reviewer.toml",
+        "econ-cross-language-validation-reviewer.toml"
+      ],
+      "obligation": "Do not create review, inference, or validation scripts as a reviewer.",
+      "destinations": [
+        "common-protocol:Preventive execution boundary",
+        "persona:inference:Prohibited overreach",
+        "persona:software-equivalence:Prohibited overreach"
+      ]
+    },
+    {
+      "obligation_id": "BUNDLE-001",
+      "source_agents": [
+        "econ-bundle-reviewer.toml"
+      ],
+      "obligation": "Audit whether the compact review package is complete for its claimed scope.",
+      "destinations": [
+        "persona:bundle:Remit",
+        "persona:bundle:Required checks"
+      ]
+    },
+    {
+      "obligation_id": "BUNDLE-002",
+      "source_agents": [
+        "econ-bundle-reviewer.toml"
+      ],
+      "obligation": "Audit package freshness and its link to the reviewed object.",
+      "destinations": [
+        "persona:bundle:Required checks",
+        "persona:provenance:Required checks"
+      ]
+    },
+    {
+      "obligation_id": "BUNDLE-003",
+      "source_agents": [
+        "econ-bundle-reviewer.toml"
+      ],
+      "obligation": "Audit whether the package is legible enough for trust review.",
+      "destinations": [
+        "persona:bundle:Remit",
+        "persona:bundle:Evidence expectations"
+      ]
+    },
+    {
+      "obligation_id": "CLAIM-001",
+      "source_agents": [
+        "econ-claim-discipline-reviewer.toml"
+      ],
+      "obligation": "Check whether prose or interpretation outruns the verified empirical object.",
+      "destinations": [
+        "persona:claim-discipline:Remit",
+        "persona:claim-discipline:Required checks"
+      ]
+    },
+    {
+      "obligation_id": "CLAIM-002",
+      "source_agents": [
+        "econ-claim-discipline-reviewer.toml"
+      ],
+      "obligation": "Police interpretation boundaries, benchmark language, and note overreach.",
+      "destinations": [
+        "persona:claim-discipline:Required checks"
+      ]
+    },
+    {
+      "obligation_id": "CODE-001",
+      "source_agents": [
+        "econ-code-quality-reviewer.toml"
+      ],
+      "obligation": "Check whether research code can be read, checked, rerun, safely modified, and handed to another researcher without hiding the research object.",
+      "destinations": [
+        "persona:code-quality:Remit",
+        "research-code-quality:Always-on floor"
+      ]
+    },
+    {
+      "obligation_id": "CODE-002",
+      "source_agents": [
+        "econ-code-quality-reviewer.toml"
+      ],
+      "obligation": "Flag code defects only when they affect readability, rerun, modification, reviewability, or research trust.",
+      "destinations": [
+        "persona:code-quality:Remit",
+        "persona:code-quality:Prohibited overreach",
+        "research-code-quality:Purpose"
+      ]
+    },
+    {
+      "obligation_id": "CODE-003",
+      "source_agents": [
+        "econ-code-quality-reviewer.toml"
+      ],
+      "obligation": "Suppress pure style nits and language preferences.",
+      "destinations": [
+        "persona:code-quality:Prohibited overreach"
+      ]
+    },
+    {
+      "obligation_id": "CODE-004",
+      "source_agents": [
+        "econ-code-quality-reviewer.toml"
+      ],
+      "obligation": "Do not decide whether a sample rule, estimator, inference choice, or substantive claim is correct.",
+      "destinations": [
+        "persona:code-quality:Prohibited overreach",
+        "research-code-quality:Hidden machinery"
+      ]
+    },
+    {
+      "obligation_id": "CODE-005",
+      "source_agents": [
+        "econ-code-quality-reviewer.toml"
+      ],
+      "obligation": "Check for hidden transformations, missing invariant checks, buried debug or test fragments, notebook-only durable logic, and unclear entrypoints.",
+      "destinations": [
+        "persona:code-quality:Required checks",
+        "research-code-quality:Always-on floor",
+        "research-code-quality:Hidden machinery"
+      ]
+    },
+    {
+      "obligation_id": "CODE-006",
+      "source_agents": [
+        "econ-code-quality-reviewer.toml"
+      ],
+      "obligation": "Give performance advice only when performance is explicitly in scope or supported by bottleneck evidence.",
+      "destinations": [
+        "persona:code-quality:Required checks",
+        "research-code-quality:Performance"
+      ]
+    },
+    {
+      "obligation_id": "CODE-007",
+      "source_agents": [
+        "econ-code-quality-reviewer.toml"
+      ],
+      "obligation": "Use the supplied research-code-quality guardrail when provided.",
+      "destinations": [
+        "subagent-template:method-guardrails",
+        "persona:code-quality:Required checks",
+        "research-code-quality:Purpose"
+      ]
+    },
+    {
+      "obligation_id": "CROSSLANG-001",
+      "source_agents": [
+        "econ-cross-language-validation-reviewer.toml"
+      ],
+      "obligation": "Audit whether a requested or existing cross-language comparison is scoped correctly and independent enough to test object parity before numeric parity.",
+      "destinations": [
+        "persona:software-equivalence:Remit",
+        "persona:software-equivalence:Required checks",
+        "persona-catalog:Cross-language fold"
+      ]
+    },
+    {
+      "obligation_id": "CROSSLANG-002",
+      "source_agents": [
+        "econ-cross-language-validation-reviewer.toml"
+      ],
+      "obligation": "Select cross-language review only for an explicit request, a validation manifest or comparison target, or an explicit equivalence claim.",
+      "destinations": [
+        "persona-catalog:Conditional triggers",
+        "persona-catalog:Cross-language fold"
+      ]
+    },
+    {
+      "obligation_id": "CROSSLANG-003",
+      "source_agents": [
+        "econ-cross-language-validation-reviewer.toml"
+      ],
+      "obligation": "When validation has not run, report the missing target, language paths, input version, parity checks, tolerance rules, and discrepancy categories as diagnostic gaps without creating scripts.",
+      "destinations": [
+        "persona:software-equivalence:Evidence expectations",
+        "persona:software-equivalence:Prohibited overreach"
+      ]
+    },
+    {
+      "obligation_id": "CROSSLANG-004",
+      "source_agents": [
+        "econ-cross-language-validation-reviewer.toml"
+      ],
+      "obligation": "Audit validation-manifest completeness, independent code paths, and input version.",
+      "destinations": [
+        "persona:software-equivalence:Required checks",
+        "persona:reproducibility:Required checks"
+      ]
+    },
+    {
+      "obligation_id": "CROSSLANG-005",
+      "source_agents": [
+        "econ-cross-language-validation-reviewer.toml"
+      ],
+      "obligation": "Audit parity of sample, variables, weights, fixed effects, clusters, and missingness before numerical comparison.",
+      "destinations": [
+        "persona:software-equivalence:Required checks",
+        "persona:transformation-and-sample:Required checks"
+      ]
+    },
+    {
+      "obligation_id": "CROSSLANG-006",
+      "source_agents": [
+        "econ-cross-language-validation-reviewer.toml"
+      ],
+      "obligation": "Audit coefficient and standard-error comparisons, degrees-of-freedom conventions, and discrepancy explanations.",
+      "destinations": [
+        "persona:software-equivalence:Required checks"
+      ]
+    },
+    {
+      "obligation_id": "CROSSLANG-007",
+      "source_agents": [
+        "econ-cross-language-validation-reviewer.toml"
+      ],
+      "obligation": "Do not silently broaden ordinary empirical review into cross-language validation.",
+      "destinations": [
+        "persona:software-equivalence:Prohibited overreach",
+        "persona-catalog:Cross-language fold"
+      ]
+    },
+    {
+      "obligation_id": "DESIGN-001",
+      "source_agents": [
+        "econ-design-reviewer.toml"
+      ],
+      "obligation": "Check whether the estimand-to-design mapping remains coherent.",
+      "destinations": [
+        "persona:design:Remit",
+        "persona:design:Required checks"
+      ]
+    },
+    {
+      "obligation_id": "DESIGN-002",
+      "source_agents": [
+        "econ-design-reviewer.toml"
+      ],
+      "obligation": "Apply only the method guardrails relevant to the visible design.",
+      "destinations": [
+        "subagent-template:method-guardrails",
+        "persona:design:Prohibited overreach"
+      ]
+    },
+    {
+      "obligation_id": "DESIGN-003",
+      "source_agents": [
+        "econ-design-reviewer.toml"
+      ],
+      "obligation": "For DiD and event studies, check treatment timing, comparison group, support, anticipation, and heterogeneous-effect risks.",
+      "destinations": [
+        "persona:design:Required checks"
+      ]
+    },
+    {
+      "obligation_id": "DESIGN-004",
+      "source_agents": [
+        "econ-design-reviewer.toml"
+      ],
+      "obligation": "For IV, check first stage, reduced form, exclusion, monotonicity or complier interpretation, and weak-instrument diagnostic evidence.",
+      "destinations": [
+        "persona:design:Required checks",
+        "persona:inference:Required checks"
+      ]
+    },
+    {
+      "obligation_id": "DESIGN-005",
+      "source_agents": [
+        "econ-design-reviewer.toml"
+      ],
+      "obligation": "For RD, check running variable, cutoff, bandwidth, manipulation, balance, and fuzzy or local-randomisation details.",
+      "destinations": [
+        "persona:design:Required checks",
+        "persona:inference:Required checks"
+      ]
+    },
+    {
+      "obligation_id": "DESIGN-006",
+      "source_agents": [
+        "econ-design-reviewer.toml"
+      ],
+      "obligation": "For RCTs, check randomisation unit, compliance, attrition, interference, and design-consistent inference evidence.",
+      "destinations": [
+        "persona:design:Required checks",
+        "persona:inference:Required checks"
+      ]
+    },
+    {
+      "obligation_id": "DESIGN-007",
+      "source_agents": [
+        "econ-design-reviewer.toml"
+      ],
+      "obligation": "For synthetic control and selection-on-observables, check donor, overlap, balance, and weight evidence.",
+      "destinations": [
+        "persona:design:Required checks"
+      ]
+    },
+    {
+      "obligation_id": "DYNAMICS-001",
+      "source_agents": [
+        "econ-dynamics-reviewer.toml"
+      ],
+      "obligation": "Check that timing, horizon, lag, cumulative or level, reference-period, and confidence-band conventions match the interpreted object.",
+      "destinations": [
+        "persona:dynamics:Remit",
+        "persona:dynamics:Required checks"
+      ]
+    },
+    {
+      "obligation_id": "DYNAMICS-002",
+      "source_agents": [
+        "econ-dynamics-reviewer.toml"
+      ],
+      "obligation": "Prioritize horizon-specific N, support, and cluster counts.",
+      "destinations": [
+        "persona:dynamics:Required checks"
+      ]
+    },
+    {
+      "obligation_id": "DYNAMICS-003",
+      "source_agents": [
+        "econ-dynamics-reviewer.toml"
+      ],
+      "obligation": "Check event-time omitted periods, binned leads and lags, shock timing, and lag-control conventions.",
+      "destinations": [
+        "persona:dynamics:Required checks"
+      ]
+    },
+    {
+      "obligation_id": "DYNAMICS-004",
+      "source_agents": [
+        "econ-dynamics-reviewer.toml"
+      ],
+      "obligation": "Distinguish level, change, cumulative, annualised, and other dynamic response objects.",
+      "destinations": [
+        "persona:dynamics:Required checks"
+      ]
+    },
+    {
+      "obligation_id": "ESTIMATION-001",
+      "source_agents": [
+        "econ-estimation-practice-reviewer.toml"
+      ],
+      "obligation": "Check that the code path implements the claimed estimator, fixed effects, weights, controls, omitted categories, and model metadata.",
+      "destinations": [
+        "persona:estimation-practice:Remit",
+        "persona:estimation-practice:Required checks"
+      ]
+    },
+    {
+      "obligation_id": "ESTIMATION-002",
+      "source_agents": [
+        "econ-estimation-practice-reviewer.toml"
+      ],
+      "obligation": "Do not duplicate inference review; only flag missing inference metadata in the model ledger at this lens.",
+      "destinations": [
+        "persona:estimation-practice:Prohibited overreach"
+      ]
+    },
+    {
+      "obligation_id": "ESTIMATION-003",
+      "source_agents": [
+        "econ-estimation-practice-reviewer.toml"
+      ],
+      "obligation": "Route clustering, weak-instrument inference, finite-sample corrections, randomisation inference, horizon bands, and multiplicity to inference.",
+      "destinations": [
+        "persona:estimation-practice:Prohibited overreach",
+        "persona:inference:Required checks"
+      ]
+    },
+    {
+      "obligation_id": "HYBRID-001",
+      "source_agents": [
+        "econ-hybrid-implementation-reviewer.toml"
+      ],
+      "obligation": "Check whether non-standard software machinery can change the empirical object even when economist-facing artifacts look plausible.",
+      "destinations": [
+        "persona:code-quality:Required checks",
+        "persona:estimation-practice:Required checks",
+        "persona:transformation-and-sample:Required checks",
+        "persona:reproducibility:Required checks",
+        "persona:output-consistency:Required checks",
+        "persona-catalog:Hybrid/custom implementation fold"
+      ]
+    },
+    {
+      "obligation_id": "HYBRID-002",
+      "source_agents": [
+        "econ-hybrid-implementation-reviewer.toml"
+      ],
+      "obligation": "Audit custom interfaces, hidden defaults, parameter plumbing, manifests, and non-standard execution machinery according to the analytical surface they can alter.",
+      "destinations": [
+        "persona:code-quality:Required checks",
+        "persona:estimation-practice:Required checks",
+        "persona:reproducibility:Required checks",
+        "persona:output-consistency:Required checks"
+      ]
+    },
+    {
+      "obligation_id": "INFERENCE-001",
+      "source_agents": [
+        "econ-inference-reviewer.toml"
+      ],
+      "obligation": "Check whether uncertainty matches the design, estimator, dependence structure, and claim.",
+      "destinations": [
+        "persona:inference:Remit",
+        "persona:inference:Required checks"
+      ]
+    },
+    {
+      "obligation_id": "INFERENCE-002",
+      "source_agents": [
+        "econ-inference-reviewer.toml"
+      ],
+      "obligation": "Check standard-error or test type, cluster level, cluster counts, and assignment-level alignment.",
+      "destinations": [
+        "persona:inference:Required checks"
+      ]
+    },
+    {
+      "obligation_id": "INFERENCE-003",
+      "source_agents": [
+        "econ-inference-reviewer.toml"
+      ],
+      "obligation": "Check small or uneven clusters, multiway or nested clustering, and serial, spatial, or network dependence.",
+      "destinations": [
+        "persona:inference:Required checks"
+      ]
+    },
+    {
+      "obligation_id": "INFERENCE-004",
+      "source_agents": [
+        "econ-inference-reviewer.toml"
+      ],
+      "obligation": "Check wild or other bootstrap, randomisation, and HAC remedies when relevant.",
+      "destinations": [
+        "persona:inference:Required checks"
+      ]
+    },
+    {
+      "obligation_id": "INFERENCE-005",
+      "source_agents": [
+        "econ-inference-reviewer.toml"
+      ],
+      "obligation": "Check weak-IV, RD bias-corrected, RCT design-based, and dynamic-band inference when relevant.",
+      "destinations": [
+        "persona:inference:Required checks"
+      ]
+    },
+    {
+      "obligation_id": "INFERENCE-006",
+      "source_agents": [
+        "econ-inference-reviewer.toml"
+      ],
+      "obligation": "Check multiplicity across outcomes, treatments, horizons, and heterogeneity cuts.",
+      "destinations": [
+        "persona:inference:Required checks",
+        "persona:robustness:Required checks"
+      ]
+    },
+    {
+      "obligation_id": "INFERENCE-007",
+      "source_agents": [
+        "econ-inference-reviewer.toml"
+      ],
+      "obligation": "Do not re-audit estimator implementation except when an implementation detail changes inference.",
+      "destinations": [
+        "persona:inference:Prohibited overreach"
+      ]
+    },
+    {
+      "obligation_id": "OUTPUTCONSISTENCY-001",
+      "source_agents": [
+        "econ-output-consistency-reviewer.toml"
+      ],
+      "obligation": "Check whether code, canonical outputs, tables, figures, captions, written claims, and output-automation status point to the same realised object.",
+      "destinations": [
+        "persona:output-consistency:Remit",
+        "persona:output-consistency:Required checks"
+      ]
+    },
+    {
+      "obligation_id": "OUTPUTCONSISTENCY-002",
+      "source_agents": [
+        "econ-output-consistency-reviewer.toml"
+      ],
+      "obligation": "Check output IDs, model and specification labels, N, sample notes, standard-error labels, coefficient names, and captions.",
+      "destinations": [
+        "persona:output-consistency:Required checks"
+      ]
+    },
+    {
+      "obligation_id": "OUTPUTCONSISTENCY-003",
+      "source_agents": [
+        "econ-output-consistency-reviewer.toml"
+      ],
+      "obligation": "Check in-text statistic source maps and whether promoted outputs are programmatically generated or manually edited.",
+      "destinations": [
+        "persona:output-consistency:Required checks",
+        "persona:reproducibility:Required checks"
+      ]
+    },
+    {
+      "obligation_id": "PERCEPTION-001",
+      "source_agents": [
+        "econ-output-perception-reviewer.toml"
+      ],
+      "obligation": "Identify visible empirical output that the current interpretation may be missing.",
+      "destinations": [
+        "persona:output-perception:Remit"
+      ]
+    },
+    {
+      "obligation_id": "PERCEPTION-002",
+      "source_agents": [
+        "econ-output-perception-reviewer.toml"
+      ],
+      "obligation": "Use the four quadrants: unexplained features, convenient absences, unasked questions, and unexploited strengths.",
+      "destinations": [
+        "persona:output-perception:Required checks"
+      ]
+    },
+    {
+      "obligation_id": "PERCEPTION-003",
+      "source_agents": [
+        "econ-output-perception-reviewer.toml"
+      ],
+      "obligation": "Look for spikes, sign flips, discontinuities, N cliffs, outliers, asymmetries, implausible magnitudes, and unstable denominators.",
+      "destinations": [
+        "persona:output-perception:Required checks"
+      ]
+    },
+    {
+      "obligation_id": "PERCEPTION-004",
+      "source_agents": [
+        "econ-output-perception-reviewer.toml"
+      ],
+      "obligation": "Look for missing subgroups and absent placebo, pretrend, balance, mechanism, support, falsification, or sensitivity checks.",
+      "destinations": [
+        "persona:output-perception:Required checks"
+      ]
+    },
+    {
+      "obligation_id": "PERCEPTION-005",
+      "source_agents": [
+        "econ-output-perception-reviewer.toml"
+      ],
+      "obligation": "Look for overlooked heterogeneity and design features that should be surfaced.",
+      "destinations": [
+        "persona:output-perception:Required checks"
+      ]
+    },
+    {
+      "obligation_id": "PERCEPTION-006",
+      "source_agents": [
+        "econ-output-perception-reviewer.toml"
+      ],
+      "obligation": "Do not make code-correctness claims unless a visible output directly contradicts another evidence surface.",
+      "destinations": [
+        "persona:output-perception:Prohibited overreach"
+      ]
+    },
+    {
+      "obligation_id": "PROVENANCE-001",
+      "source_agents": [
+        "econ-provenance-reviewer.toml"
+      ],
+      "obligation": "Check whether the empirical object's lineage, inputs, and canonical outputs can be traced.",
+      "destinations": [
+        "persona:provenance:Remit",
+        "persona:provenance:Required checks"
+      ]
+    },
+    {
+      "obligation_id": "REPRO-001",
+      "source_agents": [
+        "econ-reproducibility-reviewer.toml"
+      ],
+      "obligation": "Check whether another reviewer can understand what can and cannot be rerun, from what entrypoint, under what environment, and with what output-generation status.",
+      "destinations": [
+        "persona:reproducibility:Remit",
+        "persona:reproducibility:Required checks"
+      ]
+    },
+    {
+      "obligation_id": "REPRO-002",
+      "source_agents": [
+        "econ-reproducibility-reviewer.toml"
+      ],
+      "obligation": "Check environment and build metadata, restricted-data constraints, expected outputs, output automation, and manual or inherited outputs.",
+      "destinations": [
+        "persona:reproducibility:Required checks"
+      ]
+    },
+    {
+      "obligation_id": "REPRO-003",
+      "source_agents": [
+        "econ-reproducibility-reviewer.toml"
+      ],
+      "obligation": "Check replication-package completeness for the claimed scope without overstating reproducibility.",
+      "destinations": [
+        "persona:reproducibility:Required checks",
+        "persona:bundle:Required checks"
+      ]
+    },
+    {
+      "obligation_id": "ROBUSTNESS-001",
+      "source_agents": [
+        "econ-robustness-reviewer.toml"
+      ],
+      "obligation": "Keep baseline, companion, robustness, diagnostic, falsification, sensitivity, mechanism, heterogeneity, and exploratory objects in the correct hierarchy.",
+      "destinations": [
+        "persona:robustness:Remit",
+        "persona:robustness:Required checks"
+      ]
+    },
+    {
+      "obligation_id": "ROBUSTNESS-002",
+      "source_agents": [
+        "econ-robustness-reviewer.toml"
+      ],
+      "obligation": "Flag robustness checks promoted as baseline, exploratory heterogeneity presented as confirmatory, visible specification search, and many-outcome interpretation without family-level discipline.",
+      "destinations": [
+        "persona:robustness:Required checks"
+      ]
+    },
+    {
+      "obligation_id": "ROBUSTNESS-003",
+      "source_agents": [
+        "econ-robustness-reviewer.toml"
+      ],
+      "obligation": "Flag missing falsification or sensitivity evidence necessary for the current claim.",
+      "destinations": [
+        "persona:robustness:Required checks"
+      ]
+    },
+    {
+      "obligation_id": "EQUIVALENCE-001",
+      "source_agents": [
+        "econ-software-equivalence-reviewer.toml"
+      ],
+      "obligation": "Check whether compared software or estimator paths operate on the same analytical object.",
+      "destinations": [
+        "persona:software-equivalence:Remit",
+        "persona:software-equivalence:Required checks"
+      ]
+    },
+    {
+      "obligation_id": "EQUIVALENCE-002",
+      "source_agents": [
+        "econ-software-equivalence-reviewer.toml"
+      ],
+      "obligation": "Establish sample, variable construction, missingness, weights, fixed effects, singleton handling, clustering, omitted categories, and scaling parity before numeric parity.",
+      "destinations": [
+        "persona:software-equivalence:Required checks",
+        "persona:transformation-and-sample:Required checks"
+      ]
+    },
+    {
+      "obligation_id": "EQUIVALENCE-003",
+      "source_agents": [
+        "econ-software-equivalence-reviewer.toml"
+      ],
+      "obligation": "Check coefficient mapping, degrees-of-freedom conventions, and standard-error conventions before treating coefficient similarity as evidence.",
+      "destinations": [
+        "persona:software-equivalence:Required checks"
+      ]
+    },
+    {
+      "obligation_id": "EQUIVALENCE-004",
+      "source_agents": [
+        "econ-software-equivalence-reviewer.toml"
+      ],
+      "obligation": "Do not initiate cross-language validation unless the parent selected the route; audit only equivalence evidence already in scope.",
+      "destinations": [
+        "persona:software-equivalence:Prohibited overreach",
+        "persona-catalog:Cross-language fold"
+      ]
+    },
+    {
+      "obligation_id": "SPECIFICATION-001",
+      "source_agents": [
+        "econ-specification-reviewer.toml"
+      ],
+      "obligation": "Check whether the estimand and specification are explicit and stable or the baseline object drifted quietly.",
+      "destinations": [
+        "persona:specification:Remit",
+        "persona:specification:Required checks"
+      ]
+    },
+    {
+      "obligation_id": "SPECIFICATION-002",
+      "source_agents": [
+        "econ-specification-reviewer.toml"
+      ],
+      "obligation": "For realised estimates or model claims, check outcome, treatment or exposure, comparison group, unit, timing, target population, effect scale, aggregation, and baseline or companion status.",
+      "destinations": [
+        "persona:specification:Required checks"
+      ]
+    },
+    {
+      "obligation_id": "SPECIFICATION-003",
+      "source_agents": [
+        "econ-specification-reviewer.toml"
+      ],
+      "obligation": "Report missing estimand evidence as a diagnostic gap when it blocks trust.",
+      "destinations": [
+        "persona:specification:Required checks",
+        "common-protocol:Reviewer responsibilities"
+      ]
+    },
+    {
+      "obligation_id": "TRANSFORMATION-001",
+      "source_agents": [
+        "econ-transformation-sample-reviewer.toml"
+      ],
+      "obligation": "Check whether joins, filters, missingness, supports, weights, denominators, and timing rules produced the intended realised sample.",
+      "destinations": [
+        "persona:transformation-and-sample:Remit",
+        "persona:transformation-and-sample:Required checks"
+      ]
+    },
+    {
+      "obligation_id": "TRANSFORMATION-002",
+      "source_agents": [
+        "econ-transformation-sample-reviewer.toml"
+      ],
+      "obligation": "Check sample flow, key uniqueness, merge cardinality, unmatched counts, reason-coded drops, and missingness on analysis variables, fixed effects, clusters, and weights.",
+      "destinations": [
+        "persona:transformation-and-sample:Required checks"
+      ]
+    },
+    {
+      "obligation_id": "TRANSFORMATION-003",
+      "source_agents": [
+        "econ-transformation-sample-reviewer.toml"
+      ],
+      "obligation": "Check overlap and support, denominator integrity, and timing alignment for lags, leads, horizons, and treatment windows.",
+      "destinations": [
+        "persona:transformation-and-sample:Required checks",
+        "persona:dynamics:Required checks"
+      ]
+    }
+  ]
+}
