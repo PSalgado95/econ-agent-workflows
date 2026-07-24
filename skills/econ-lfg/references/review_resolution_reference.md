@@ -7,7 +7,7 @@ Use this reference during `econ-lfg` Stage 4 after `econ-review` returns retaine
 For every retained finding, inspect these fields before choosing a route:
 
 - finding ID;
-- fix class: `safe automatic`, `gated`, `manual`, or `advisory`;
+- fix class: `parent-resolvable`, `gated`, `manual`, or `advisory`;
 - trust effect or promotion effect;
 - issue origin;
 - affected labels, such as plan labels, output IDs, bundle IDs, branch/worktree names, or evidence IDs;
@@ -23,24 +23,24 @@ Use these route tokens exactly in the review-resolution closeout:
 
 | Route token | Use when | Typical examples |
 | --- | --- | --- |
-| `fix-now` | The fix is mechanical, safe automatic, or missing work already required by the saved plan, and it does not touch the Pedro-level trigger list. | Path repair, stale cross-reference, missing metadata, stale bundle manifest, validator rerun, missing diagnostic already required by the plan. |
+| `fix-now` | The fix is parent-resolvable, mechanical, or missing work already required by the saved plan, and it does not touch the researcher-level trigger list. | Path repair, stale cross-reference, missing metadata, stale bundle manifest, validator rerun, missing diagnostic already required by the plan. |
 | `revise-plan-choice` | Review evidence shows an agent-owned plan or work default should change, and the better path remains inside the initial task intent. | Diagnostic order, figure priority, note framing, implementation route, wording that narrows a claim to accepted evidence. |
-| `ask-user` | The fix touches the Pedro-level trigger list or would override a researcher-anchored choice. | Baseline, sample, estimand, identification, benchmark treatment, output promotion, claim budget, substantive interpretation. |
+| `ask-user` | The fix touches the researcher-level trigger list or would override a researcher-anchored choice. | Baseline, sample, estimand, identification, benchmark treatment, output promotion, claim budget, substantive interpretation. |
 | `defer-with-rationale` | The finding is legitimate but outside the prompt, not needed for trust in the requested output, or better handled as follow-up work. | Optional robustness extension, future package audit, non-blocking broader cleanup. |
 | `advisory-only` | The finding is useful context but does not affect trust, promotion, or the requested output. | FYI note, non-blocking ergonomics suggestion, future wording improvement. |
 
 ## Mapping From econ-review Fix Classes
 
-- `safe automatic` usually maps to `fix-now`, unless the authority test shows the edit would change a Pedro-level choice.
+- `parent-resolvable` usually maps to `fix-now`, unless the authority test shows the edit would change a researcher-level choice.
 - `gated` maps to `ask-user` when it changes what gets promoted, shown, emphasized, or treated as the main output. If it is outside the requested output, map it to `defer-with-rationale`.
-- `manual` usually maps to `ask-user`. It may map to `fix-now` only when the missing work is already required by the saved plan, the needed inputs and rerun authority are present, and no Pedro-level trigger is touched.
+- `manual` usually maps to `ask-user`. It may map to `fix-now` only when the missing work is already required by the saved plan, the needed inputs and rerun authority are present, and no researcher-level trigger is touched.
 - `advisory` maps to `advisory-only` or `defer-with-rationale`.
 
 Choose the more conservative route when fix class, trust effect, and authority source disagree.
 
-## What Codex May Fix Without Asking Pedro
+## What the Agent May Fix Without Asking
 
-Codex may fix directly when the finding stays inside the saved plan, the initial prompt, and the current authority hierarchy:
+The agent may fix directly when the finding stays inside the saved plan, the initial prompt, and the current authority hierarchy:
 
 - path repairs;
 - stale cross-references;
@@ -55,9 +55,9 @@ Codex may fix directly when the finding stays inside the saved plan, the initial
 
 Each direct fix must leave a compact trace: finding ID, evidence path, route token, fix performed, verification run, and targeted re-review surface.
 
-## Pedro-Level Trigger List
+## Researcher-Level Trigger List
 
-Pause for Pedro when the finding or proposed fix would change any of these:
+Pause for the researcher when the finding or proposed fix would change any of these:
 
 - research question or decision problem;
 - estimand or descriptive target;
@@ -76,7 +76,7 @@ When pausing, return the finding ID, evidence path, affected labels, recommended
 
 ## Decision Memo Protocol
 
-For any non-trivial `ask-user` blocker, write an economist-facing HTML decision memo before asking Pedro to decide.
+For any non-trivial `ask-user` blocker, write an economist-facing HTML decision memo before asking the researcher to decide.
 
 When the installed runtime provides them, prefer these skills:
 
@@ -96,11 +96,11 @@ The memo must say:
 
 - what decision arose;
 - which review findings, outputs, diagnostics, or evidence paths created the decision;
-- why the finding is a Pedro-level choice rather than an agent-owned cleanup;
+- why the finding is a researcher-level choice rather than an agent-owned cleanup;
 - what the agent recommends as the conservative path and why;
 - what changes under each plausible choice;
 - what stays unchanged under each choice;
-- what the agent will do next once Pedro decides;
+- what the agent will do next once the researcher decides;
 - the exact prompt or command needed to resume the `econ-lfg` loop.
 
 Output location:
@@ -115,13 +115,13 @@ For trivial one-question blockers with no evidence synthesis needed, the agent m
 
 After `fix-now` or `revise-plan-choice`, run targeted `econ-review` on the changed or previously problematic surface. Cite the fixed finding IDs, changed paths, changed output or bundle labels, and prior evidence paths.
 
-Escalate from targeted to broader review only when the revision changes the baseline, sample, estimand, specification, inference, benchmark treatment, note argument, primary output family, or another Pedro-level research-object boundary.
+Escalate from targeted to broader review only when the revision changes the baseline, sample, estimand, specification, inference, benchmark treatment, note argument, primary output family, or another researcher-level research-object boundary.
 
 Repeat review resolution until:
 
 - no blocking or worth-fixing findings remain;
 - remaining findings are `defer-with-rationale` or `advisory-only`;
-- a Pedro-level decision blocks the loop;
+- a researcher-level decision blocks the loop;
 - external access or missing data prevents meaningful progress.
 
 The final closeout must list fixed finding IDs, deferred/advisory finding IDs, decision memo path if one was written, targeted re-review result, verification performed, remaining risk, and resume route if blocked.

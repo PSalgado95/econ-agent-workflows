@@ -8,6 +8,8 @@ A learning note records precedent for future economics research work. It is not 
 
 Old memos, exploratory reports, GPT handoff bundles, and project briefs are leads unless they were explicitly reviewed or accepted for a defined purpose. A learning note should cite the underlying evidence behind such artifacts, not the artifact alone, unless the artifact itself is the reviewed object.
 
+When a lesson locks a project-specific definition, the definition itself belongs in the project's `DEFINITIONS.md` (offered with the researcher's approval; definitions and boundaries only, never file paths or current parameter values). The learning note keeps the evidence and the reuse boundary.
+
 ## Storage
 
 Prefer an existing repo convention. Otherwise use:

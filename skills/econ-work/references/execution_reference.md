@@ -18,23 +18,22 @@ Read this file only when you need a template or checklist during execution.
 
 ## Note brief template
 
+The note brief is a delta on `interpretation_brief.md`: start from that brief and record only what changes now that a specific reader is in view. Do not restate the main finding, supporting facts, or limitations already in the interpretation brief.
+
 ```md
-## Note brief
-- Reader:
-- Note type:
-- Question the note answers:
-- One-sentence answer:
-- Why the note is worth reading:
+## Note brief (delta on the interpretation brief)
+- Reader, and what they must take away:
+- Note type (free text):
 - Definitions that must appear before the findings:
-- Main sections in order:
-- Candidate headline figure:
-- Supporting figures or tables:
-- What belongs only in the appendix or execution note:
+- Main sections in order, and the headline figure:
+- What drops to the appendix or execution note:
 - Terms that must not appear in the main text:
 - Claims that need especially careful wording:
 ```
 
-## Surprise memo template
+## Surprise memo
+
+The surprise memo is human-facing: render it as HTML via the `econ-html-memo` skill and design system when installed, or as plain standalone HTML under the same content discipline when it is not. Use the content checklist below in either case. When the finding is escalated to `gpt-pro-handoff`, that package may carry the same content; the memo itself stays human-facing.
 
 ```md
 ## Surprise memo
@@ -55,15 +54,42 @@ Keep at least:
 3. the key sample, benchmark, weighting, or specification note needed to keep the mapping honest; and
 4. whether the cited object is current, inherited, or inspected-only when that status matters.
 
+## Output provenance status vocabulary
+
+Every output or artefact carries two orthogonal tags. These are the single vocabulary used wherever output status is recorded: `econ-work` Stage 2 and the closeout, the review bundle, and the reviewer evidence manifest passed to `econ-review`.
+
+Provenance status (exactly one):
+- `refreshed`: regenerated in this run;
+- `inherited`: produced earlier and still intentionally used as current;
+- `inspected-only`: read or interpreted in this run but not regenerated;
+- `scaffolded`: created as structure, never executed;
+- `stale`: likely superseded, no longer current, or inconsistent with the active object;
+- `unknown`: reviewer-side fallback when the status cannot be read from the evidence. A producer should never leave its own output `unknown`.
+
+Role tag (exactly one, orthogonal to status):
+- `support-only`: useful diagnostic or backend evidence, not a reader-facing report input;
+- `report-input`: candidate table, figure, note excerpt, or bundle surface for reader-facing use.
+
+## Choice register row template
+
+Log each Class A and Class B choice (see `econ-work` "Choice classes") as one row in `choice_register.md`:
+
+```md
+- [label] | class: A|B|C | choice: | alternatives worth stress-testing: | status: provisional|settled
+```
+
+Keep Class A rows `provisional` until the researcher confirms; record credible alternatives for Class B rows so they can be stress-tested later.
+
 ## Analysis surface simplification checklist
 
-Use this after output inspection and before interpretation, review bundle preparation, or closeout.
+Use this after output inspection and before interpretation, review bundle preparation, or closeout. Tags follow the provenance vocabulary above.
 
 ```md
 ## Analysis surface simplification
 - Refreshed outputs:
 - Inherited outputs still intentionally used:
 - Inspected-only outputs:
+- Scaffolded outputs (created as structure, never executed):
 - Stale or superseded outputs:
 - Support-only diagnostics:
 - Report inputs:
@@ -79,20 +105,27 @@ Never delete, overwrite, or hide stale research evidence without explicit approv
 
 ## Verification ladder
 
-Run the levels that apply:
-1. input integrity;
-2. code and helper integrity;
-3. research-code-quality floor;
-4. transformation integrity;
-5. computational-object integrity;
-6. realised-sample audit;
-7. grouping and denominator integrity;
-8. object comparability;
-9. output-specification integrity;
-10. text-figure and report-build integrity;
-11. interpretation discipline;
-12. reader-facing note integrity;
-13. reproducibility rerun status.
+Run the rungs that apply; each gives an example check.
+1. input integrity — the named inputs exist and match the expected signature or vintage, not just the folder.
+2. code and helper integrity — a helper that defines bins, keys, denominators, or timing returns what the object needs on a small known case.
+3. research-code-quality floor — entrypoints visible, object-defining parameters named, no stale debug or test fragments in tracked code.
+4. transformation integrity — row and unit counts and key uniqueness hold through each join and filter; drops are reason-coded.
+5. computational-object integrity — dimensions, convergence, residuals, feasibility, or conservation hold for the computational object.
+6. realised-sample audit — the stage-by-stage sample flow reconciles to the final N.
+7. grouping and denominator integrity — the denominator and aggregation level match the claim; weights applied at the intended stage.
+8. object comparability — same sample filter, weights, and denominator on both sides of any benchmark claim, shown in one comparison table.
+9. output-specification integrity — each promoted table or figure matches its specification and was regenerated by the stated entrypoint.
+10. text-figure and report-build integrity — every number and direction claimed in the text matches the cited table or figure cell; the report builds from portable paths.
+11. interpretation discipline — causal, mechanism, or policy language does not outrun the verified object.
+12. reader-facing note integrity — the note passes the `econ-review` Stage 6 reader-facing gate.
+13. reproducibility rerun status — the provenance status of each promoted output is stated.
+
+## Minimal artefacts glossary
+
+Create the minimal version of any of these when it is absent rather than working without it:
+- **Model-spec ledger** — a stable list of the realised specification(s): estimator, sample, fixed effects, weights, inference, and the output each maps to.
+- **Output specification / manifest** — what each canonical output family should contain and where it is written, so a changed output can be checked against intent.
+- **Workflow note** — the running execution note (what was inspected, changed, run, regenerated, and what remains), kept separate from the reader-facing note.
 
 ## Research code quality checklist
 
@@ -129,7 +162,7 @@ Also include when relevant:
 - `interpretation_brief.md`;
 - `note_brief.md`;
 - the defended note, memo, or excerpt and relevant caption material;
-- `surprise_memo.md`.
+- `surprise_memo.html`.
 
 ## Issue checkpoint comment
 
@@ -139,7 +172,7 @@ Use this only when the work is issue-linked and the user asked for or approved a
 ## Checkpoint
 - Objective:
 - Branch or worktree:
-- Execution mode: structure-only|full empirical rerun|full computational run
+- What was run, and what was not run:
 - Code role: none|exploratory|analysis-pipeline|shared-collaborator|replication-facing|library-tool
 - Plan labels touched:
 - Outputs refreshed:
@@ -151,50 +184,24 @@ Use this only when the work is issue-linked and the user asked for or approved a
 
 Do not include raw restricted data, confidential evidence, or long logs in issue comments. Link to plans, outputs, bundles, or commits instead.
 
-## Evidence pulse
+## Closeout
 
-Use this inside closeouts for substantial empirical or hybrid work.
+Use this as the completion gate for `econ-work` runs. The run is complete only when every applicable item is stated (or explicitly marked not applicable); a script run, a generated file, or one passing check is not completion.
 
-```md
-## Evidence pulse
-- What changed:
-- What became more trustworthy:
-- What became weaker or remains unresolved:
-- Outputs refreshed:
-- Outputs inherited or inspected only:
-- Labels/issues/branches the next session should use:
-- Suggested next planning question:
-- Durable update target: none|closeout-only|econ-compound candidate|issue comment|project backbone|README dictionary|follow-up plan
-- Proposed project-backbone update, if any:
-- Project-backbone update approval status: not needed|drafted only|approved and applied
-```
+1. objective and outcome;
+2. what was inspected, changed, run, and regenerated, plus code role when code changed;
+3. furthest stage reached;
+4. outputs by provenance status (`refreshed`/`inherited`/`inspected-only`/`scaffolded`/`stale`) and role tag (`support-only`/`report-input`), named by file;
+5. verification performed and what it proved;
+6. interpretation and note status: interpretation brief, note brief, note or figures, and surprise memo with any GPT Pro escalation;
+7. review route and bundle status, plus the issue checkpoint when the work is issue-linked;
+8. blockers, risks, and open questions, plus choice-register updates and any durable residual sink (see below);
+9. reusable lesson checkpoint (one line, format below);
+10. recommended next command.
 
-## Closeout format
+Durable residual sink: deferred or advisory findings that affect trust must land on a durable surface before delivery — the review bundle's residual section, a GitHub issue (with approval), or a dated `docs/residual-findings/<slug>.md` — with finding IDs preserved. Never close out with trust-affecting residuals recorded only in chat.
 
-Use this as the completion gate for non-trivial `econ-work` runs. Do not declare the run complete until the applicable items are stated or explicitly marked not applicable.
-
-End with:
-1. objective completed;
-2. domain mode;
-3. execution mode;
-4. code role when code is in scope;
-5. furthest stage reached;
-6. outputs refreshed versus inspected-only versus scaffolded;
-7. analysis-surface simplification status;
-8. files and artefacts changed;
-9. key findings taken into the interpretation brief;
-10. note brief status when reporting is in scope;
-11. surprise memo and GPT Pro escalation status, if any;
-12. choice-register updates;
-13. verification performed;
-14. research-code-quality checks when code is in scope;
-15. review-bundle status;
-16. data or computational blockers, if any;
-17. evidence pulse;
-18. issue checkpoint status, if issue-linked;
-19. remaining risks or open questions;
-20. reusable lesson checkpoint; and
-21. recommended next command.
+For trivial one-off work, use a compact closeout, but still state what was checked, changed, run, or regenerated, output status, remaining risk, and next step.
 
 Reusable lesson checkpoint format:
 - `Reusable lesson checkpoint: none` when the run did not reveal a reusable lesson. Keep this to one compact line.
@@ -202,3 +209,52 @@ Reusable lesson checkpoint format:
 - `Reusable lesson checkpoint: econ-compound candidate` when the run revealed a reusable economics research lesson. Include one sentence plus the evidence path a later `econ-compound` run should read.
 
 Do not write durable learning notes from the closeout unless the user explicitly asked for learning capture or the larger autonomous run explicitly included compounding.
+
+## Private return-to-caller envelope
+
+Return this object inline when an authorised `econ-lfg` parent supplies `caller_contract: econ-lfg/v1`. Do not save it automatically.
+
+```json
+{
+  "contract": "econ-work-for-caller/v1",
+  "status": "complete|blocked|failed",
+  "objective": "<bounded research task>",
+  "saved_plan_path": "<repo-relative path>",
+  "furthest_stage": "intake|code-and-run|output-audit|interpretation|reporting|closeout",
+  "inspected_paths": [],
+  "changed_paths": [],
+  "commands_or_entrypoints_run": [],
+  "verification": [
+    {
+      "check": "<command, assertion, or inspection>",
+      "evidence_path": "<repo-relative path or null>",
+      "proved": "<bounded claim>"
+    }
+  ],
+  "outputs": [
+    {
+      "path": "<repo-relative path>",
+      "provenance": "refreshed|inherited|inspected-only|scaffolded|stale",
+      "role": "support-only|report-input"
+    }
+  ],
+  "code_role": "none|exploratory|analysis-pipeline|shared-collaborator|replication-facing|library-tool",
+  "interpretation_status": "complete|not-required|blocked",
+  "interpretation_brief_path": null,
+  "note_status": "complete|not-required|blocked",
+  "note_brief_path": null,
+  "note_paths": [],
+  "figure_status": "complete|not-required|blocked",
+  "figure_paths": [],
+  "bundle_status": "complete|not-required|blocked",
+  "review_bundle_path": null,
+  "choice_register_path": null,
+  "review_route": "<tier and surface, or none>",
+  "residual_risks": [],
+  "reusable_lesson_checkpoint": "none|closeout-only|econ-compound candidate",
+  "researcher_decision": null,
+  "access_blocker": null
+}
+```
+
+Use empty arrays and `null` rather than omitting keys. Set `status: complete` only when every applicable closeout field is filled; otherwise return the blocking researcher decision, access condition, or failure.
