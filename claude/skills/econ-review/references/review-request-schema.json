@@ -1,0 +1,359 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://econ-agent-workflows.local/schemas/econ-review-request-v1.json",
+  "title": "econ-review-request/v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "run_id",
+    "invocation",
+    "caller",
+    "surfaces",
+    "depth",
+    "promotion",
+    "interpretation",
+    "scope",
+    "evidence_manifest",
+    "triggers",
+    "timeout_policy",
+    "supplemental_assessments"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "econ-review-request/v1"
+    },
+    "run_id": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$"
+    },
+    "invocation": {
+      "type": "string",
+      "enum": [
+        "direct",
+        "nested"
+      ],
+      "default": "direct"
+    },
+    "caller": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "minLength": 1,
+      "default": null
+    },
+    "surfaces": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "enum": [
+          "plan-design",
+          "implementation-code",
+          "empirical-results",
+          "replication-handoff"
+        ]
+      }
+    },
+    "depth": {
+      "type": "string",
+      "enum": [
+        "quick",
+        "standard",
+        "full"
+      ],
+      "default": "standard"
+    },
+    "promotion": {
+      "type": "boolean",
+      "default": false
+    },
+    "interpretation": {
+      "type": "boolean",
+      "default": false
+    },
+    "scope": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "target_paths",
+        "authority_paths",
+        "base_ref",
+        "blind_spots"
+      ],
+      "properties": {
+        "target_paths": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "authority_paths": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "minLength": 1
+          },
+          "default": []
+        },
+        "base_ref": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "minLength": 1,
+          "default": null
+        },
+        "blind_spots": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          },
+          "default": []
+        }
+      }
+    },
+    "evidence_manifest": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "evidence_id",
+          "path",
+          "kind",
+          "description",
+          "required"
+        ],
+        "properties": {
+          "evidence_id": {
+            "type": "string",
+            "pattern": "^E[1-9][0-9]*$"
+          },
+          "path": {
+            "type": "string",
+            "minLength": 1
+          },
+          "kind": {
+            "type": "string",
+            "enum": [
+              "plan",
+              "code",
+              "data-manifest",
+              "output",
+              "table",
+              "figure",
+              "note",
+              "bundle",
+              "manifest",
+              "check",
+              "log",
+              "other"
+            ]
+          },
+          "description": {
+            "type": "string",
+            "minLength": 1
+          },
+          "required": {
+            "type": "boolean",
+            "default": false
+          }
+        }
+      }
+    },
+    "triggers": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "provenance_risk",
+        "sample_construction",
+        "nontrivial_estimation",
+        "inferential_claims",
+        "substantive_outputs",
+        "custom_implementation",
+        "custom_changes_sample",
+        "custom_changes_rerun",
+        "custom_changes_outputs",
+        "causal_design",
+        "dynamic_objects",
+        "robustness_hierarchy",
+        "cross_software",
+        "cross_language",
+        "cross_language_data_construction",
+        "cross_language_environment",
+        "reproducibility",
+        "bundle_target"
+      ],
+      "properties": {
+        "provenance_risk": {
+          "type": "boolean",
+          "default": false
+        },
+        "sample_construction": {
+          "type": "boolean",
+          "default": false
+        },
+        "nontrivial_estimation": {
+          "type": "boolean",
+          "default": false
+        },
+        "inferential_claims": {
+          "type": "boolean",
+          "default": false
+        },
+        "substantive_outputs": {
+          "type": "boolean",
+          "default": false
+        },
+        "custom_implementation": {
+          "type": "boolean",
+          "default": false
+        },
+        "custom_changes_sample": {
+          "type": "boolean",
+          "default": false
+        },
+        "custom_changes_rerun": {
+          "type": "boolean",
+          "default": false
+        },
+        "custom_changes_outputs": {
+          "type": "boolean",
+          "default": false
+        },
+        "causal_design": {
+          "type": "boolean",
+          "default": false
+        },
+        "dynamic_objects": {
+          "type": "boolean",
+          "default": false
+        },
+        "robustness_hierarchy": {
+          "type": "boolean",
+          "default": false
+        },
+        "cross_software": {
+          "type": "boolean",
+          "default": false
+        },
+        "cross_language": {
+          "type": "boolean",
+          "default": false
+        },
+        "cross_language_data_construction": {
+          "type": "boolean",
+          "default": false
+        },
+        "cross_language_environment": {
+          "type": "boolean",
+          "default": false
+        },
+        "reproducibility": {
+          "type": "boolean",
+          "default": false
+        },
+        "bundle_target": {
+          "type": "boolean",
+          "default": false
+        }
+      }
+    },
+    "timeout_policy": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "mode",
+        "seconds"
+      ],
+      "properties": {
+        "mode": {
+          "type": "string",
+          "enum": [
+            "none",
+            "host-enforced",
+            "supported-policy"
+          ],
+          "default": "none"
+        },
+        "seconds": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "minimum": 1,
+          "default": null
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "mode": {
+                "const": "none"
+              }
+            },
+            "required": [
+              "mode"
+            ]
+          },
+          "then": {
+            "properties": {
+              "seconds": {
+                "const": null
+              }
+            }
+          },
+          "else": {
+            "properties": {
+              "seconds": {
+                "type": "integer",
+                "minimum": 1
+              }
+            }
+          }
+        }
+      ]
+    },
+    "supplemental_assessments": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "assessment_id",
+          "assessment_type",
+          "required",
+          "evidence_id"
+        ],
+        "properties": {
+          "assessment_id": {
+            "type": "string",
+            "minLength": 1
+          },
+          "assessment_type": {
+            "type": "string",
+            "minLength": 1
+          },
+          "required": {
+            "type": "boolean"
+          },
+          "evidence_id": {
+            "type": "string",
+            "pattern": "^E[1-9][0-9]*$"
+          }
+        }
+      },
+      "default": []
+    }
+  }
+}

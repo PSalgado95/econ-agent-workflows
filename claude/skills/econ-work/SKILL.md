@@ -1,464 +1,124 @@
 ---
 name: econ-work
-description: "Execute economics research, empirical economics, or hybrid analysis-engineering work. Use when the task involves code changes, reruns, output inspection, interpretation, review-bundle preparation, GitHub issue-linked research work, or economist-facing note production from defended outputs. Work in order: execution, output inspection, interpretation brief, note brief, then note or figures."
+description: "Execute empirical or computational economics work from a plan or a clear request, keeping the research object, realised sample, and audit trail intact. Use when the task is to run or rerun code, inspect and audit realised outputs, interpret results, draft an economist-facing note or figures from defended outputs, prepare a review bundle, or carry out issue-linked research work. Not for pure software engineering with no research object, not for planning (use econ-plan) or reviewing (use econ-review)."
 ---
 
-<!-- GENERATED FROM CODEX SOURCE - DO NOT EDIT. Edit the Codex sources (skills/, .codex/agents/, references/) and run build_claude.py. -->
+<!-- GENERATED FROM CODEX SOURCE - DO NOT EDIT. Edit the Codex sources and run build_claude.py. -->
 
 # Economist Execution Workflow
 
-Execute the work without losing the research object, realised sample, audit trail, benchmark boundary, or reader-facing deliverable.
+Execute the work without losing the research object, realised sample, audit trail, benchmark boundary, or reader-facing deliverable. This file is the contract; read `references/execution_reference.md` at the stage that needs a template or checklist (each pointer below says when).
 
-## Direct invocation contract
+## Intake
 
-When directly invoked, stay inside the `econ-work` execution workflow. Never treat explicit skill invocation as casual advice or as permission to skip the staged empirical workflow.
+Treat the arguments passed with this invocation, or the user's current request, as the work object. If it is empty, ask (blocking) what to execute — the plan, issue, output, note, or concrete task. Classify before touching anything:
 
-A valid direct invocation must do one of these:
-- execute from a saved plan, issue-linked work object, or clear work request;
-- triage a bare request and write a short execution outline before non-trivial edits or reruns;
-- ask one focused blocking question when the missing answer would materially change the baseline, estimand, output surface, rerun scope, note scope, or destructive-overwrite decision;
-- route pure software work to the current Compound Engineering work skill; or
-- label the response as advice-only when the user explicitly asked for advice rather than execution.
+- **Trivial one-off** — a narrow check, inspection, or mechanical edit with low empirical stakes. Proceed compactly: no task list, no review bundle, a compact closeout. This is the expected path for small work; do not force the full workflow onto it.
+- **Saved plan** — read it as the decision artifact (not a progress log) and execute its stages; record divergence in the task tracker or closeout rather than rewriting the plan body.
+- **Bare empirical request** — clear task, no plan. Scan the work surface, then write a short execution outline before any non-trivial edit or rerun.
+- **Issue-linked work** — read the issue as coordination context only (objective, done-when, linked branches). Record whether issue updates are requested, approved, or out of scope.
+- **Unclear work object** — inspect the available surface, then ask one decision per question and continue until the work object is shared clearly enough to execute.
 
-Do not start code changes, empirical reruns, output promotion, or note drafting until input triage and execution mode are explicit.
+Route pure software work to the current Compound Engineering work skill (`compound-engineering:ce-work` when available). If the user asked for advice rather than execution, label the response advice-only. Do not start code changes, reruns, output promotion, or note drafting until the task, research object, scope, and rerun authority are sufficiently understood.
 
-Route pure software tasks to the current Compound Engineering work skill, such as `compound-engineering:ce-work` when available.
+## Core invariants
 
-Keep this file as the execution contract. Read `references/execution_reference.md` only when you need the exact templates or checklists for `interpretation_brief.md`, `note_brief.md`, `surprise_memo.md`, the output-consistency map, the verification ladder, the review bundle, the issue checkpoint comment, or the closeout format.
+Keep these distinctions explicit for the whole run; collapsing any of them is how research trust is lost:
 
-## Input
+- project backbone vs dated execution plan; plan labels vs incidental task names;
+- the live research object vs any benchmark or comparison object;
+- rerun outputs vs pre-existing outputs being inspected;
+- audit outputs vs report inputs; the execution note vs the reader-facing note;
+- observed facts vs diagnostic explanations vs limitations;
+- research-code role and the maturity expected now.
 
-<work_object> #$ARGUMENTS </work_object>
+Default order of work: (1) code and run checks; (2) output inspection; (3) economic interpretation and headline triage; (4) note brief when reporting is in scope; (5) only then the note and figures.
 
-If the input is empty, use `AskUserQuestion` and ask:
-"What empirical or hybrid work should I execute? Please name the plan, issue, output, note, or concrete task."
+When code changes the main output family, update its specification, manifest, and checks in the same unit. When it changes sample, missingness, grouping, denominator, weighting, or timing rules, refresh the corresponding audit before closing. Keep one writer per mutable output family (derived datasets, tables, figures, logs, ledgers, note drafts, bundles, manifests, specs) unless isolated roots or worktrees are explicit; use sub-agents for evidence collection, not parallel writes.
 
-## Input triage
+## Run boundary and provenance
 
-Classify the input before execution:
-- `saved plan`: a plan file or explicit execution document is provided -> read it and use it as the decision artifact;
-- `bare empirical request`: no plan path is provided, but the empirical task is clear -> scan the relevant work surface, then write a short execution outline before non-trivial edits or reruns;
-- `trivial one-off`: narrow check, inspection, or mechanical edit with low empirical stakes -> proceed compactly, but still state execution mode and closeout status;
-- `issue-linked work`: a GitHub issue, issue number, or issue-derived task is provided -> treat the issue as coordination context, not analytical evidence;
-- `missing or unclear work object`: the task, output, baseline, or rerun scope is unclear -> ask one focused blocking question before execution.
+Before major edits or reruns, establish what can actually be executed. A directory such as `raw/` is never proof that the required inputs are present. Check the actual files and access conditions; the authorised scope; which outputs or model objects are stale, inherited, or expected to be regenerated now; whether the active specification or computational object matches the intended run; and the stable entrypoint that regenerates the surface.
 
-Do not require a saved plan for every small task. Do require an explicit execution outline for non-trivial bare requests.
+When required raw, restricted, model, simulation, calibration, or numerical inputs are unavailable or intentionally outside scope, code, manifests, checks, specifications, static validation, and interpretation of defended existing outputs may still proceed. State plainly that the main outputs were not regenerated, name the missing input or scope reason, and never present inherited outputs as fresh. When inputs and authority are present, run the appropriate empirical or computational path and report exactly what was regenerated.
 
-## Core contract
+## Choice classes and questions
 
-Keep these distinctions explicit throughout the run:
-- project backbone versus dated execution plan;
-- plan labels versus incidental task names;
-- GitHub issue coordination versus analytical evidence;
-- the live research object versus any benchmark or comparison object;
-- rerun outputs versus pre-existing outputs being inspected;
-- audit outputs versus report inputs;
-- the execution note versus the reader-facing note;
-- observed facts versus diagnostic explanations versus limitations;
-- research code role and maturity expected now;
-- surprising findings that justify escalation versus routine diagnostics that do not.
+Asking good blocking questions is part of building the task with the researcher, not an interruption. Use the platform's blocking-question tool (`AskUserQuestion`; the Claude build translates it), not plain chat text. Ask one decision per question, with the context that makes it answerable: what the decision affects, the plausible options with their tradeoffs, and a recommended conservative default. Continue until the objective, research object, scope, assumptions, methods, outputs, audience, and relevant constraints are sufficiently understood. Do not guess missing context merely to avoid asking, and never bury a material question in a closeout or "open questions" list.
 
-Default order:
-1. code and run checks;
-2. output inspection;
-3. economic interpretation and headline triage;
-4. if reporting is in scope, build the note brief;
-5. only then draft the note and build figures.
+- **Class A** — estimand, identification, sample boundary, baseline, main output, benchmark treatment, or note scope when reporting is live. Ask before resolving any Class A choice, any destructive overwrite, or any new empirical branch. In an autonomous parent run, return an unresolved Class A choice to the parent; do not mark it provisional and continue silently.
+- **Class B** — a specification or inference choice within the allowed hierarchy. Choose from the plan or repo conventions, log it, and note credible alternatives worth stress-testing.
+- **Class C** — a low-stakes implementation detail. Choose directly; log only when the audit trail benefits.
 
-Do not let the note become the place where the analysis is first figured out.
-
-## Non-negotiables
-
-- Keep the baseline, estimand, or descriptive object explicit before comparing results or writing claims.
-- Distinguish outputs to build now, outputs kept for support, and outputs deliberately deferred.
-- Treat missing raw or restricted data as a mode change, not as a minor caveat.
-- When code changes the main output family, update the corresponding specification, manifest, and checks in the same unit of work.
-- When code changes sample construction, missingness, grouping, denominator, weighting, or timing rules, refresh the corresponding audit before closing.
-- When the plan provides stable labels, use those labels in execution notes, closeout, review bundle, and issue checkpoint comments.
-- When work is issue-linked, update or draft issue comments only when the user requested or approved it.
-- Use one writer per mutable empirical output family unless isolated output roots or worktrees are explicit. Mutable families include derived datasets, tables, figures, logs, model-spec ledgers, note drafts, review bundles, output manifests, and output specifications.
-- Do not start a reader-facing note until the interpretation brief exists.
-- If reporting is in scope, do not start drafting until the note brief exists.
-- Keep the execution note and the reader-facing note separate.
-- Do not leak workflow nouns or absolute paths into note, caption, or figure surfaces.
-
-## Execution modes
-
-Every non-trivial run must be classified before major edits or reruns:
-
-`structure-only`
-- required raw or restricted inputs are absent, inaccessible, stale, or intentionally not being rerun;
-- allowed work includes code edits, manifests, checks, specifications, syntax checks, static validation, interpretation of already-existing outputs, note rewriting from defended outputs, and bundle preparation;
-- forbidden claim: that the main empirical outputs were regenerated now.
-
-`full empirical rerun`
-- required inputs are present, usable, and the rerun is authorised;
-- allowed work includes the full code and empirical path, including regenerated outputs that the plan treats as current.
-
-`full computational run`
-- required model, simulation, calibration, numerical, or research-tool inputs are present and the run is authorised;
-- allowed work includes the full computational path, including refreshed model objects, diagnostics, benchmarks, or generated outputs that the plan treats as current;
-- required checks should match the computational object rather than forcing empirical-rerun language.
-
-If the task is note-only or bundle-only and does not regenerate outputs, keep it in `structure-only` and say clearly that existing outputs were interpreted or repackaged rather than rerun.
-
-If the mode is `structure-only`, closeout must name the missing inputs or the exact reason the rerun stayed out of scope.
-
-## Ask rather than guess
-
-Use `AskUserQuestion` when the next step could materially change:
-- the baseline, estimand, or main output;
-- benchmark treatment;
-- whether the run should remain `structure-only` or become a `full empirical rerun` or `full computational run`;
-- whether a destructive overwrite is acceptable;
-- whether a new empirical branch should be opened;
-- whether the task really includes a reader-facing note or figures; or
-- whether a surprising finding deserves deeper follow-up or GPT Pro escalation.
-
-Prefer one short question with a recommended default.
-
-If `AskUserQuestion` is unavailable, ask concise numbered choices in chat, name the recommended conservative default, and wait for the user's answer for Class A choices.
-
-## Choice classes
-
-`Class A`
-- estimand-defining;
-- identification-defining;
-- sample-boundary;
-- baseline-defining;
-- main-output choice;
-- benchmark-treatment choice; or
-- note-scope-defining choice when reporting is live.
-
-Action: ask if unresolved. If forced to proceed, mark the choice as provisional and high-priority in the choice register.
-
-`Class B`
-- important specification or inference choice within the allowed hierarchy.
-
-Action: choose using the plan or repo conventions, log it, and note credible alternatives worth stress testing.
-
-`Class C`
-- low-stakes implementation detail.
-
-Action: choose directly and log only when the audit trail benefits.
-
-## Plan-derived task tracking
-
-For non-trivial work, create and maintain a task list using `update_plan` or the platform's equivalent after Phase 0 and before major edits or reruns.
-
-Derive tasks from the actual work surface:
-- saved-plan stages, work units, labels, and stop conditions;
-- the user's concrete request when no saved plan exists;
-- required inputs, output families, report inputs, and review surfaces;
-- verification needs from the execution mode and research object; and
-- interpretation, note, bundle, or issue-update obligations when they are in scope.
-
-Do not impose a fixed universal checklist. A baseline rerun, output inspection, note rewrite, and bundle cleanup should produce different task lists. For trivial one-off work, a formal task list may be skipped, but the closeout must still state what was checked, what changed, and what remains uncertain.
-
-Keep task statuses current as work progresses. Preserve plan labels when present, and add new tasks only when they are necessary to complete the authorised scope or to record a blocker/follow-up.
+Log Class A/B choices as rows in `choice_register.md` using the template in `references/execution_reference.md`.
 
 ## Workflow
 
-### Phase 0: Ingest the work surface
-
-Read the plan when present, then read the current workflow note and current authority files.
-
-If a saved plan is present, treat it as a decision artifact, not a progress log. Read enough of it to understand scope, labels, stop conditions, review route, and non-goals. Do not rewrite the plan body to track execution progress. If reality diverges from the plan, record the divergence in the task tracker, working notes, closeout, review bundle, or a follow-up plan recommendation.
-
-Identify:
-- objective;
-- project-backbone document, if named;
-- GitHub issue link or issue number, if named;
-- stable plan labels for decisions, outputs, and work units;
-- research question and estimand or descriptive object;
-- baseline;
-- current choice register;
-- live object versus benchmark block;
-- outputs in scope;
-- code role when code is in scope;
-- whether reporting is in scope;
-- whether a review bundle already exists; and
-- which inputs are required for a real rerun.
-
-If reporting is in scope, also identify:
-- note type;
-- intended reader;
-- finished note format and render target;
-- whether figures are required;
-- whether there is an existing note to revise; and
-- which existing artefacts are for support only and should not govern the note.
-
-If no plan exists and the task is not trivial, write a short inline execution outline before editing anything.
-
-If a plan names a project backbone such as `PROJECT_BRIEF.md`, read only the sections needed for the current work. Do not expand `AGENTS.md` or `README.md` into a research plan.
-
-If a GitHub issue is named, treat it as coordination context:
-- read it when `gh` or the GitHub connector is available;
-- extract objective, done-when condition, linked branches or worktrees, and follow-up links;
-- do not treat issue comments as a substitute for outputs, checks, or plans; and
-- record whether issue updates are requested, approved, or out of scope.
-
-### Phase 1: Lock the execution mode and input gate
-
-Before major edits or reruns:
-1. name the exact required inputs by file name, pattern, manifest, or known artefact signature;
-2. verify that those actual inputs are present and usable;
-3. classify the run as `structure-only`, `full empirical rerun`, or `full computational run`; and
-4. record the result in the execution outline or working notes.
-
-A directory such as `raw/` is never enough proof by itself.
-
-Before promoting a run from `structure-only` to `full empirical rerun`, re-check:
-- actual files and access conditions;
-- rerun scope and authorised workstream;
-- which outputs are stale or inherited versus which will be regenerated now;
-- whether the active output specification still matches the intended run; and
-- the stable entrypoint that will regenerate the intended surface.
-
-Before promoting a run from `structure-only` to `full computational run`, re-check:
-- actual model, calibration, simulation, or numerical inputs;
-- authorised computational scope;
-- which model objects, diagnostics, benchmarks, or outputs are stale or inherited versus refreshed now;
-- whether the active computational object still matches the intended research question; and
-- the stable entrypoint that will regenerate the intended surface.
-
-### Phase 2: Set execution posture
-
-Default posture:
-- keep one blocking writer on mutable files;
-- use deterministic entrypoints where possible;
-- keep notebook state from becoming the only record of the analytical object; and
-- use small read-heavy sub-agents only when they make the live evidence cleaner.
-
-Use sub-agents for evidence collection, not for parallel writes.
-
-For empirical branches and worktrees:
-- record the current branch or worktree when it matters for later recovery;
-- do not mix unrelated empirical lanes in the same closeout;
-- when output folders are mutable, prefer one active writer unless the plan explicitly creates isolated output roots;
-- separate newly refreshed outputs from inherited or inspected-only outputs.
-
-### Phase 3: Stage 1 — code execution and run checks
-
-For each code unit:
-1. mark the unit in progress using the plan label when one exists;
-2. read the relevant files and artefacts together;
-3. implement the smallest authorised code change;
-4. use stable entrypoints where possible;
-5. record what actually ran and which outputs are newly generated versus pre-existing; and
-6. run the unit's verification before moving on.
-
-Mandatory checks inside Stage 1:
-- research-code-quality floor whenever code is written or changed: descriptive names, visible entrypoints, named object-defining parameters, no stale debug/test fragments in tracked research code, and separation of analytical logic from formatting when practical;
-- object-defining assertions or equivalents for row counts, keys, merge cardinality, denominators, weights, dimensions, convergence, residuals, accounting identities, or other invariants relevant to the task;
-- helper-behaviour checks whenever a helper or rule directly defines probabilities, bins, sample keys, denominator rules, matching rules, timing rules, or any other object-defining parameter;
-- output-specification-first checks whenever the main output family changes;
-- model-spec-ledger refreshes whenever realised estimates or model-based descriptives are in scope and the realised model surface changed materially.
-
-For `full computational run`, also use checks appropriate to the computational object, such as dimensions, convergence, residuals, feasibility, mass conservation, market clearing, deterministic simulation checks, small transparent benchmark cases, or comparison to a known baseline or analytical limit.
-
-Stage 1 close condition:
-- code changes were made or deliberately skipped with reason;
-- execution mode is still correct; and
-- changed output families have current specification and checks.
-
-### Phase 4: Stage 2 — output inspection and empirical audit
+For non-trivial work, keep a task list (the platform's task tool) derived from the actual work surface — plan stages, required inputs, output families, verification needs, and any interpretation, note, bundle, or issue obligations — not a fixed universal checklist.
 
-Read the realised outputs, not just the scripts that made them.
+### Stage 0 — Ingest the work surface
 
-Inspect, when relevant:
-- sample accounting;
-- merge and key diagnostics;
-- missingness and support diagnostics;
-- weighting, grouping, and denominator checks;
-- canonical tables and figures for the main object; and
-- benchmark diagnostics when the task is benchmark-facing.
-
-Whenever sample formation, overlap, weighting, grouping, denominator, or support restrictions matter, make the realised sample legible before moving to interpretation.
-
-If a diagnostic claim may later enter the note, organise the supporting audit in this order:
-1. total impact;
-2. composition of affected cases; and
-3. selection consequence for the final analytical sample or comparison.
-
-Stage 2 close condition:
-- realised outputs were inspected;
-- the main audit surfaces exist or were refreshed; and
-- candidate report inputs are separated from backend diagnostics.
-
-### Phase 4b: Analysis surface simplification before interpretation and review
-
-Before interpretation, note writing, review bundle preparation, or closeout, simplify the analysis surface without deleting evidence.
-
-Classify relevant outputs and artefacts as:
-- `refreshed`: regenerated in this run;
-- `inherited`: produced earlier and still intentionally used;
-- `inspected-only`: read or interpreted in this run but not regenerated;
-- `stale`: likely superseded, no longer current, or inconsistent with the active object;
-- `support-only`: useful diagnostic or backend evidence, but not a report input;
-- `report-input`: candidate table, figure, note excerpt, or bundle surface for reader-facing use.
-
-Check for:
-- duplicate execution paths;
-- redundant diagnostics;
-- unclear figure or table naming;
-- old benchmark or comparison objects drifting into the live object;
-- output folders that mix refreshed and inherited objects without a manifest note.
-
-Do not delete, overwrite, or hide stale evidence without explicit approval. Mark it, separate it from report inputs, or recommend a cleanup follow-up.
-
-Surface simplification close condition:
-- report inputs are separated from support-only diagnostics;
-- stale or inherited outputs are named rather than silently trusted;
-- no destructive cleanup was performed without approval.
-
-### Phase 5: Stage 3 — economic interpretation and headline triage
-
-Stop after Stage 2 and answer explicitly:
-- what is the main finding;
-- what actually matters out of all the things in the data;
-- what should be visualised; and
-- what follow-up checks or deeper investigation are immediately implied.
-
-Build `interpretation_brief.md` using the template in `references/execution_reference.md`.
-
-Tag candidate claims as one of:
-- `observed fact`;
-- `diagnostic explanation`;
-- `limitation`; or
-- `open question`.
-
-If a reader-facing note is required, build `note_brief.md` after the interpretation brief and before any drafting. Use the template in `references/execution_reference.md`.
-
-Rules:
-- build the note brief from the interpretation brief plus defended report inputs;
-- do not build it from raw diagnostics alone;
-- do not let the execution note or file names determine the narrative; and
-- if the note is a rewrite, diagnose the old note first and then update the brief before rewriting.
-
-If execution reveals a genuinely surprising finding, write `surprise_memo.md` using the template in `references/execution_reference.md` and ask whether the user wants GPT Pro escalation when the finding is materially important, not explained by a quick definitional or sample check, and likely to benefit from a deeper second opinion.
-
-Stage 3 close condition:
-- the interpretation brief exists;
-- the note brief exists when reporting is in scope;
-- the main finding and figure priority are explicit; and
-- the main-text versus appendix split is explicit.
-
-### Phase 6: Stage 4 — note writing and figures
-
-Only start this stage after Stage 3 is complete.
-
-If a reader-facing note is in scope:
-- use `econ-note-writing` as the main drafting and rewriting layer;
-- provide `note_brief.md`, `interpretation_brief.md`, the output-consistency map, tagged source material, the existing note when revising, and figure notes when relevant; and
-- revise from the brief rather than line-editing machine language sentence by sentence.
-
-Format rule:
-- if the repo already has a viable TeX/PDF note path, the finished note
-  deliverable is `.tex` plus rendered `.pdf` unless the user explicitly asked
-  for another format;
-- Markdown can be a drafting scaffold, but not the finished note in that case;
-- if figures are in scope and already exist, insert them rather than leaving
-  placeholders.
-
-Use `writing-clear-prose` only for non-note human-facing documents or for local sentence-level polish after the note structure and register are already correct.
-
-When note, memo, table, or figure claims are in scope, keep an output-consistency map current using the minimum structure in `references/execution_reference.md`.
-
-Before closing a note or figure pack, run:
-- the text-figure consistency test; and
-- the reader-facing note integrity test in `econ-note-writing`.
-
-Stage 4 close condition:
-- note structure is economist-facing;
-- figure order reflects the interpretation brief and note brief;
-- the output-consistency map is current when note-facing claims are in scope; and
-- report paths are portable; and
-- when the agreed note format is `tex-plus-pdf`, the `.tex` and `.pdf`
-  artefacts both exist or the blocker is named explicitly.
-
-### Phase 7: Verification ladder
-
-Run the relevant checks from `references/execution_reference.md`.
-
-At minimum, cover the levels that apply:
-- input integrity;
-- code and helper integrity;
-- research-code-quality floor;
-- transformation integrity;
-- computational-object integrity;
-- realised-sample audit;
-- grouping and denominator integrity;
-- object comparability;
-- output-specification integrity;
-- text-figure and report-build integrity;
-- interpretation discipline;
-- reader-facing note integrity; and
-- reproducibility rerun status.
-
-For hybrid work, add targeted software checks such as assertions, named tests, lint, interface checks, and manifest synchronisation where those surfaces matter for analytical trust. Scale named tests by code role: local invariants may use inline assertions, while collaborator-facing, replication-facing, library-like, or recurring-bug surfaces should use named tests.
-
-### Phase 8: Review bundle and closeout
-
-If interpretation, adjudication, or external review is in scope, build or refresh a compact bundle using the minimum structure in `references/execution_reference.md`.
-
-Default review target:
-- empirical or hybrid work -> `econ-review`;
-- pure software -> the current Compound Engineering review skill.
-
-Review-tier routing:
-- claim-bearing empirical changes should route to at least `econ-review tier:standard`;
-- coauthor, supervisor, paper, appendix, replication, or public-facing promotion should route to `econ-review tier:promotion`;
-- changed sample construction, estimand, specification, weighting, clustering, inference, treatment timing, inclusion/exclusion rules, or headline output should not route to `tier:quick`.
-
-Before closing, write a compact evidence pulse:
-- what changed in the research object, sample, outputs, note surface, or review surface;
-- what became more trustworthy;
-- what became weaker, unresolved, or newly risky;
-- which outputs were refreshed, inherited, inspected-only, or scaffolded;
-- which plan labels, issue numbers, branch/worktree names, or output files the next session should use; and
-- what should be planned next.
-
-Route durable lessons to the lightest appropriate surface:
-- issue comment when the work was issue-linked and the user approved an update;
-- project backbone when the paper/data-project state changed, but draft substantive updates in the closeout and apply them only when the user requested or approved the update;
-- README only when the repo dictionary changed;
-- dated follow-up plan when the next round needs planning; and
-- closeout only when the lesson is task-local.
-
-Old memos, exploratory reports, GPT bundles, and project briefs are not durable update targets by default. Treat them as leads unless they were explicitly reviewed or accepted for a defined purpose, and trace any claim back to the underlying source, data output, script, or review finding before relying on it.
-
-Add a reusable lesson checkpoint before the recommended next command:
-- `Reusable lesson checkpoint: none` when the run did not reveal a reusable lesson;
-- `Reusable lesson checkpoint: closeout-only` when the lesson is task-local and should stay in the closeout;
-- `Reusable lesson checkpoint: econ-compound candidate` when the run revealed a reusable economics research lesson that future `econ-plan`, `econ-work`, or `econ-review` should consult.
-
-If the checkpoint is `none`, keep it to one compact line and do not turn the closeout into a reflection exercise.
-
-When the checkpoint is `econ-compound candidate`, name the lesson in one sentence and recommend `econ-compound` with the relevant plan, review, output, note, source bundle, or closeout path. Do not silently write durable learning notes from `econ-work` unless the user explicitly asked for learning capture or the larger autonomous run explicitly includes compounding.
-
-Use the issue checkpoint comment and closeout formats in `references/execution_reference.md`.
-
-Completion gate:
-- this run is not complete until the closeout states objective, domain mode, execution mode, code role when code is in scope, furthest stage reached, output status, analysis-surface simplification status, verification performed, interpretation/note status, review-bundle or review-route status, evidence pulse, reusable lesson checkpoint, blockers or residual risks, and recommended next command;
-- a script run, a generated file, or one passing check is not enough to declare completion;
-- for trivial one-off work, use a compact closeout, but still state execution mode, what was checked or changed, output status, remaining risk, and next step.
+Read the plan when present (as a decision artifact, not a progress log), the current workflow note, and only the authority-file sections the work needs; do not expand a project backbone or README into a research plan. Identify:
+
+- objective; project backbone and GitHub issue when named; stable plan labels;
+- research question and estimand or descriptive object; baseline; current choice register;
+- the live object vs any benchmark block; outputs in scope; code role when code is in scope;
+- whether reporting is in scope, and if so the reader, finished note format, and whether figures are required;
+- which inputs a real rerun requires, and whether a review bundle already exists.
+
+*Close when:* the objective, baseline, research object, feasible run boundary, and review route are named, and a task list exists for non-trivial work.
+
+### Stage 1 — Code execution and run checks
+
+Implement the smallest authorised change per code unit, using stable entrypoints, and record what actually ran and which outputs are newly generated vs pre-existing. Run the unit's verification before moving on. When writing or editing research code, the taste rules and worked examples live in `references/research-code-quality.md`; when the language is R, also consult `references/r-defaults.md` for package and tool defaults. Mandatory inside Stage 1:
+
+- the research-code-quality floor: descriptive names that put the economic object before the plumbing, visible entrypoints, named object-defining parameters, no stale debug or test fragments, analytical logic separated from formatting when practical;
+- input checking matched to provenance (the Provenance Ladder in `references/research-code-quality.md`): validate external/untrusted inputs properly; give self-authored workbooks and configs one thin boundary check, never repeated defensive parsing; check generated intermediates on the economic object, not every column; no defensive scaffolding, option flags, or fallback routes in internal helpers for callers that do not exist;
+- object-defining assertions for row counts, keys, merge cardinality, denominators, weights, dimensions, convergence, residuals, or identities;
+- helper-behaviour checks when a helper defines probabilities, bins, sample keys, denominators, matching, or timing;
+- output-specification-first checks when the main output family changes, and a model-spec-ledger refresh when the realised model surface changed;
+- for computational work, checks matched to the object (dimensions, convergence, residuals, feasibility, conservation, market clearing, deterministic simulation, small transparent benchmarks).
+
+*Close when:* code changed or was skipped with a reason, what ran is recorded, and changed output families have current specifications and checks.
+
+### Stage 2 — Output inspection and empirical audit
+
+Read the realised outputs, not just the scripts that made them: sample accounting, merge and key diagnostics, missingness and support, weighting, grouping, and denominator, canonical tables and figures, and benchmark diagnostics when benchmark-facing. Make the realised sample legible before interpreting. For a diagnostic that may enter the note, organise the audit as total impact → composition of affected cases → selection consequence. Then simplify the surface without deleting evidence: tag every output with the two orthogonal tags in `references/execution_reference.md` ("Output provenance status vocabulary") — provenance status (`refreshed`/`inherited`/`inspected-only`/`scaffolded`/`stale`) and role tag (`support-only`/`report-input`).
+
+*Close when:* outputs were inspected, the audit surfaces exist or were refreshed, report inputs are separated from support-only diagnostics, and stale or inherited outputs are named rather than silently trusted.
+
+### Stage 3 — Economic interpretation and headline triage
+
+Stop and answer: the main finding; what actually matters in the data; what to visualise; what follow-up is immediately implied. Build `interpretation_brief.md` (template in the reference), tagging claims as observed fact / diagnostic explanation / limitation / open question. When reporting is in scope, build `note_brief.md` after it, as a delta on the interpretation brief, from defended report inputs, never from raw diagnostics; if revising an existing note, diagnose the old note first.
+
+If the run turns up a genuinely surprising finding, write a surprise memo (HTML via `econ-html-memo` when installed, plain standalone HTML under the same content discipline otherwise). Keep it as a normal local user-facing output: state the minimal validation already completed, plausible explanations, decisive missing evidence, and the research decision or next local check needed to continue.
+
+*Close when:* the interpretation brief exists, the note brief exists when reporting is in scope, and the main finding, figure priority, and main-text-vs-appendix split are explicit.
+
+### Stage 4 — Note writing and figures
+
+Only after Stage 3. Draft from the note brief, interpretation brief, output-consistency map, tagged sources, and the existing note when revising — revising from the brief, not line-editing machine sentences. Keep the output-consistency map current (minimum structure in the reference) whenever note, memo, table, or figure claims are in scope. Standalone researcher-facing notes and memos default to HTML through `econ-html-memo` when installed; use plain HTML under the same discipline otherwise. Produce TeX and PDF only when the user explicitly requests those formats or explicitly asks for integration into a paper. Markdown is an agent-facing drafting scaffold. Insert existing figures rather than leaving placeholders. Before closing, run the text-figure consistency test and the reader-facing note gate defined in `econ-review` Stage 6.
+
+*Close when:* the note is economist-facing, figure order follows the briefs, the consistency map is current, report paths are portable, and the explicitly agreed output format exists or the blocker is named.
+
+### Verify and close
+
+Run the verification ladder in `references/execution_reference.md`, covering only the rungs that apply; scale named tests by code role. Build or refresh the review bundle (minimum structure in the reference) only when the closeout routes to `econ-review` on a bundle or mixed surface, or the work goes to a coauthor or external reviewer — otherwise skip it. Default review target: empirical or hybrid work → `econ-review` (apply its escalation triggers; when in doubt, the stricter tier); pure software → the Compound Engineering review skill.
+
+Fill the closeout in `references/execution_reference.md`; the run is complete only when it is filled — a script run, a generated file, or one passing check is not completion. Route any durable lesson to the lightest surface (issue comment when issue-linked and approved; a drafted project-backbone update applied only on approval; a dated follow-up plan; or closeout-only). Old memos, exploratory reports, and externally supplied packages are leads, not authority, until traced to the underlying source, output, script, or review finding.
+
+## Internal return to `econ-lfg`
+
+An `econ-lfg` parent may supply the private caller contract `caller_contract: econ-lfg/v1`. This is orchestration metadata, not a user-facing option. Return the inline `econ-work-for-caller/v1` envelope defined in `references/execution_reference.md`. Do not deliver the final user closeout or perform Git actions; the parent owns the next stage and final handoff.
 
 ## Hard stops
 
-- Do not skip from code execution straight to note writing.
-- Do not treat generated outputs as understood until they were inspected.
-- Do not write the note directly from raw diagnostics without an interpretation brief and, when reporting is in scope, a note brief.
-- Do not declare success on the basis of one passing run alone.
-- Do not leave the baseline, estimand, or execution mode implicit.
-- Do not leave the code role implicit when code is being changed or reviewed.
-- Do not leave scratch debug prints, temporary plots, stale commented-out code, or ad hoc test fragments in tracked research code.
-- Do not treat folder existence as proof that required data are present.
-- Do not change the output surface without updating the corresponding specification, manifest, and checks in the same unit.
-- Do not let pre-existing outputs be mistaken for rerun outputs after a `structure-only` pass.
-- Do not let the execution note stand in for the reader-facing note.
-- Do not let multiple writers mutate the same empirical output family unless isolated roots or worktrees are explicit.
-- Do not delete, overwrite, or hide stale empirical evidence without explicit approval.
-- Do not silently update `PROJECT_BRIEF.md` or another project-backbone document with substantive interpretation, claim-budget, baseline, or bottleneck changes.
+Each is a named failure this workflow exists to prevent; the stage close-conditions above enforce them.
+
+- Do not write the note or memo before the realised outputs are inspected and the interpretation brief exists (and the note brief when reporting is live).
+- Do not let old or inherited outputs be presented as freshly regenerated.
+- Do not stage, commit, or push unless the user explicitly requests that Git action.
 - Do not treat GitHub issue text as analytical evidence without checking the actual plan, outputs, code, or bundle.
-- Do not write durable research-state updates into `AGENTS.md` or `README.md` unless the change is truly an agent rule or repo dictionary change.
+- Do not silently change the baseline, sample, estimand, benchmark treatment, or note scope — those are Class A; ask first.
+- Do not write a durable learning or project-state update (including `PROJECT_BRIEF.md`, `CLAUDE.md`, or `README.md`) without its evidence paths and scope, or without approval for a substantive backbone change.
+- Do not delete, overwrite, or hide stale empirical evidence without explicit approval.
