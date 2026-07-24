@@ -155,6 +155,17 @@ python install_claude.py --claude-home <temporary-claude-home>
 python install_claude.py --claude-home <temporary-claude-home> --check
 ```
 
+Static checks do not replace the agent-native release smoke:
+
+```text
+python tests/run_agent_native_smoke.py --host codex --checkout .
+```
+
+That command requires a trusted host adapter able to attest the effective
+read-only child policy. Without one it returns `not-run` and remains a
+release-blocking result; see
+[the smoke contract](docs/testing/agent-native-review-smoke.md).
+
 Maintainers regenerate Claude output only from canonical source:
 
 ```text

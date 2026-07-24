@@ -173,10 +173,25 @@ python install_claude.py --claude-home <temporary-claude-home> --check
 
 These commands do not touch a live installation.
 
+The separate agent-native release smoke is:
+
+```text
+python tests/run_agent_native_smoke.py --host codex --checkout .
+```
+
+It requires a trusted host adapter and validates four real runtime scenarios,
+the installed personas and schemas, host-level safety attestation, and
+byte-identical fixture state. An unavailable adapter returns the release-
+blocking result `not-run`; static or synthetic tests cannot convert it into a
+pass. See
+[`docs/testing/agent-native-review-smoke.md`](../testing/agent-native-review-smoke.md)
+for the adapter and receipt contract.
+
 ## Release gate
 
 The source is ready for review and may be merged independently. Live forced
-installation remains blocked until the separately owned SSJ adapter:
+installation remains blocked until the agent-native smoke passes and the
+separately owned SSJ adapter:
 
 1. emits `ssj-model-validity` as `econ-domain-assessment/v1`;
 2. stops requesting a retired reviewer identity; and
