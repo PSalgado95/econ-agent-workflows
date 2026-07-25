@@ -1,0 +1,18 @@
+{
+  "case": "process-failure",
+  "selected_role": "inference",
+  "run_id": "fixture-run",
+  "evidence_manifest": {
+    "E1": "results/table.tex"
+  },
+  "process": {
+    "status": "failed",
+    "reason": "child-process-failed"
+  },
+  "raw_output": null,
+  "expected": {
+    "terminal_state": "failed",
+    "reason": "child-process-failed",
+    "salvaged": false
+  }
+}

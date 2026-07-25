@@ -708,7 +708,7 @@ def build_prompt(
 
     return "\n".join(
         [
-            "You are reviewing a curated handoff package prepared by Codex.",
+            "You are reviewing a curated handoff package prepared by Claude Code.",
             "",
             "## Goal",
             "",

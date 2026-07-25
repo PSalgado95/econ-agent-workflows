@@ -1,0 +1,17 @@
+{
+  "case": "malformed",
+  "selected_role": "inference",
+  "run_id": "fixture-run",
+  "evidence_manifest": {
+    "E1": "results/table.tex"
+  },
+  "process": {
+    "status": "completed"
+  },
+  "raw_output": "{\"schema_version\":\"econ-reviewer-output/v1\",\"run_id\":\"fixture-run\"",
+  "expected": {
+    "terminal_state": "invalid",
+    "reason": "malformed-json",
+    "salvaged": false
+  }
+}

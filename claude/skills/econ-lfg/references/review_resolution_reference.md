@@ -1,23 +1,32 @@
-<!-- GENERATED FROM CODEX SOURCE - DO NOT EDIT. Edit the Codex sources (skills/, .codex/agents/, references/) and run build_claude.py. -->
+<!-- GENERATED FROM CODEX SOURCE - DO NOT EDIT. Edit the Codex sources and run build_claude.py. -->
 
 # Econ LFG Review Resolution Reference
 
-Use this reference during `econ-lfg` Stage 4 after `econ-review` returns retained findings. Review findings are evidence for the loop; they are not orders to change the research object.
+Use this reference during `econ-lfg` Stage 4 after `econ-review` returns retained
+findings or diagnostic gaps. Review outputs are evidence for the loop; they are
+not orders to change the research object.
 
 ## Classification Inputs
 
 For every retained finding, inspect these fields before choosing a route:
 
 - finding ID;
-- fix class: `safe automatic`, `gated`, `manual`, or `advisory`;
+- fix class: `safe-automatic`, `gated`, `manual`, or `advisory`;
 - trust effect or promotion effect;
 - issue origin;
 - affected labels, such as plan labels, output IDs, bundle IDs, branch/worktree names, or evidence IDs;
-- evidence path and whether the evidence path is strong enough to act on;
+- evidence locations and whether they are strong enough to act on;
 - missing diagnostic surfaces, if any;
 - whether the finding conflicts with a researcher-anchored, plan-backed, agent-owned, or execution-discovered choice.
 
 If a finding has no evidence path, do not act on it unless the issue is a visible bundle-metadata gap. Treat unsupported findings as degraded or advisory and record that limitation in the closeout.
+
+For every diagnostic gap, inspect its parent-owned gap ID, trust effect, issue
+origin, affected labels, evidence references, recommended action, and authority
+source. Apply the same route tokens. A plan-required missing diagnostic with
+available inputs may be `fix-now`; a gap that changes the research object is
+`ask-user`; a gap outside the requested output may be deferred only with its
+`G<n>` ID and rationale preserved.
 
 ## Canonical Route Tokens
 
@@ -25,24 +34,24 @@ Use these route tokens exactly in the review-resolution closeout:
 
 | Route token | Use when | Typical examples |
 | --- | --- | --- |
-| `fix-now` | The fix is mechanical, safe automatic, or missing work already required by the saved plan, and it does not touch the Pedro-level trigger list. | Path repair, stale cross-reference, missing metadata, stale bundle manifest, validator rerun, missing diagnostic already required by the plan. |
+| `fix-now` | The fix is `safe-automatic`, mechanical, or missing work already required by the saved plan, and it does not touch the researcher-level trigger list. | Path repair, stale cross-reference, missing metadata, stale bundle manifest, validator rerun, missing diagnostic already required by the plan. |
 | `revise-plan-choice` | Review evidence shows an agent-owned plan or work default should change, and the better path remains inside the initial task intent. | Diagnostic order, figure priority, note framing, implementation route, wording that narrows a claim to accepted evidence. |
-| `ask-user` | The fix touches the Pedro-level trigger list or would override a researcher-anchored choice. | Baseline, sample, estimand, identification, benchmark treatment, output promotion, claim budget, substantive interpretation. |
+| `ask-user` | The fix touches the researcher-level trigger list or would override a researcher-anchored choice. | Baseline, sample, estimand, identification, benchmark treatment, output promotion, claim budget, substantive interpretation. |
 | `defer-with-rationale` | The finding is legitimate but outside the prompt, not needed for trust in the requested output, or better handled as follow-up work. | Optional robustness extension, future package audit, non-blocking broader cleanup. |
 | `advisory-only` | The finding is useful context but does not affect trust, promotion, or the requested output. | FYI note, non-blocking ergonomics suggestion, future wording improvement. |
 
 ## Mapping From econ-review Fix Classes
 
-- `safe automatic` usually maps to `fix-now`, unless the authority test shows the edit would change a Pedro-level choice.
+- `safe-automatic` usually maps to `fix-now`, unless the authority test shows the edit would change a researcher-level choice.
 - `gated` maps to `ask-user` when it changes what gets promoted, shown, emphasized, or treated as the main output. If it is outside the requested output, map it to `defer-with-rationale`.
-- `manual` usually maps to `ask-user`. It may map to `fix-now` only when the missing work is already required by the saved plan, the needed inputs and rerun authority are present, and no Pedro-level trigger is touched.
+- `manual` usually maps to `ask-user`. It may map to `fix-now` only when the missing work is already required by the saved plan, the needed inputs and rerun authority are present, and no researcher-level trigger is touched.
 - `advisory` maps to `advisory-only` or `defer-with-rationale`.
 
 Choose the more conservative route when fix class, trust effect, and authority source disagree.
 
-## What Claude Code May Fix Without Asking Pedro
+## What the Agent May Fix Without Asking
 
-Claude Code may fix directly when the finding stays inside the saved plan, the initial prompt, and the current authority hierarchy:
+The agent may fix directly when the finding stays inside the saved plan, the initial prompt, and the current authority hierarchy:
 
 - path repairs;
 - stale cross-references;
@@ -55,11 +64,13 @@ Claude Code may fix directly when the finding stays inside the saved plan, the i
 - missing diagnostic surfaces already required by the saved plan, when the inputs and rerun authority are present;
 - agent-owned planning or work defaults, such as diagnostic order, figure priority, note framing, implementation route, or review-bundle organisation.
 
-Each direct fix must leave a compact trace: finding ID, evidence path, route token, fix performed, verification run, and targeted re-review surface.
+Each direct fix must leave a compact trace: `F<n>` or `G<n>` ID, prior evidence
+reference, route token, fix performed, changed path, verification run, and
+targeted re-review surface.
 
-## Pedro-Level Trigger List
+## Researcher-Level Trigger List
 
-Pause for Pedro when the finding or proposed fix would change any of these:
+Pause for the researcher when the finding or proposed fix would change any of these:
 
 - research question or decision problem;
 - estimand or descriptive target;
@@ -70,7 +81,7 @@ Pause for Pedro when the finding or proposed fix would change any of these:
 - estimator, inference, weighting, clustering, timing, horizon, or robustness hierarchy when it changes the research object;
 - main output family or output promotion;
 - note scope, claim budget, or substantive interpretation;
-- destructive overwrite, expensive rerun, access-sensitive action, or external handoff decision.
+- destructive overwrite, expensive rerun, access-sensitive action, or release/sharing decision.
 
 These are decision blockers even when the review finding is persuasive. A review finding can justify presenting the decision clearly; it cannot itself decide the economics.
 
@@ -78,7 +89,7 @@ When pausing, return the finding ID, evidence path, affected labels, recommended
 
 ## Decision Memo Protocol
 
-For any non-trivial `ask-user` blocker, write an economist-facing HTML decision memo before asking Pedro to decide.
+For any non-trivial `ask-user` blocker, write an economist-facing HTML decision memo before asking the researcher to decide.
 
 When the installed runtime provides them, prefer these skills:
 
@@ -98,11 +109,11 @@ The memo must say:
 
 - what decision arose;
 - which review findings, outputs, diagnostics, or evidence paths created the decision;
-- why the finding is a Pedro-level choice rather than an agent-owned cleanup;
+- why the finding is a researcher-level choice rather than an agent-owned cleanup;
 - what the agent recommends as the conservative path and why;
 - what changes under each plausible choice;
 - what stays unchanged under each choice;
-- what the agent will do next once Pedro decides;
+- what the agent will do next once the researcher decides;
 - the exact prompt or command needed to resume the `econ-lfg` loop.
 
 Output location:
@@ -115,15 +126,20 @@ For trivial one-question blockers with no evidence synthesis needed, the agent m
 
 ## Re-Review and Closeout
 
-After `fix-now` or `revise-plan-choice`, run targeted `econ-review` on the changed or previously problematic surface. Cite the fixed finding IDs, changed paths, changed output or bundle labels, and prior evidence paths.
+After `fix-now` or `revise-plan-choice`, run targeted `econ-review` on the
+changed or previously problematic surface. Supply non-duplicable outcome maps
+keyed by fixed finding and diagnostic-gap IDs, with prior evidence references;
+every `fixed` trace also names at least one changed path.
 
-Escalate from targeted to broader review only when the revision changes the baseline, sample, estimand, specification, inference, benchmark treatment, note argument, primary output family, or another Pedro-level research-object boundary.
+Escalate from targeted to broader review only when the revision changes the baseline, sample, estimand, specification, inference, benchmark treatment, note argument, primary output family, or another researcher-level research-object boundary.
 
 Repeat review resolution until:
 
-- no blocking or worth-fixing findings remain;
-- remaining findings are `defer-with-rationale` or `advisory-only`;
-- a Pedro-level decision blocks the loop;
+- no blocking or worth-fixing findings or diagnostic gaps remain;
+- remaining findings and gaps are `defer-with-rationale` or `advisory-only`;
+- a researcher-level decision blocks the loop;
 - external access or missing data prevents meaningful progress.
 
-The final closeout must list fixed finding IDs, deferred/advisory finding IDs, decision memo path if one was written, targeted re-review result, verification performed, remaining risk, and resume route if blocked.
+The final closeout must list fixed and deferred/advisory `F<n>` and `G<n>` IDs,
+decision memo path if one was written, targeted re-review result, verification
+performed, remaining risk, and resume route if blocked.

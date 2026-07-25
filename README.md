@@ -1,105 +1,245 @@
 # Econ Agent Workflows
 
-Agentic workflows for economists, inspired by [Compound Engineering](https://github.com/EveryInc/compound-engineering-plugin).
+Agentic workflows for economists, inspired by
+[Compound Engineering](https://github.com/EveryInc/compound-engineering-plugin).
 
-These skills adapt a plan -> work -> review -> revise -> compound loop to economic research. They help a coding agent turn a research task into a staged plan, run code and checks, inspect and interpret outputs, review the resulting evidence, revise in response to review findings, and save lessons that should carry into future projects.
+The package adapts a plan → work → review → revise → compound loop to economic
+research. It helps an agent preserve the research object, realised sample,
+evidence trail, interpretation boundary, and reader-facing deliverable while
+moving from an idea to reviewed work.
 
-This is still a beta. Most of the development so far has come from empirical work: data cleaning, sample construction, estimation, tables, figures, notes, review bundles, and reproducibility handoffs. The same loop should also adapt to more theory-based settings, including structural and theory-based work, calibration, simulation, etc.
+This is a beta. The workflows are strongest for empirical research—data
+construction, estimation, tables, figures, notes, review bundles, and
+reproducibility—but the same boundaries also apply to computational and
+theory-facing work.
 
-The skills were built and tested for Codex, but the loop is conceptually portable to Claude Code or any agent runtime that supports skills and subagents. The Codex-specific pieces are the install paths, local skill layout, and reviewer-agent configuration.
+## Public workflow
 
-## The Loop
+The seven core skills are:
 
-1. **Plan** the research task: who reads the output, what is being estimated or built, what evidence will exist, and how it will be reviewed.
-2. **Work** through it: run code, inspect outputs, interpret results, prepare notes, and close out while keeping those steps distinct.
-3. **Review** the result before trusting or promoting it: a plan, a set of outputs, a bundle, a note, a diff, or a mix.
-4. **Revise** fixable or agent-owned review findings before delivery, while pausing before overriding researcher-anchored choices.
-5. **Compound** a reusable lesson, but only when there is bounded evidence for it.
+- **`econ-brainstorm`** turns a vague research idea into a bounded scope memo.
+- **`econ-plan`** turns a clear task into a staged, reviewable research plan.
+- **`econ-work`** executes a plan or concrete request while separating code
+  changes, realised-output inspection, interpretation, reporting, and closeout.
+- **`econ-review`** performs one report-only review over plans, implementation,
+  empirical results, replication material, or a mixed evidence surface.
+- **`econ-debug`** diagnoses anomalous empirical or computational results
+  without silently changing the research object.
+- **`econ-lfg`** runs the bounded plan → work → review → revise loop and pauses
+  for researcher-level decisions.
+- **`econ-compound`** records a durable research lesson only when bounded
+  evidence supports it.
 
-## Core Skills
+The package also contains one auxiliary skill, **`gpt-pro-handoff`**. It
+activates only when the current user turn explicitly names the skill or
+unambiguously requests an external GPT Pro handoff package. Core workflows do
+not offer, recommend, prepare, or automatically route to a package. Reports,
+blockers, prior turns, imported packages, and generated next steps cannot
+activate it.
 
-- **`econ-plan`** turns a research or analysis-engineering task into a staged plan. It surfaces the material planning decisions, classifies the task family, and hands a four-stage execution path to `econ-work`.
-- **`econ-work`** executes from a saved plan or a clear request. It keeps code changes, output inspection, interpretation, note preparation, review-bundle preparation, and closeout separate.
-- **`econ-review`** reviews plans, outputs, bundles, notes, diffs, or mixed evidence surfaces. It audits the evidence and runs an economist review panel using the included reviewer agents.
-- **`econ-lfg`** runs the autonomous loop for bounded tasks: plan, work, review, revise fixable or agent-owned findings, write decision memos for researcher-level choices, targeted re-review, then deliver or pause.
-- **`econ-compound`** saves durable research lessons as bounded precedent, validating each note against its evidence paths, scope, status, and rules for staleness and supersession.
+## One economics review, internal lenses
 
-## Review Panel
+Users invoke `econ-review`; they do not choose or dispatch reviewers.
 
-`econ-review` is built around research-audit lenses. The review checks the main places where research workflows can go wrong: data provenance, sample and variable construction, specification choice, inference, robustness, output consistency, reproducibility, and research-code quality when code is part of the review surface. Different reviewer agents specialise in these questions, and the parent review skill assigns the relevant ones for the task. A data-cleaning review focuses on provenance, transformations, sample rules, and output consistency. A results review adds specification, estimation, inference, robustness, or dynamics checks when the estimates require them.
+The skill contains 15 compact, skill-local review lenses:
 
-The review panel also includes a code-quality evaluator for research code. It checks whether scripts, notebooks, model code, and helper functions are clear, testable, rerunnable, and appropriate for the role they play in the project. The standard is intentionally different for exploratory code, analysis pipelines, replication-facing code, and reusable research tools. It also covers performance and numerical-code concerns when they matter for the task. This part of the workflow draws in part on Matthew Rognlie's coding guide and his [fast-code-macro](https://github.com/mrognlie/fast-code-macro) materials.
+1. provenance;
+2. specification;
+3. transformation and sample;
+4. estimation practice;
+5. inference;
+6. output consistency;
+7. claim discipline;
+8. output perception;
+9. code quality;
+10. design;
+11. dynamics;
+12. robustness;
+13. software equivalence;
+14. reproducibility;
+15. bundle quality.
 
-Reviewer lenses live as custom agents under `.codex/agents/`, with shared rules in [references/reviewer-protocol.md](references/reviewer-protocol.md) and [references/research-code-quality.md](references/research-code-quality.md). If the agents are not installed or subagent tools are unavailable, `econ-review` reports that the panel did not fully run. Promotion-grade reviews stop or ask before continuing in a degraded mode.
+`econ-review` selects the applicable lenses automatically from the requested
+surface, depth, visible evidence, and promotion status. The list is a catalogue
+of internal perspectives, not 15 commands or user-facing products. Necessary
+lenses compose, and six is a cost target rather than a cap.
 
-### Cross-Language Validation
+Cross-language and custom-implementation checks are folds across these lenses,
+not separate reviewers. Cross-language work establishes object parity before
+numeric parity and selects software equivalence plus the sample and
+reproducibility lenses when those surfaces are material.
 
-The skills also support cross-language validation as a way to catch coding mistakes. The idea is to rebuild selected outputs independently in another language, most naturally R or Python, and sometimes Stata. Because the agent has to express the same sample, variables, transformations, fixed effects, and inference rules in a different software environment, it is less likely to repeat exactly the same coding error. The validation then compares coefficients, standard errors, diagnostics, and output files, classifying any discrepancy as an object mismatch, a software-convention difference, a tolerance-level numerical difference, or an unresolved problem.
+The review contracts live with the skill:
 
-Use `crosslang:plan` to prepare the validation handoff or `crosslang:audit` to check an existing validation against its manifest. It is off by default and is never triggered just because a repo contains more than one language.
+- `econ-review-request/v1` normalizes direct and nested requests;
+- `econ-reviewer-output/v1` constrains one lens contribution;
+- `econ-domain-assessment/v1` accepts supplemental domain evidence without
+  treating it as another reviewer;
+- `econ-review-report/v1` is the parent-owned final report.
 
-## Folder Structure
+The parent owns roster selection, child validation, stable finding IDs,
+synthesis, coverage, verdict, and the promotion gate. Coverage is immutable
+report evidence: missing, invalid, unavailable, failed, or timed-out required
+lenses degrade the report rather than being relabelled away. Promotion passes
+only with full coverage, an unchanged state canary, accepted required
+assessments, and no unresolved blocking finding.
+
+## Report-only and fail-closed
+
+`econ-review` never edits reviewed files, applies fixes, changes repository
+state, creates issues, or initiates another workflow.
+
+Reviewer children run only when the host attests the effective child policy
+after configuration precedence and live overrides:
+
+- the workspace is hard read-only;
+- approval or elevation cannot be granted;
+- side-effecting connector, browser, computer-control, messaging, and similar
+  tools are unavailable;
+- the child cannot broaden the policy.
+
+A prompt promise, configuration declaration, child self-report, or clean
+post-run canary is not attestation. If the host cannot prove the preventive
+boundary, the review fails closed: no child is dispatched, selected lenses are
+unavailable, coverage is `not-run`, and promotion is blocked.
+
+## Source layout
 
 ```text
-.codex/
-  agents/
-    econ-*-reviewer.toml      # Codex reviewer agents (source of truth)
-references/
-  reviewer-protocol.md        # shared reviewer protocol (source of truth)
-  research-code-quality.md    # shared research-code-quality standard
-skills/                       # skills (source of truth)
+skills/                         # canonical skill source
+  econ-brainstorm/
   econ-plan/
   econ-work/
   econ-review/
+    references/
+      personas/                 # 15 internal review lenses
+      *-schema.json             # four versioned contracts
+  econ-debug/
   econ-lfg/
   econ-compound/
   auxiliary/
     gpt-pro-handoff/
-claude/                       # generated Claude Code package (do not hand-edit)
-  skills/  commands/  agents/  references/
-install.py                    # Codex installer
-build_claude.py               # regenerates claude/ from the Codex sources
-install_claude.py             # installs the generated claude/ package
-LICENSE
-README.md
+tests/                          # contract and migration tests
+claude/
+  skills/                       # generated Claude Code skills; do not edit
+build_claude.py                 # builds and checks claude/
+install.py                      # Codex installer and health check
+install_claude.py               # Claude Code installer and health check
+check_install.py                # shared read-only install checker
 ```
 
-## Installation
+Complete skill trees are the install unit. Personas, schemas, templates,
+scripts, and skill-local references move together. There is no shared root
+review-contract directory.
 
-`econ-review` depends on three pieces: the skill text, the reviewer agents, and the shared references. Installing only the skills leaves the review panel incomplete.
+Claude Code discovers the generated skills directly under `claude/skills`.
+The generated package has no duplicate command wrappers, no persona-bearing
+reviewer agents, and no root review contracts.
 
-**Simplest path**: ask Codex to install the package from this repo.
+## Verification
+
+From the repository root:
 
 ```text
-Clone or download https://github.com/PSalgado95/econ-agent-workflows, then run:
-
-python install.py --force
-
-from the repo root. Confirm it installs the core skills, auxiliary helper skills, reviewer agents, and shared references.
+python -m unittest discover -s tests -v
+python build_claude.py --check
 ```
 
-Restart Codex afterward so the skills and reviewer agents load.
-
-**Manual install**: copy the core skill folders and auxiliary skill folders into your Codex skills folder, copy `.codex/agents/*.toml` into your Codex agents folder, and copy `references/*.md` into a stable reference location such as `~/.codex/references/econ-agent-workflows/`.
-
-### Claude Code
-
-The skills are authored for Codex, and a ready-to-install Claude Code package is generated under `claude/`. Install it from the repo root:
+Temporary-home install checks are safe and do not affect a live runtime:
 
 ```text
-python install_claude.py --force
+python install.py --codex-home <temporary-codex-home>
+python install.py --codex-home <temporary-codex-home> --check
+
+python install_claude.py --claude-home <temporary-claude-home>
+python install_claude.py --claude-home <temporary-claude-home> --check
 ```
 
-This installs into `~/.claude`: the skills, `/econ-plan` / `/econ-work` / `/econ-review` / `/econ-lfg` / `/econ-compound` / `/gpt-pro-handoff` slash commands, the reviewer subagents, and the shared references. Restart Claude Code afterward. To update, pull the repo and re-run the same command.
+Static checks do not replace the agent-native release smoke:
 
-On Claude Code the reviewer lenses run as subagents dispatched through the Task tool, and they default to the Sonnet model (promote a review to Opus manually when the task is critical).
+```text
+python tests/run_agent_native_smoke.py --host codex --checkout . --result-path <agent-native-release-proof.json>
+```
 
-### Editing the skills (maintainers)
+That command requires a trusted host adapter able to attest the effective
+read-only child policy. Without one it returns `not-run` and remains a
+release-blocking result; see
+[the smoke contract](docs/testing/agent-native-review-smoke.md).
 
-**Codex is the single source of truth.** Edit the Codex sources (`skills/`, `.codex/agents/`, `references/`), then regenerate the Claude Code package and commit it:
+Maintainers regenerate Claude output only from canonical source:
 
 ```text
 python build_claude.py
+python build_claude.py --check
 ```
 
-Never hand-edit anything under `claude/`; every generated file says so in a banner and will be overwritten on the next build.
+Never hand-edit `claude/`.
+
+## Live-install gate
+
+The source can be reviewed and merged now. A live `--force` installation of
+this migration is blocked until the separately owned SSJ adapter:
+
+1. emits `ssj-model-validity` through `econ-domain-assessment/v1`;
+2. no longer requests a retired reviewer identity; and
+3. passes the core request/report integration checks.
+
+This gate matters because a forced migration removes the retired core reviewer
+registrations while existing SSJ workflows may still depend on one. Do not run
+a live forced install from this version before the adapter prerequisite passes.
+
+The live installer enforces this boundary. A default-home `--force` requires an
+`econ-agent-workflows-release-gate/v1` receipt that embeds the allowlisted
+agent-native proof and independently accepted SSJ evidence. All three objects
+must identify the current checkout HEAD and the same deterministic
+`git archive HEAD` digest. Package-owned install sources must also be clean.
+The repository ships no accepted receipt and no placeholder adapter digest.
+
+After both prerequisites are accepted for the exact reviewed checkout:
+
+```text
+python install.py --force --release-gate <release-gate.json>
+python install.py --check
+```
+
+or, for Claude Code:
+
+```text
+python install_claude.py --force --release-gate <release-gate.json>
+python install_claude.py --check
+```
+
+Temporary or other custom homes remain available without release evidence.
+When a default-home health check finds drift before the gate is satisfied, it
+reports the blocker rather than suggesting an unauthorized forced repair.
+
+Restart the relevant runtime after installation so its skill registry refreshes.
+Repository edits do not update installed copies automatically.
+
+## Migration boundary
+
+Forced installation removes exactly 18 retired package-owned reviewer
+identities: the 17 former specialist registrations and the later consolidated
+registration. The Claude filenames are derived deterministically from that
+literal list. Cleanup runs only under `--force`.
+
+The migration does not use prefixes, globs, declared-name scans, or fuzzy
+ownership rules. Every SSJ agent, unknown file, unrelated skill, and optional
+persona-free read-only transport is outside the stale inventory and is
+preserved. Historical Claude command wrappers and moved root contracts have
+their own exact package-owned inventories.
+
+See
+[the 2026-07-24 persona-runtime migration note](docs/releases/2026-07-24-economics-review-persona-runtime.md)
+for the exact retired identities and upgrade details.
+
+## Source versus installed runtime
+
+This repository is the source of truth. Installed copies under
+`$CODEX_HOME/skills` or `~/.codex/skills`, and under
+`$CLAUDE_CONFIG_DIR/skills` or `~/.claude/skills`, are runtime copies.
+
+Edit repository source first, regenerate committed Claude output when needed,
+run the contract suite, and use the installer only from the exact checkout that
+should become active. Prefer explicit copy installation over symlinks so an
+uncommitted source edit does not silently change runtime behaviour.

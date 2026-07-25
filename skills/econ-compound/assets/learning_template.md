@@ -31,7 +31,7 @@ State the reusable rule or habit. Keep it narrow enough that a future agent can 
 
 Name the plan, output, source, review finding, note, bundle, or closeout that supports the lesson. Use repo-relative file paths for local evidence. For non-file evidence, use an explicit identifier such as `source_id:...`, `archive_id:...`, `register_id:...`, `dataset_id:...`, or `doi:...`.
 
-If the lesson came from an old memo, exploratory report, GPT bundle, or project brief, name the underlying source, output, script, or review finding that makes the lesson credible. Do not treat the old artifact itself as authority unless it was the reviewed object.
+If the lesson came from an old memo, exploratory report, externally supplied package, or project brief, name the underlying source, output, script, or review finding that makes the lesson credible. Do not treat the old artifact itself as authority unless it was the reviewed object.
 
 ## Reuse Boundary
 

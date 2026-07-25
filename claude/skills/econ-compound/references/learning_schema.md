@@ -1,4 +1,4 @@
-<!-- GENERATED FROM CODEX SOURCE - DO NOT EDIT. Edit the Codex sources (skills/, .codex/agents/, references/) and run build_claude.py. -->
+<!-- GENERATED FROM CODEX SOURCE - DO NOT EDIT. Edit the Codex sources and run build_claude.py. -->
 
 # Econ Compound Learning Schema
 
@@ -8,16 +8,18 @@ Use this reference when writing or refreshing a durable economics research learn
 
 A learning note records precedent for future economics research work. It is not live project state. Current plans, code, data, outputs, notes, source files, and review findings override old learning notes.
 
-Old memos, exploratory reports, GPT handoff bundles, and project briefs are leads unless they were explicitly reviewed or accepted for a defined purpose. A learning note should cite the underlying evidence behind such artifacts, not the artifact alone, unless the artifact itself is the reviewed object.
+Old memos, exploratory reports, externally supplied packages, and project briefs are leads unless they were explicitly reviewed or accepted for a defined purpose. A learning note should cite the underlying evidence behind such artifacts, not the artifact alone, unless the artifact itself is the reviewed object.
+
+When a lesson locks a project-specific definition, the definition itself belongs in the project's `DEFINITIONS.md` (offered with the researcher's approval; definitions and boundaries only, never file paths or current parameter values). The learning note keeps the evidence and the reuse boundary.
 
 ## Storage
 
 Prefer an existing repo convention. Otherwise use:
 
 - `docs/research-learnings/<category>/<slug>.md` inside a repo;
-- `.codex/research-learnings/<category>/<slug>.md` when there is no repo but a durable local project folder exists.
+- `.claude/research-learnings/<category>/<slug>.md` when there is no repo but a durable local project folder exists.
 
-Do not write substantive research lessons into `PROJECT_BRIEF.md`, `README.md`, or `AGENTS.md`.
+Do not write substantive research lessons into `PROJECT_BRIEF.md`, `README.md`, or `CLAUDE.md`.
 
 ## Required Frontmatter
 
@@ -67,7 +69,7 @@ refresh_reason: none
 - `theory-models`: notation, model objects, derivation checks, calibration interpretation, mechanism exposition.
 - `interpretation-claims`: what evidence can support, claim-budget rules, overclaiming risks.
 - `writing-figures`: note structure, figure-text consistency, paper-facing synthesis discipline.
-- `reproducibility-handoff`: bundles, manifests, review packages, GPT Pro packages, rerun status.
+- `reproducibility-handoff`: bundles, manifests, review packages, and rerun status.
 - `workflow-practice`: useful planning/work/review patterns that do not fit a narrower category.
 
 ## Note Body

@@ -1,0 +1,317 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://econ-agent-workflows.local/schemas/econ-reviewer-output-v1.json",
+  "title": "econ-reviewer-output/v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "run_id",
+    "role",
+    "status",
+    "evidence_reviewed",
+    "findings",
+    "open_questions",
+    "diagnostic_gaps",
+    "coverage_note"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "econ-reviewer-output/v1"
+    },
+    "run_id": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$"
+    },
+    "role": {
+      "$ref": "#/$defs/role"
+    },
+    "status": {
+      "const": "completed"
+    },
+    "evidence_reviewed": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "pattern": "^E[1-9][0-9]*$"
+      }
+    },
+    "findings": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/finding"
+      }
+    },
+    "open_questions": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    },
+    "diagnostic_gaps": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/diagnosticGap"
+      }
+    },
+    "coverage_note": {
+      "type": "string",
+      "minLength": 1
+    }
+  },
+  "$defs": {
+    "role": {
+      "type": "string",
+      "enum": [
+        "provenance",
+        "specification",
+        "transformation-and-sample",
+        "estimation-practice",
+        "inference",
+        "output-consistency",
+        "claim-discipline",
+        "output-perception",
+        "code-quality",
+        "design",
+        "dynamics",
+        "robustness",
+        "software-equivalence",
+        "reproducibility",
+        "bundle"
+      ]
+    },
+    "issueOrigin": {
+      "$ref": "#/$defs/role"
+    },
+    "evidenceLocation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "evidence_id",
+        "path",
+        "locator",
+        "quote"
+      ],
+      "properties": {
+        "evidence_id": {
+          "type": "string",
+          "pattern": "^E[1-9][0-9]*$"
+        },
+        "path": {
+          "type": "string",
+          "minLength": 1
+        },
+        "locator": {
+          "type": "string",
+          "minLength": 1
+        },
+        "quote": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "minLength": 1
+        }
+      }
+    },
+    "finding": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "severity",
+        "trust_effect",
+        "issue_origin",
+        "finding_type",
+        "fix_class",
+        "affected_labels",
+        "issue_followup_type",
+        "title",
+        "why_it_matters",
+        "evidence_refs",
+        "evidence_locations",
+        "recommended_action",
+        "user_judgement_required",
+        "safe_autofix",
+        "confidence"
+      ],
+      "properties": {
+        "severity": {
+          "type": "string",
+          "enum": [
+            "P0",
+            "P1",
+            "P2",
+            "P3"
+          ]
+        },
+        "trust_effect": {
+          "type": "string",
+          "enum": [
+            "baseline-defining",
+            "promotion-blocking",
+            "robustness-relevant",
+            "documentation-only"
+          ]
+        },
+        "issue_origin": {
+          "$ref": "#/$defs/issueOrigin"
+        },
+        "finding_type": {
+          "type": "string",
+          "enum": [
+            "finding",
+            "warning"
+          ]
+        },
+        "fix_class": {
+          "type": "string",
+          "enum": [
+            "safe-automatic",
+            "gated",
+            "manual",
+            "advisory"
+          ]
+        },
+        "affected_labels": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "issue_followup_type": {
+          "type": "string",
+          "enum": [
+            "none",
+            "empirical-problem",
+            "implementation-fix",
+            "robustness-extension",
+            "note-paper-follow-up"
+          ]
+        },
+        "title": {
+          "type": "string",
+          "minLength": 1
+        },
+        "why_it_matters": {
+          "type": "string",
+          "minLength": 1
+        },
+        "evidence_refs": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "pattern": "^E[1-9][0-9]*$"
+          }
+        },
+        "evidence_locations": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "$ref": "#/$defs/evidenceLocation"
+          }
+        },
+        "recommended_action": {
+          "type": "string",
+          "minLength": 1
+        },
+        "user_judgement_required": {
+          "type": "boolean"
+        },
+        "safe_autofix": {
+          "type": "boolean"
+        },
+        "confidence": {
+          "type": "integer",
+          "enum": [
+            50,
+            75,
+            100
+          ]
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "safe_autofix": {
+                "const": true
+              }
+            },
+            "required": [
+              "safe_autofix"
+            ]
+          },
+          "then": {
+            "properties": {
+              "fix_class": {
+                "const": "safe-automatic"
+              }
+            }
+          }
+        }
+      ]
+    },
+    "diagnosticGap": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "gap",
+        "trust_effect",
+        "issue_origin",
+        "affected_labels",
+        "why_it_matters",
+        "evidence_refs",
+        "recommended_action"
+      ],
+      "properties": {
+        "gap": {
+          "type": "string",
+          "minLength": 1
+        },
+        "trust_effect": {
+          "type": "string",
+          "enum": [
+            "baseline-defining",
+            "promotion-blocking",
+            "robustness-relevant",
+            "documentation-only"
+          ]
+        },
+        "issue_origin": {
+          "$ref": "#/$defs/issueOrigin"
+        },
+        "affected_labels": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "why_it_matters": {
+          "type": "string",
+          "minLength": 1
+        },
+        "evidence_refs": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "pattern": "^E[1-9][0-9]*$"
+          }
+        },
+        "recommended_action": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    }
+  }
+}

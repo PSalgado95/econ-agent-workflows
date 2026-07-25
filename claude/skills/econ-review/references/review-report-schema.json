@@ -1,0 +1,1098 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://econ-agent-workflows.local/schemas/econ-review-report-v1.json",
+  "title": "econ-review-report/v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "run_id",
+    "parent_status",
+    "request_summary",
+    "safety",
+    "coverage",
+    "verdict",
+    "selected_roles",
+    "findings",
+    "warnings",
+    "diagnostic_gaps",
+    "process_failures",
+    "supplemental_assessments",
+    "promotion_gate",
+    "state_canary",
+    "failure"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "econ-review-report/v1"
+    },
+    "run_id": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$"
+    },
+    "parent_status": {
+      "type": "string",
+      "enum": [
+        "completed",
+        "failed",
+        "cancelled"
+      ]
+    },
+    "request_summary": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "surfaces",
+        "depth",
+        "promotion"
+      ],
+      "properties": {
+        "surfaces": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "enum": [
+              "plan-design",
+              "implementation-code",
+              "empirical-results",
+              "replication-handoff"
+            ]
+          }
+        },
+        "depth": {
+          "type": "string",
+          "enum": [
+            "quick",
+            "standard",
+            "full"
+          ]
+        },
+        "promotion": {
+          "type": "boolean"
+        }
+      }
+    },
+    "safety": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "mode",
+        "attestation",
+        "side_effecting_tools_disabled"
+      ],
+      "properties": {
+        "mode": {
+          "type": "string",
+          "enum": [
+            "host-read-only",
+            "transport-read-only",
+            "unavailable"
+          ]
+        },
+        "attestation": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "minLength": 1
+        },
+        "side_effecting_tools_disabled": {
+          "type": "boolean"
+        }
+      }
+    },
+    "coverage": {
+      "type": "string",
+      "enum": [
+        "full",
+        "degraded",
+        "not-run"
+      ]
+    },
+    "verdict": {
+      "type": "string",
+      "enum": [
+        "clean",
+        "issues-found",
+        "indeterminate",
+        "blocked"
+      ]
+    },
+    "selected_roles": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "$ref": "#/$defs/roleLifecycle"
+      }
+    },
+    "findings": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/canonicalFinding"
+      }
+    },
+    "warnings": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/canonicalFinding"
+      }
+    },
+    "diagnostic_gaps": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/canonicalDiagnosticGap"
+      }
+    },
+    "process_failures": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/processFailure"
+      }
+    },
+    "supplemental_assessments": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/assessmentLifecycle"
+      }
+    },
+    "promotion_gate": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "requested",
+        "status",
+        "reasons"
+      ],
+      "properties": {
+        "requested": {
+          "type": "boolean"
+        },
+        "status": {
+          "type": "string",
+          "enum": [
+            "not-requested",
+            "passed",
+            "blocked"
+          ]
+        },
+        "reasons": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "requested": {
+                "const": false
+              }
+            },
+            "required": [
+              "requested"
+            ]
+          },
+          "then": {
+            "properties": {
+              "status": {
+                "const": "not-requested"
+              }
+            }
+          },
+          "else": {
+            "properties": {
+              "status": {
+                "enum": [
+                  "passed",
+                  "blocked"
+                ]
+              }
+            }
+          }
+        }
+      ]
+    },
+    "state_canary": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "status",
+        "in_scope_drift",
+        "out_of_scope_drift"
+      ],
+      "properties": {
+        "status": {
+          "type": "string",
+          "enum": [
+            "unchanged",
+            "drift-detected",
+            "not-run"
+          ]
+        },
+        "in_scope_drift": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "out_of_scope_drift": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        }
+      }
+    },
+    "failure": {
+      "oneOf": [
+        {
+          "type": "null"
+        },
+        {
+          "$ref": "#/$defs/parentFailure"
+        }
+      ]
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "coverage": {
+            "const": "degraded"
+          }
+        },
+        "required": [
+          "coverage"
+        ]
+      },
+      "then": {
+        "properties": {
+          "verdict": {
+            "enum": [
+              "indeterminate",
+              "blocked"
+            ]
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "safety": {
+            "properties": {
+              "mode": {
+                "const": "unavailable"
+              }
+            },
+            "required": [
+              "mode"
+            ]
+          }
+        },
+        "required": [
+          "safety"
+        ]
+      },
+      "then": {
+        "properties": {
+          "parent_status": {
+            "const": "completed"
+          },
+          "safety": {
+            "properties": {
+              "attestation": {
+                "type": "null"
+              },
+              "side_effecting_tools_disabled": {
+                "const": false
+              }
+            }
+          },
+          "coverage": {
+            "const": "not-run"
+          },
+          "verdict": {
+            "const": "blocked"
+          },
+          "selected_roles": {
+            "items": {
+              "properties": {
+                "state": {
+                  "const": "unavailable"
+                }
+              },
+              "required": [
+                "state"
+              ]
+            }
+          },
+          "state_canary": {
+            "properties": {
+              "status": {
+                "const": "not-run"
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "coverage": {
+            "const": "full"
+          }
+        },
+        "required": [
+          "coverage"
+        ]
+      },
+      "then": {
+        "properties": {
+          "safety": {
+            "properties": {
+              "mode": {
+                "enum": [
+                  "host-read-only",
+                  "transport-read-only"
+                ]
+              },
+              "attestation": {
+                "type": "string",
+                "minLength": 1
+              },
+              "side_effecting_tools_disabled": {
+                "const": true
+              }
+            }
+          },
+          "selected_roles": {
+            "items": {
+              "properties": {
+                "state": {
+                  "const": "completed"
+                }
+              },
+              "required": [
+                "state"
+              ]
+            }
+          },
+          "supplemental_assessments": {
+            "not": {
+              "contains": {
+                "type": "object",
+                "properties": {
+                  "required": {
+                    "const": true
+                  },
+                  "state": {
+                    "not": {
+                      "const": "accepted"
+                    }
+                  }
+                },
+                "required": [
+                  "required",
+                  "state"
+                ]
+              }
+            }
+          },
+          "state_canary": {
+            "properties": {
+              "status": {
+                "const": "unchanged"
+              }
+            }
+          },
+          "process_failures": {
+            "maxItems": 0
+          },
+          "verdict": {
+            "enum": [
+              "clean",
+              "issues-found"
+            ]
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "promotion_gate": {
+            "properties": {
+              "status": {
+                "const": "passed"
+              }
+            },
+            "required": [
+              "status"
+            ]
+          }
+        },
+        "required": [
+          "promotion_gate"
+        ]
+      },
+      "then": {
+        "properties": {
+          "parent_status": {
+            "const": "completed"
+          },
+          "coverage": {
+            "const": "full"
+          },
+          "verdict": {
+            "const": "clean"
+          },
+          "findings": {
+            "maxItems": 0
+          },
+          "diagnostic_gaps": {
+            "maxItems": 0
+          },
+          "process_failures": {
+            "maxItems": 0
+          },
+          "promotion_gate": {
+            "properties": {
+              "reasons": {
+                "maxItems": 0
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "verdict": {
+            "const": "clean"
+          }
+        },
+        "required": [
+          "verdict"
+        ]
+      },
+      "then": {
+        "properties": {
+          "coverage": {
+            "const": "full"
+          },
+          "findings": {
+            "maxItems": 0
+          },
+          "diagnostic_gaps": {
+            "maxItems": 0
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "verdict": {
+            "const": "issues-found"
+          }
+        },
+        "required": [
+          "verdict"
+        ]
+      },
+      "then": {
+        "anyOf": [
+          {
+            "properties": {
+              "findings": {
+                "minItems": 1
+              }
+            }
+          },
+          {
+            "properties": {
+              "diagnostic_gaps": {
+                "minItems": 1
+              }
+            }
+          }
+        ],
+        "properties": {
+          "coverage": {
+            "const": "full"
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "promotion_gate": {
+            "properties": {
+              "requested": {
+                "const": false
+              }
+            },
+            "required": [
+              "requested"
+            ]
+          }
+        },
+        "required": [
+          "promotion_gate"
+        ]
+      },
+      "then": {
+        "properties": {
+          "promotion_gate": {
+            "properties": {
+              "status": {
+                "const": "not-requested"
+              }
+            }
+          }
+        }
+      },
+      "else": {
+        "properties": {
+          "promotion_gate": {
+            "properties": {
+              "status": {
+                "enum": [
+                  "passed",
+                  "blocked"
+                ]
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "request_summary": {
+            "properties": {
+              "promotion": {
+                "const": true
+              }
+            },
+            "required": [
+              "promotion"
+            ]
+          }
+        },
+        "required": [
+          "request_summary"
+        ]
+      },
+      "then": {
+        "properties": {
+          "promotion_gate": {
+            "properties": {
+              "requested": {
+                "const": true
+              }
+            }
+          }
+        }
+      },
+      "else": {
+        "properties": {
+          "promotion_gate": {
+            "properties": {
+              "requested": {
+                "const": false
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "coverage": {
+            "const": "not-run"
+          }
+        },
+        "required": [
+          "coverage"
+        ]
+      },
+      "then": {
+        "properties": {
+          "verdict": {
+            "const": "blocked"
+          },
+          "promotion_gate": {
+            "properties": {
+              "status": {
+                "enum": [
+                  "not-requested",
+                  "blocked"
+                ]
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "parent_status": {
+            "const": "completed"
+          }
+        },
+        "required": [
+          "parent_status"
+        ]
+      },
+      "then": {
+        "properties": {
+          "failure": {
+            "type": "null"
+          }
+        }
+      },
+      "else": {
+        "properties": {
+          "failure": {
+            "$ref": "#/$defs/parentFailure"
+          }
+        }
+      }
+    }
+  ],
+  "$defs": {
+    "role": {
+      "type": "string",
+      "enum": [
+        "provenance",
+        "specification",
+        "transformation-and-sample",
+        "estimation-practice",
+        "inference",
+        "output-consistency",
+        "claim-discipline",
+        "output-perception",
+        "code-quality",
+        "design",
+        "dynamics",
+        "robustness",
+        "software-equivalence",
+        "reproducibility",
+        "bundle"
+      ]
+    },
+    "roleLifecycle": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "role",
+        "state",
+        "reason",
+        "accepted_findings"
+      ],
+      "properties": {
+        "role": {
+          "$ref": "#/$defs/role"
+        },
+        "state": {
+          "type": "string",
+          "enum": [
+            "completed",
+            "invalid",
+            "failed",
+            "timed_out",
+            "cancelled",
+            "unavailable"
+          ]
+        },
+        "reason": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "minLength": 1
+        },
+        "accepted_findings": {
+          "type": "integer",
+          "minimum": 0
+        }
+      }
+    },
+    "source": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "source_id"
+      ],
+      "properties": {
+        "kind": {
+          "type": "string",
+          "enum": [
+            "reviewer-role",
+            "domain-assessment"
+          ]
+        },
+        "source_id": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    },
+    "canonicalFinding": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "finding_id",
+        "severity",
+        "trust_effect",
+        "issue_origin",
+        "fix_class",
+        "affected_labels",
+        "issue_followup_type",
+        "title",
+        "why_it_matters",
+        "evidence_refs",
+        "evidence_locations",
+        "recommended_action",
+        "user_judgement_required",
+        "confidence",
+        "sources",
+        "disagreement"
+      ],
+      "properties": {
+        "finding_id": {
+          "type": "string",
+          "pattern": "^F[1-9][0-9]*$"
+        },
+        "severity": {
+          "type": "string",
+          "enum": [
+            "P0",
+            "P1",
+            "P2",
+            "P3"
+          ]
+        },
+        "trust_effect": {
+          "type": "string",
+          "enum": [
+            "baseline-defining",
+            "promotion-blocking",
+            "robustness-relevant",
+            "documentation-only"
+          ]
+        },
+        "issue_origin": {
+          "$ref": "#/$defs/role"
+        },
+        "fix_class": {
+          "type": "string",
+          "enum": [
+            "safe-automatic",
+            "gated",
+            "manual",
+            "advisory"
+          ]
+        },
+        "affected_labels": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "issue_followup_type": {
+          "type": "string",
+          "enum": [
+            "none",
+            "empirical-problem",
+            "implementation-fix",
+            "robustness-extension",
+            "note-paper-follow-up"
+          ]
+        },
+        "title": {
+          "type": "string",
+          "minLength": 1
+        },
+        "why_it_matters": {
+          "type": "string",
+          "minLength": 1
+        },
+        "evidence_refs": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "evidence_locations": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "$ref": "#/$defs/evidenceLocation"
+          }
+        },
+        "recommended_action": {
+          "type": "string",
+          "minLength": 1
+        },
+        "user_judgement_required": {
+          "type": "boolean"
+        },
+        "confidence": {
+          "type": "integer",
+          "enum": [
+            50,
+            75,
+            100
+          ]
+        },
+        "sources": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "$ref": "#/$defs/source"
+          }
+        },
+        "disagreement": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "minLength": 1
+        }
+      }
+    },
+    "evidenceLocation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "evidence_id",
+        "path",
+        "locator",
+        "quote"
+      ],
+      "properties": {
+        "evidence_id": {
+          "type": "string",
+          "pattern": "^E[1-9][0-9]*$"
+        },
+        "path": {
+          "type": "string",
+          "minLength": 1
+        },
+        "locator": {
+          "type": "string",
+          "minLength": 1
+        },
+        "quote": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "minLength": 1
+        }
+      }
+    },
+    "canonicalDiagnosticGap": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "gap_id",
+        "gap",
+        "trust_effect",
+        "issue_origin",
+        "affected_labels",
+        "why_it_matters",
+        "evidence_refs",
+        "recommended_action",
+        "sources"
+      ],
+      "properties": {
+        "gap_id": {
+          "type": "string",
+          "pattern": "^G[1-9][0-9]*$"
+        },
+        "gap": {
+          "type": "string",
+          "minLength": 1
+        },
+        "trust_effect": {
+          "type": "string",
+          "enum": [
+            "baseline-defining",
+            "promotion-blocking",
+            "robustness-relevant",
+            "documentation-only"
+          ]
+        },
+        "issue_origin": {
+          "$ref": "#/$defs/role"
+        },
+        "affected_labels": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "why_it_matters": {
+          "type": "string",
+          "minLength": 1
+        },
+        "evidence_refs": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "pattern": "^E[1-9][0-9]*$"
+          }
+        },
+        "recommended_action": {
+          "type": "string",
+          "minLength": 1
+        },
+        "sources": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "$ref": "#/$defs/source"
+          }
+        }
+      }
+    },
+    "processFailure": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "stage",
+        "code",
+        "message",
+        "affected_roles"
+      ],
+      "properties": {
+        "stage": {
+          "type": "string",
+          "enum": [
+            "request-validation",
+            "safety-preflight",
+            "baseline-canary",
+            "selection",
+            "dispatch",
+            "child-validation",
+            "post-canary",
+            "synthesis",
+            "report-validation"
+          ]
+        },
+        "code": {
+          "type": "string",
+          "minLength": 1
+        },
+        "message": {
+          "type": "string",
+          "minLength": 1
+        },
+        "affected_roles": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "$ref": "#/$defs/role"
+          }
+        }
+      }
+    },
+    "assessmentLifecycle": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "assessment_id",
+        "assessment_type",
+        "required",
+        "state",
+        "reason"
+      ],
+      "properties": {
+        "assessment_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "assessment_type": {
+          "type": "string",
+          "minLength": 1
+        },
+        "required": {
+          "type": "boolean"
+        },
+        "state": {
+          "type": "string",
+          "enum": [
+            "accepted",
+            "missing",
+            "invalid",
+            "unsupported-version",
+            "partial",
+            "failed"
+          ]
+        },
+        "reason": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "minLength": 1
+        }
+      }
+    },
+    "parentFailure": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "stage",
+        "code",
+        "message",
+        "raw_payload_preserved"
+      ],
+      "properties": {
+        "stage": {
+          "type": "string",
+          "minLength": 1
+        },
+        "code": {
+          "type": "string",
+          "minLength": 1
+        },
+        "message": {
+          "type": "string",
+          "minLength": 1
+        },
+        "raw_payload_preserved": {
+          "type": "boolean"
+        }
+      }
+    }
+  }
+}
