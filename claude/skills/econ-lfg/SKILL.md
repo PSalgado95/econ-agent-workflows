@@ -127,7 +127,10 @@ unresolved.
 
 ### Stage 4: Review-resolution pass
 
-Do not deliver immediately after review. Use `references/review_resolution_reference.md` to classify each retained finding. Review findings are evidence for the loop, not orders to change the research object.
+Do not deliver immediately after review. Use
+`references/review_resolution_reference.md` to classify every retained finding
+and diagnostic gap. Review outputs are evidence for the loop, not orders to
+change the research object.
 
 For every retained finding, inspect its finding ID, fix class, trust or
 promotion effect, issue origin, affected labels, evidence locations, issue
@@ -140,15 +143,22 @@ and authority source. Then assign exactly one route token:
 - `defer-with-rationale`: legitimate follow-up outside the prompt or not needed for the requested output;
 - `advisory-only`: useful note that does not affect trust, promotion, or the requested output.
 
+For every diagnostic gap, inspect its gap ID, trust effect, issue origin,
+affected labels, prior evidence, recommended action, and authority source. Use
+the same route tokens: produce already-required evidence under `fix-now`, route
+researcher choices to `ask-user`, and retain deferred or advisory gaps with
+their `G<n>` IDs. Never treat a gap as resolved merely because no ordinary
+finding was returned.
+
 Apply this policy. Every revision-stage `econ-work` invocation includes
 `caller_contract: econ-lfg/v1` and consumes `econ-work-for-caller/v1`. Every
 targeted `econ-review` invocation instead uses a complete
 `econ-review-request/v1` and consumes `econ-review-report/v1`; there is no
 review-specific private caller contract.
-- Fix `fix-now` findings through `econ-work` or a bounded local revision pass.
-- Revise `revise-plan-choice` findings when the new path remains inside the initial prompt's intent.
-- Pause for `ask-user` findings and write a decision memo when the decision is non-trivial.
-- Record `defer-with-rationale` and `advisory-only` findings in the final closeout; do not hide them. Findings that affect trust must also land on a durable residual sink before delivery — the review bundle's residual section, a GitHub issue (with approval), or a dated `docs/residual-findings/<slug>.md` — with finding IDs preserved. Never deliver with trust-affecting residuals recorded only in chat.
+- Fix `fix-now` findings and gaps through `econ-work` or a bounded local revision pass.
+- Revise `revise-plan-choice` findings or gaps when the new path remains inside the initial prompt's intent.
+- Pause for `ask-user` findings or gaps and write a decision memo when the decision is non-trivial.
+- Record `defer-with-rationale` and `advisory-only` findings and gaps in the final closeout; do not hide them. Items that affect trust must also land on a durable residual sink before delivery — the review bundle's residual section, a GitHub issue (with approval), or a dated `docs/residual-findings/<slug>.md` — with `F<n>` or `G<n>` IDs preserved. Never deliver with trust-affecting residuals recorded only in chat.
 
 The direct-fix boundary, the researcher-level trigger list, and the decision-memo contract are defined in `references/review_resolution_reference.md`; apply them exactly.
 
@@ -160,21 +170,24 @@ If revisions materially change the plan's assumptions, record that divergence in
 
 ### Stage 5: Targeted re-review
 
-After `fix-now` or `revise-plan-choice` revisions, run targeted `econ-review` on
-changed or previously problematic surfaces. Build another complete
+After `fix-now` or `revise-plan-choice` revisions to findings or diagnostic
+gaps, run targeted `econ-review` on changed or previously problematic surfaces.
+Build another complete
 `econ-review-request/v1` with `invocation: nested`, `caller: econ-lfg/v1`, and a
-non-null `resolution_context`. That context names the prior run and, for each
-resolved finding, its ID, outcome (`fixed`, `researcher-rejected`, or
-`deferred`), changed paths, affected labels, and prior evidence references. The
-new request's normal surfaces, scope, manifest, and triggers still define what
-is reviewed; resolution context never suppresses new evidence or reuses the old
-roster blindly.
+non-null `resolution_context`. That context names the prior run and carries
+`finding_outcomes` and `gap_outcomes` maps keyed by each resolved finding ID and
+diagnostic-gap ID. Each trace records the outcome (`fixed`,
+`researcher-rejected`, or `deferred`), affected labels, and prior evidence
+references; `fixed` also requires a changed path.
+The new request's normal surfaces, scope, manifest, and triggers still define
+what is reviewed; resolution context never suppresses new evidence or reuses
+the old roster blindly.
 
 Escalate to broader review only when revisions changed the baseline, sample, estimand, specification, inference, benchmark treatment, note argument, or primary output family.
 
 Repeat the review-resolution pass until:
-- no blocking or worth-fixing findings remain;
-- remaining findings are consciously deferred with rationale;
+- no blocking or worth-fixing findings or diagnostic gaps remain;
+- remaining findings and gaps are consciously deferred with rationale;
 - the run hits the same user-level decision blocker repeatedly; or
 - external access or missing data prevents meaningful progress.
 

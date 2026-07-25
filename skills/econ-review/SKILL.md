@@ -59,10 +59,11 @@ A workflow caller supplies one complete `econ-review-request/v1` object. Validat
 it against `review-request-schema.json` before doing anything else. The caller
 does not select personas or pass raw reviewer outputs. An initial review sets
 `resolution_context` to `null`. A targeted re-review supplies the prior run ID
-and one or more bounded finding outcomes (`fixed`, `researcher-rejected`, or
-`deferred`) with changed paths, affected labels, and prior evidence references.
-Resolution context is trace evidence, not authority to suppress a role, finding,
-diagnostic gap, or changed-surface concern.
+plus non-duplicable `finding_outcomes` and `gap_outcomes` maps keyed by
+parent-owned finding IDs (`F<n>`) and diagnostic-gap IDs (`G<n>`). Every outcome
+records prior evidence; a `fixed` outcome also records at least one changed
+path. Resolution context is trace evidence, not authority to suppress a role,
+finding, diagnostic gap, or changed-surface concern.
 
 ### Direct invocation
 
@@ -368,6 +369,11 @@ Before assigning identifiers, sort retained findings by:
 Assign `F1`, `F2`, ... only after this sort. Child completion order, queue batch,
 and assessment arrival order must not affect identifiers or final ordering.
 
+Sort diagnostic gaps independently by trust effect, canonical issue origin,
+lowest evidence ID, affected label, and normalized gap text. Assign `G1`, `G2`,
+... only after that sort. Gap IDs are parent-owned and stable under child
+completion order for the same accepted evidence.
+
 ## Stage 11: Derive immutable coverage and verdict
 
 Coverage is report evidence and cannot be relabelled by a caller.
@@ -386,8 +392,9 @@ with stage and code.
 
 Verdict:
 
-- full coverage with no retained findings -> `clean`;
-- full coverage with retained findings -> `issues-found`;
+- full coverage with no retained findings or diagnostic gaps -> `clean`;
+- full coverage with at least one retained finding or diagnostic gap ->
+  `issues-found`;
 - degraded coverage -> `blocked` when promotion was requested, otherwise
   `indeterminate`;
 - not-run coverage -> `blocked`.

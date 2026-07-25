@@ -185,6 +185,7 @@ def canonical_finding() -> dict[str, Any]:
 
 def canonical_gap() -> dict[str, Any]:
     return {
+        "gap_id": "G1",
         "gap": "Cluster-count evidence is absent.",
         "trust_effect": "promotion-blocking",
         "issue_origin": "inference",
@@ -480,29 +481,27 @@ class ReviewSchemaContractsTest(unittest.TestCase):
         rereview["run_id"] = "fixture-rereview"
         rereview["resolution_context"] = {
             "prior_run_id": "fixture-run",
-            "finding_outcomes": [
-                {
-                    "finding_id": "F1",
+            "finding_outcomes": {
+                "F1": {
                     "outcome": "fixed",
                     "changed_paths": ["analysis/model.py"],
                     "affected_labels": ["table-main"],
                     "prior_evidence_refs": ["E1"],
                 },
-                {
-                    "finding_id": "F2",
+                "F2": {
                     "outcome": "researcher-rejected",
                     "changed_paths": [],
                     "affected_labels": ["baseline"],
                     "prior_evidence_refs": ["E1"],
                 },
-                {
-                    "finding_id": "F3",
+                "F3": {
                     "outcome": "deferred",
                     "changed_paths": [],
                     "affected_labels": ["appendix-robustness"],
                     "prior_evidence_refs": ["E1"],
                 },
-            ],
+            },
+            "gap_outcomes": {},
         }
         self.validators["request"].validate(rereview)
 
@@ -513,11 +512,35 @@ class ReviewSchemaContractsTest(unittest.TestCase):
         )
 
         malformed_context = copy.deepcopy(rereview)
-        malformed_context["resolution_context"]["finding_outcomes"][0][
+        malformed_context["resolution_context"]["finding_outcomes"]["F1"][
             "outcome"
         ] = "silently-ignore"
         self.assertTrue(
             list(self.validators["request"].iter_errors(malformed_context))
+        )
+
+        fixed_without_path = copy.deepcopy(rereview)
+        fixed_without_path["resolution_context"]["finding_outcomes"]["F1"][
+            "changed_paths"
+        ] = []
+        self.assertTrue(
+            list(self.validators["request"].iter_errors(fixed_without_path))
+        )
+
+        outcome_without_evidence = copy.deepcopy(rereview)
+        outcome_without_evidence["resolution_context"]["finding_outcomes"]["F2"][
+            "prior_evidence_refs"
+        ] = []
+        self.assertTrue(
+            list(self.validators["request"].iter_errors(outcome_without_evidence))
+        )
+
+        invalid_finding_key = copy.deepcopy(rereview)
+        invalid_finding_key["resolution_context"]["finding_outcomes"]["F1-copy"] = (
+            invalid_finding_key["resolution_context"]["finding_outcomes"].pop("F1")
+        )
+        self.assertTrue(
+            list(self.validators["request"].iter_errors(invalid_finding_key))
         )
 
         direct_with_history = copy.deepcopy(rereview)
@@ -695,6 +718,49 @@ class ReviewSchemaContractsTest(unittest.TestCase):
         self.assertTrue(
             list(self.validators["report"].iter_errors(missing_gaps))
         )
+
+    def test_gap_only_report_has_a_bounded_resolution_and_rereview_path(self) -> None:
+        report = valid_report()
+        report["verdict"] = "issues-found"
+        report["diagnostic_gaps"] = [canonical_gap()]
+        self.validators["report"].validate(report)
+
+        request = valid_request()
+        request["run_id"] = "fixture-gap-rereview"
+        request["invocation"] = "nested"
+        request["caller"] = "econ-lfg/v1"
+        request["resolution_context"] = {
+            "prior_run_id": report["run_id"],
+            "finding_outcomes": {},
+            "gap_outcomes": {
+                "G1": {
+                    "outcome": "fixed",
+                    "changed_paths": ["analysis/diagnostics.py"],
+                    "affected_labels": ["table-main"],
+                    "prior_evidence_refs": ["E1"],
+                }
+            },
+        }
+        self.validators["request"].validate(request)
+
+        broken = copy.deepcopy(request)
+        broken["resolution_context"]["gap_outcomes"]["G1"][
+            "changed_paths"
+        ] = []
+        self.assertTrue(list(self.validators["request"].iter_errors(broken)))
+
+        no_outcomes = copy.deepcopy(request)
+        no_outcomes["resolution_context"]["gap_outcomes"] = {}
+        self.assertTrue(
+            list(self.validators["request"].iter_errors(no_outcomes))
+        )
+
+        lfg = (REPO / "skills" / "econ-lfg" / "SKILL.md").read_text(
+            encoding="utf-8"
+        )
+        self.assertIn("`finding_outcomes`", lfg)
+        self.assertIn("`gap_outcomes`", lfg)
+        self.assertIn("diagnostic-gap ID", lfg)
 
 
 if __name__ == "__main__":

@@ -2,7 +2,9 @@
 
 # Econ LFG Review Resolution Reference
 
-Use this reference during `econ-lfg` Stage 4 after `econ-review` returns retained findings. Review findings are evidence for the loop; they are not orders to change the research object.
+Use this reference during `econ-lfg` Stage 4 after `econ-review` returns retained
+findings or diagnostic gaps. Review outputs are evidence for the loop; they are
+not orders to change the research object.
 
 ## Classification Inputs
 
@@ -18,6 +20,13 @@ For every retained finding, inspect these fields before choosing a route:
 - whether the finding conflicts with a researcher-anchored, plan-backed, agent-owned, or execution-discovered choice.
 
 If a finding has no evidence path, do not act on it unless the issue is a visible bundle-metadata gap. Treat unsupported findings as degraded or advisory and record that limitation in the closeout.
+
+For every diagnostic gap, inspect its parent-owned gap ID, trust effect, issue
+origin, affected labels, evidence references, recommended action, and authority
+source. Apply the same route tokens. A plan-required missing diagnostic with
+available inputs may be `fix-now`; a gap that changes the research object is
+`ask-user`; a gap outside the requested output may be deferred only with its
+`G<n>` ID and rationale preserved.
 
 ## Canonical Route Tokens
 
@@ -55,7 +64,9 @@ The agent may fix directly when the finding stays inside the saved plan, the ini
 - missing diagnostic surfaces already required by the saved plan, when the inputs and rerun authority are present;
 - agent-owned planning or work defaults, such as diagnostic order, figure priority, note framing, implementation route, or review-bundle organisation.
 
-Each direct fix must leave a compact trace: finding ID, evidence path, route token, fix performed, verification run, and targeted re-review surface.
+Each direct fix must leave a compact trace: `F<n>` or `G<n>` ID, prior evidence
+reference, route token, fix performed, changed path, verification run, and
+targeted re-review surface.
 
 ## Researcher-Level Trigger List
 
@@ -115,15 +126,20 @@ For trivial one-question blockers with no evidence synthesis needed, the agent m
 
 ## Re-Review and Closeout
 
-After `fix-now` or `revise-plan-choice`, run targeted `econ-review` on the changed or previously problematic surface. Cite the fixed finding IDs, changed paths, changed output or bundle labels, and prior evidence paths.
+After `fix-now` or `revise-plan-choice`, run targeted `econ-review` on the
+changed or previously problematic surface. Supply non-duplicable outcome maps
+keyed by fixed finding and diagnostic-gap IDs, with prior evidence references;
+every `fixed` trace also names at least one changed path.
 
 Escalate from targeted to broader review only when the revision changes the baseline, sample, estimand, specification, inference, benchmark treatment, note argument, primary output family, or another researcher-level research-object boundary.
 
 Repeat review resolution until:
 
-- no blocking or worth-fixing findings remain;
-- remaining findings are `defer-with-rationale` or `advisory-only`;
+- no blocking or worth-fixing findings or diagnostic gaps remain;
+- remaining findings and gaps are `defer-with-rationale` or `advisory-only`;
 - a researcher-level decision blocks the loop;
 - external access or missing data prevents meaningful progress.
 
-The final closeout must list fixed finding IDs, deferred/advisory finding IDs, decision memo path if one was written, targeted re-review result, verification performed, remaining risk, and resume route if blocked.
+The final closeout must list fixed and deferred/advisory `F<n>` and `G<n>` IDs,
+decision memo path if one was written, targeted re-review result, verification
+performed, remaining risk, and resume route if blocked.

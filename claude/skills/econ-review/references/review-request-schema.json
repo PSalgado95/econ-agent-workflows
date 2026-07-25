@@ -425,7 +425,24 @@
       "additionalProperties": false,
       "required": [
         "prior_run_id",
-        "finding_outcomes"
+        "finding_outcomes",
+        "gap_outcomes"
+      ],
+      "anyOf": [
+        {
+          "properties": {
+            "finding_outcomes": {
+              "minProperties": 1
+            }
+          }
+        },
+        {
+          "properties": {
+            "gap_outcomes": {
+              "minProperties": 1
+            }
+          }
+        }
       ],
       "properties": {
         "prior_run_id": {
@@ -433,63 +450,95 @@
           "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$"
         },
         "finding_outcomes": {
+          "type": "object",
+          "maxProperties": 100,
+          "propertyNames": {
+            "pattern": "^F[1-9][0-9]*$"
+          },
+          "additionalProperties": {
+            "$ref": "#/$defs/outcomeTrace"
+          }
+        },
+        "gap_outcomes": {
+          "type": "object",
+          "maxProperties": 100,
+          "propertyNames": {
+            "pattern": "^G[1-9][0-9]*$"
+          },
+          "additionalProperties": {
+            "$ref": "#/$defs/outcomeTrace"
+          }
+        }
+      }
+    },
+    "outcomeTrace": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "outcome",
+        "changed_paths",
+        "affected_labels",
+        "prior_evidence_refs"
+      ],
+      "properties": {
+        "outcome": {
+          "type": "string",
+          "enum": [
+            "fixed",
+            "researcher-rejected",
+            "deferred"
+          ]
+        },
+        "changed_paths": {
+          "type": "array",
+          "maxItems": 200,
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "affected_labels": {
+          "type": "array",
+          "maxItems": 200,
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "prior_evidence_refs": {
           "type": "array",
           "minItems": 1,
-          "maxItems": 100,
+          "maxItems": 200,
+          "uniqueItems": true,
           "items": {
-            "type": "object",
-            "additionalProperties": false,
-            "required": [
-              "finding_id",
-              "outcome",
-              "changed_paths",
-              "affected_labels",
-              "prior_evidence_refs"
-            ],
+            "type": "string",
+            "pattern": "^E[1-9][0-9]*$"
+          }
+        }
+      },
+      "allOf": [
+        {
+          "if": {
             "properties": {
-              "finding_id": {
-                "type": "string",
-                "pattern": "^F[1-9][0-9]*$"
-              },
               "outcome": {
-                "type": "string",
-                "enum": [
-                  "fixed",
-                  "researcher-rejected",
-                  "deferred"
-                ]
-              },
+                "const": "fixed"
+              }
+            },
+            "required": [
+              "outcome"
+            ]
+          },
+          "then": {
+            "properties": {
               "changed_paths": {
-                "type": "array",
-                "maxItems": 200,
-                "uniqueItems": true,
-                "items": {
-                  "type": "string",
-                  "minLength": 1
-                }
-              },
-              "affected_labels": {
-                "type": "array",
-                "maxItems": 200,
-                "uniqueItems": true,
-                "items": {
-                  "type": "string",
-                  "minLength": 1
-                }
-              },
-              "prior_evidence_refs": {
-                "type": "array",
-                "maxItems": 200,
-                "uniqueItems": true,
-                "items": {
-                  "type": "string",
-                  "pattern": "^E[1-9][0-9]*$"
-                }
+                "minItems": 1
               }
             }
           }
         }
-      }
+      ]
     }
   }
 }
