@@ -15,7 +15,6 @@ from install import (
     STALE_SKILL_DIRS,
     copy_file,
     copy_tree,
-    enforce_live_release_gate,
     remove_empty_directory,
     remove_stale_file,
     remove_stale_tree,
@@ -76,14 +75,6 @@ def parse_args() -> argparse.Namespace:
         action="store_true",
         help="Report-only health check; mutate nothing and exit 1 on failure.",
     )
-    parser.add_argument(
-        "--release-gate",
-        type=Path,
-        help=(
-            "Checkout-bound econ-agent-workflows-release-gate/v1 receipt. "
-            "Required for --force into a default live runtime home."
-        ),
-    )
     return parser.parse_args()
 
 
@@ -141,22 +132,10 @@ def main() -> int:
             references_dir=references_dir,
             check_generated=True,
             repo=repo,
-            release_gate=args.release_gate,
         )
 
     if not package.is_dir():
         raise SystemExit("claude/ not found. Run `python build_claude.py` first.")
-
-    try:
-        enforce_live_release_gate(
-            runtime="Claude Code",
-            home=claude_home,
-            force=args.force,
-            release_gate=args.release_gate,
-            repo=repo,
-        )
-    except RuntimeError as error:
-        raise SystemExit(str(error)) from error
 
     current_agents, current_references = package_files(package)
     selected_skills = CORE_SKILLS if args.skip_auxiliary else CORE_SKILLS + AUXILIARY_SKILLS

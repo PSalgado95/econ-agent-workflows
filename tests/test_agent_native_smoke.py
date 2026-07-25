@@ -529,7 +529,7 @@ class AgentNativeSmokeContractTest(unittest.TestCase):
             self.assertEqual("", after["porcelain"])
             self.assertNotEqual(before["index"], after["index"])
 
-    def test_no_configured_driver_is_release_blocking_not_run(self) -> None:
+    def test_no_configured_driver_returns_not_run(self) -> None:
         variable = "ECON_REVIEW_CODEX_SMOKE_DRIVER"
         with patch.dict(os.environ, {}, clear=False):
             os.environ.pop(variable, None)
@@ -539,7 +539,7 @@ class AgentNativeSmokeContractTest(unittest.TestCase):
             ):
                 smoke.resolve_driver("codex", None)
 
-    def test_unreviewed_explicit_driver_is_release_blocking_not_run(self) -> None:
+    def test_unreviewed_explicit_driver_returns_not_run(self) -> None:
         with tempfile.TemporaryDirectory() as temporary:
             fake_driver = Path(temporary) / "fake-driver.exe"
             fake_driver.write_bytes(b"not an independently reviewed adapter")

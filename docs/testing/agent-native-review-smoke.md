@@ -1,7 +1,8 @@
 # Agent-native economics review smoke
 
-This smoke is the release gate for the installed `econ-review` runtime path. It
-is intentionally separate from the static contract suite.
+This optional smoke exercises the installed `econ-review` runtime path through
+a trusted host adapter. It is intentionally separate from the static contract
+suite and is not required for a normal local installation.
 
 Run it from the repository root:
 
@@ -82,7 +83,7 @@ not-run`. It dispatches no reviewer child and does not claim release evidence.
 An invalid receipt or changed workspace exits `1`. Only a fully validated
 agent-native receipt exits `0`.
 
-Passing this smoke is necessary but not sufficient for a live forced install.
-The separately owned SSJ adapter must also be accepted against the final
-request, domain-assessment, and report contracts. Until both gates pass, source
-review and merge may proceed, but live `--force` installation remains blocked.
+Passing this smoke provides stronger maintainer evidence about the real host
+path. It does not authorize or block `python install.py --force`; local
+installation relies on the reviewed installer, its exact ownership inventory,
+and the normal contract suite.
