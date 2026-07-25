@@ -4,9 +4,7 @@
 from __future__ import annotations
 
 import argparse
-import filecmp
 import os
-import shutil
 from pathlib import Path
 
 from install import (
@@ -15,8 +13,10 @@ from install import (
     STALE_AGENT_FILES,
     STALE_REFERENCE_FILES,
     STALE_SKILL_DIRS,
-    is_within,
+    copy_file,
+    copy_tree,
     remove_empty_directory,
+    remove_stale_file,
     remove_stale_tree,
 )
 
@@ -47,45 +47,6 @@ def stale_claude_agent_name(codex_filename: str) -> str:
 STALE_CLAUDE_AGENT_FILES = tuple(
     stale_claude_agent_name(filename) for filename in STALE_AGENT_FILES
 )
-
-
-def copy_tree(source: Path, destination: Path, *, force: bool, root: Path) -> str:
-    if destination.exists():
-        if not force:
-            return f"skipped existing {destination}"
-        if not is_within(destination, root):
-            raise RuntimeError(f"Refusing to replace path outside Claude home: {destination}")
-        shutil.rmtree(destination)
-    shutil.copytree(
-        source,
-        destination,
-        ignore=shutil.ignore_patterns("__pycache__", "*.pyc"),
-    )
-    return f"installed {destination}"
-
-
-def copy_file(source: Path, destination: Path, *, force: bool, root: Path) -> str:
-    destination.parent.mkdir(parents=True, exist_ok=True)
-    if destination.exists():
-        if filecmp.cmp(source, destination, shallow=False):
-            return f"already current {destination}"
-        if not force:
-            return f"skipped existing {destination}"
-        if not is_within(destination, root):
-            raise RuntimeError(f"Refusing to replace path outside Claude home: {destination}")
-    shutil.copy2(source, destination)
-    return f"installed {destination}"
-
-
-def remove_stale_file(path: Path, *, root: Path, label: str = "stale") -> str | None:
-    if not path.exists():
-        return None
-    if not path.is_file():
-        return f"skipped {label} non-file {path}"
-    if not is_within(path, root):
-        raise RuntimeError(f"Refusing to remove path outside Claude home: {path}")
-    path.unlink()
-    return f"removed {label} {path}"
 
 
 def parse_args() -> argparse.Namespace:
@@ -198,6 +159,7 @@ def main() -> int:
                 skills_dir / installed_name,
                 force=args.force,
                 root=claude_home,
+                home_label="Claude",
             )
         )
 
@@ -208,6 +170,7 @@ def main() -> int:
                 agents_dir / agent.name,
                 force=args.force,
                 root=claude_home,
+                home_label="Claude",
             )
         )
     for reference in current_references:
@@ -217,6 +180,7 @@ def main() -> int:
                 references_dir / reference.name,
                 force=args.force,
                 root=claude_home,
+                home_label="Claude",
             )
         )
 
@@ -230,15 +194,24 @@ def main() -> int:
                 commands_dir / stale,
                 root=claude_home,
                 label="stale command wrapper",
+                home_label="Claude",
             )
             if message:
                 messages.append(message)
         for stale in STALE_CLAUDE_AGENT_FILES:
-            message = remove_stale_file(agents_dir / stale, root=claude_home)
+            message = remove_stale_file(
+                agents_dir / stale,
+                root=claude_home,
+                home_label="Claude",
+            )
             if message:
                 messages.append(message)
         for stale in STALE_REFERENCE_FILES:
-            message = remove_stale_file(references_dir / stale, root=claude_home)
+            message = remove_stale_file(
+                references_dir / stale,
+                root=claude_home,
+                home_label="Claude",
+            )
             if message:
                 messages.append(message)
         remove_empty_directory(commands_dir, root=claude_home)

@@ -245,15 +245,15 @@ def build_tree(repo: Path, out: Path) -> tuple[list[str], list[str], list[str]]:
     return skill_names, agent_names, reference_names
 
 
-def tree_digest(root: Path) -> dict[str, str]:
-    digest: dict[str, str] = {}
+def tree_digest(root: Path) -> dict[str, bytes]:
+    digest: dict[str, bytes] = {}
     if not root.is_dir():
         return digest
     for path in sorted(item for item in root.rglob("*") if item.is_file()):
         if "__pycache__" in path.parts or path.suffix == ".pyc":
             continue
         raw = path.read_bytes().replace(b"\r\n", b"\n")
-        digest[path.relative_to(root).as_posix()] = raw.hex()
+        digest[path.relative_to(root).as_posix()] = raw
     return digest
 
 

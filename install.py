@@ -72,12 +72,21 @@ def is_within(path: Path, root: Path) -> bool:
         return False
 
 
-def copy_tree(source: Path, destination: Path, *, force: bool, root: Path) -> str:
+def copy_tree(
+    source: Path,
+    destination: Path,
+    *,
+    force: bool,
+    root: Path,
+    home_label: str = "Codex",
+) -> str:
     if destination.exists():
         if not force:
             return f"skipped existing {destination}"
         if not is_within(destination, root):
-            raise RuntimeError(f"Refusing to replace path outside Codex home: {destination}")
+            raise RuntimeError(
+                f"Refusing to replace path outside {home_label} home: {destination}"
+            )
         shutil.rmtree(destination)
     shutil.copytree(
         source,
@@ -87,7 +96,14 @@ def copy_tree(source: Path, destination: Path, *, force: bool, root: Path) -> st
     return f"installed {destination}"
 
 
-def copy_file(source: Path, destination: Path, *, force: bool, root: Path) -> str:
+def copy_file(
+    source: Path,
+    destination: Path,
+    *,
+    force: bool,
+    root: Path,
+    home_label: str = "Codex",
+) -> str:
     destination.parent.mkdir(parents=True, exist_ok=True)
     if destination.exists():
         if filecmp.cmp(source, destination, shallow=False):
@@ -95,21 +111,31 @@ def copy_file(source: Path, destination: Path, *, force: bool, root: Path) -> st
         if not force:
             return f"skipped existing {destination}"
         if not is_within(destination, root):
-            raise RuntimeError(f"Refusing to replace path outside Codex home: {destination}")
+            raise RuntimeError(
+                f"Refusing to replace path outside {home_label} home: {destination}"
+            )
     shutil.copy2(source, destination)
     return f"installed {destination}"
 
 
-def remove_stale_file(path: Path, *, root: Path) -> str | None:
+def remove_stale_file(
+    path: Path,
+    *,
+    root: Path,
+    label: str = "stale",
+    home_label: str = "Codex",
+) -> str | None:
     """Remove one exact package-owned stale file under the install root."""
     if not path.exists():
         return None
     if not path.is_file():
-        return f"skipped stale non-file {path}"
+        return f"skipped {label} non-file {path}"
     if not is_within(path, root):
-        raise RuntimeError(f"Refusing to remove path outside Codex home: {path}")
+        raise RuntimeError(
+            f"Refusing to remove path outside {home_label} home: {path}"
+        )
     path.unlink()
-    return f"removed stale {path}"
+    return f"removed {label} {path}"
 
 
 def remove_stale_tree(path: Path, *, root: Path) -> str | None:

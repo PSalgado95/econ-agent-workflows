@@ -93,10 +93,9 @@ def _current_package_files(
 def _stale_agent_names(runtime: str) -> tuple[str, ...]:
     if runtime != "Claude Code":
         return STALE_AGENT_FILES
-    return tuple(
-        Path(filename).stem.replace("-", "_") + ".md"
-        for filename in STALE_AGENT_FILES
-    )
+    from install_claude import stale_claude_agent_name
+
+    return tuple(stale_claude_agent_name(filename) for filename in STALE_AGENT_FILES)
 
 
 def run_check(
