@@ -131,7 +131,3 @@ read-only review boundary:
 ```text
 python tests/run_agent_native_smoke.py --host codex --checkout .
 ```
-
-See
-[the smoke-test documentation](docs/testing/agent-native-review-smoke.md)
-for its requirements.
