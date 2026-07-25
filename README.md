@@ -1,109 +1,90 @@
 # Econ Agent Workflows
 
-Agentic workflows for economists, inspired by
+Research workflows for economists, inspired by
 [Compound Engineering](https://github.com/EveryInc/compound-engineering-plugin).
 
-The package adapts a plan → work → review → revise → compound loop to economic
-research. It helps an agent preserve the research object, realised sample,
-evidence trail, interpretation boundary, and reader-facing deliverable while
-moving from an idea to reviewed work.
+It consists of a set of skills that structure the use of AI agents across the
+full research process, from developing an idea and writing a plan to carrying
+out the analysis, reviewing the evidence, and revising the work. Verified
+lessons from completed projects are carried into later work, allowing
+successful methods and solutions to accumulate across projects.
 
-This is a beta. The workflows are strongest for empirical research—data
-construction, estimation, tables, figures, notes, review bundles, and
-reproducibility—but the same boundaries also apply to computational and
-theory-facing work.
+```text
+brainstorm → plan → work → review → revise → compound
+```
 
-## Public workflow
+Most development so far has come from empirical applications, including data
+construction, estimation, figures, tables, research notes, and replication.
+The skills can also be used for computational and theory-based research,
+although these applications have received less testing.
 
-The seven core skills are:
+## The research workflow
 
-- **`econ-brainstorm`** turns a vague research idea into a bounded scope memo.
-- **`econ-plan`** turns a clear task into a staged, reviewable research plan.
-- **`econ-work`** executes a plan or concrete request while separating code
-  changes, realised-output inspection, interpretation, reporting, and closeout.
-- **`econ-review`** performs one report-only review over plans, implementation,
-  empirical results, replication material, or a mixed evidence surface.
-- **`econ-debug`** diagnoses anomalous empirical or computational results
-  without silently changing the research object.
-- **`econ-lfg`** runs the bounded plan → work → review → revise loop and pauses
-  for researcher-level decisions.
-- **`econ-compound`** records a durable research lesson only when bounded
-  evidence supports it.
+The seven core skills cover distinct parts of this process. They can be used
+separately or combined as the research develops.
 
-The package also contains one auxiliary skill, **`gpt-pro-handoff`**. It
-activates only when the current user turn explicitly names the skill or
-unambiguously requests an external GPT Pro handoff package. Core workflows do
-not offer, recommend, prepare, or automatically route to a package. Reports,
-blockers, prior turns, imported packages, and generated next steps cannot
-activate it.
+| Research task | Skill | What it does |
+| --- | --- | --- |
+| Explore a research idea | `econ-brainstorm` | Helps the researcher work out what they want to investigate |
+| Plan the research | `econ-plan` | Turns an idea or concrete task into a sequence of research steps |
+| Carry out the analysis | `econ-work` | Works through data, code, models, results, and their interpretation |
+| Review the research | `econ-review` | Checks the design, evidence, results, and claims |
+| Investigate an unexpected result | `econ-debug` | Traces its likely source and identifies the evidence needed to resolve it |
+| Run the full research cycle | `econ-lfg` | Coordinates planning, execution, review, and revision while preserving researcher decisions |
+| Carry lessons into later work | `econ-compound` | Retains verified lessons from completed research for use in later projects |
 
-## One economics review, internal lenses
+`econ-lfg` runs this cycle for a defined research task. It pauses when a decision
+would change the research question, empirical design, interpretation, or scope.
 
-Users invoke `econ-review`; they do not choose or dispatch reviewers.
+The repository also includes the auxiliary skill `gpt-pro-handoff`, which
+prepares an external GPT Pro review package when the researcher explicitly
+requests one.
 
-The skill contains 15 compact, skill-local review lenses:
+## What `econ-review` checks
 
-1. provenance;
-2. specification;
-3. transformation and sample;
-4. estimation practice;
-5. inference;
-6. output consistency;
-7. claim discipline;
-8. output perception;
-9. code quality;
-10. design;
-11. dynamics;
-12. robustness;
-13. software equivalence;
-14. reproducibility;
-15. bundle quality.
+`econ-review` selects the checks that fit the research task and the available
+evidence. Depending on the material, it examines:
 
-`econ-review` selects the applicable lenses automatically from the requested
-surface, depth, visible evidence, and promotion status. The list is a catalogue
-of internal perspectives, not 15 commands or user-facing products. Necessary
-lenses compose, and six is a cost target rather than a cap.
+- whether the data sources, transformations, and realised sample are clear;
+- whether the specification answers the stated research question;
+- whether estimation and inference are appropriate;
+- whether dynamics and robustness support the interpretation;
+- whether tables, figures, code, and written claims agree; and
+- whether the analysis can be reproduced from the supplied material.
 
-Cross-language and custom-implementation checks are folds across these lenses,
-not separate reviewers. Cross-language work establishes object parity before
-numeric parity and selects software equivalence plus the sample and
-reproducibility lenses when those surfaces are material.
+When useful, the review can ask reviewers to reproduce selected results
+independently in another programming language. They compare the constructed
+sample, variables, estimates, tables, and figures. Because the second version
+is written independently, discrepancies can reveal coding errors in the
+original analysis.
 
-The review contracts live with the skill:
+The economist invokes one review skill. `econ-review` chooses and combines the
+relevant specialist checks internally.
 
-- `econ-review-request/v1` normalizes direct and nested requests;
-- `econ-reviewer-output/v1` constrains one lens contribution;
-- `econ-domain-assessment/v1` accepts supplemental domain evidence without
-  treating it as another reviewer;
-- `econ-review-report/v1` is the parent-owned final report.
+## Installation
 
-The parent owns roster selection, child validation, stable finding IDs,
-synthesis, coverage, verdict, and the promotion gate. Coverage is immutable
-report evidence: missing, invalid, unavailable, failed, or timed-out required
-lenses degrade the report rather than being relabelled away. Promotion passes
-only with full coverage, an unchanged state canary, accepted required
-assessments, and no unresolved blocking finding.
+The skills are model-agnostic. This repository currently provides installers
+for Codex and Claude Code.
 
-## Report-only and fail-closed
+To install or update the Codex skills:
 
-`econ-review` never edits reviewed files, applies fixes, changes repository
-state, creates issues, or initiates another workflow.
+```text
+python install.py --force
+python install.py --check
+```
 
-Reviewer children run only when the host attests the effective child policy
-after configuration precedence and live overrides:
+To install or update the Claude Code skills:
 
-- the workspace is hard read-only;
-- approval or elevation cannot be granted;
-- side-effecting connector, browser, computer-control, messaging, and similar
-  tools are unavailable;
-- the child cannot broaden the policy.
+```text
+python install_claude.py --force
+python install_claude.py --check
+```
 
-A prompt promise, configuration declaration, child self-report, or clean
-post-run canary is not attestation. If the host cannot prove the preventive
-boundary, the review fails closed: no child is dispatched, selected lenses are
-unavailable, coverage is `not-run`, and promotion is blocked.
+Restart the relevant application after installation so it reloads the skills.
 
-## Source layout
+## For contributors
+
+### Source layout
 
 ```text
 skills/                         # canonical skill source
@@ -112,113 +93,46 @@ skills/                         # canonical skill source
   econ-work/
   econ-review/
     references/
-      personas/                 # 15 internal review lenses
-      *-schema.json             # four versioned contracts
+      personas/                 # internal specialist review perspectives
+      *-schema.json             # review contracts
   econ-debug/
   econ-lfg/
   econ-compound/
   auxiliary/
     gpt-pro-handoff/
-tests/                          # contract and migration tests
+tests/                          # contract and installation tests
 claude/
   skills/                       # generated Claude Code skills; do not edit
 build_claude.py                 # builds and checks claude/
 install.py                      # Codex installer and health check
 install_claude.py               # Claude Code installer and health check
-check_install.py                # shared read-only install checker
+check_install.py                # shared read-only installation check
 ```
 
-Complete skill trees are the install unit. Personas, schemas, templates,
-scripts, and skill-local references move together. There is no shared root
-review-contract directory.
+The repository is the source of truth. Installed skill directories are runtime
+copies and do not update automatically when the repository changes.
 
-Claude Code discovers the generated skills directly under `claude/skills`.
-The generated package has no duplicate command wrappers, no persona-bearing
-reviewer agents, and no root review contracts.
+Edit the source under `skills/`, regenerate the committed Claude output when
+needed, run the tests, and then install from the exact checkout that should
+become active. Do not edit generated files under `claude/` directly.
 
-## Verification
+### Verification
 
-From the repository root:
+Run the contract suite and verify the generated Claude package from the
+repository root:
 
 ```text
 python -m unittest discover -s tests -v
 python build_claude.py --check
 ```
 
-Temporary-home install checks are safe and do not affect a live runtime:
+An optional host-level smoke test is available for maintainers working on the
+read-only review boundary:
 
 ```text
-python install.py --codex-home <temporary-codex-home>
-python install.py --codex-home <temporary-codex-home> --check
-
-python install_claude.py --claude-home <temporary-claude-home>
-python install_claude.py --claude-home <temporary-claude-home> --check
+python tests/run_agent_native_smoke.py --host codex --checkout .
 ```
-
-An optional agent-native smoke is available for maintainers developing a
-trusted host adapter:
-
-```text
-python tests/run_agent_native_smoke.py --host codex --checkout . --result-path <agent-native-release-proof.json>
-```
-
-That command requires a trusted host adapter able to attest the effective
-read-only child policy. Without one it returns `not-run`; this does not block a
-normal local installation. See
-[the smoke contract](docs/testing/agent-native-review-smoke.md).
-
-Maintainers regenerate Claude output only from canonical source:
-
-```text
-python build_claude.py
-python build_claude.py --check
-```
-
-Never hand-edit `claude/`.
-
-## Install locally
-
-Install or update the Codex skills directly:
-
-```text
-python install.py --force
-python install.py --check
-```
-
-For Claude Code:
-
-```text
-python install_claude.py --force
-python install_claude.py --check
-```
-
-Restart the relevant runtime after installation so its skill registry refreshes.
-Repository edits do not update installed copies automatically.
-
-## Migration boundary
-
-Forced installation removes exactly 18 retired package-owned reviewer
-identities: the 17 former specialist registrations and the later consolidated
-registration. The Claude filenames are derived deterministically from that
-literal list. Cleanup runs only under `--force`.
-
-The migration does not use prefixes, globs, declared-name scans, or fuzzy
-ownership rules. Every SSJ agent, unknown file, unrelated skill, and optional
-persona-free read-only transport is outside the stale inventory and is
-preserved. Historical Claude command wrappers and moved root contracts have
-their own exact package-owned inventories.
 
 See
-[the 2026-07-24 persona-runtime migration note](docs/releases/2026-07-24-economics-review-persona-runtime.md)
-for the exact retired identities and upgrade details.
-
-## Source versus installed runtime
-
-This repository is the source of truth. Installed copies under
-`$CODEX_HOME/skills` or `~/.codex/skills`, and under
-`$CLAUDE_CONFIG_DIR/skills` or `~/.claude/skills`, are runtime copies.
-
-Edit repository source first, regenerate committed Claude output when needed,
-run the contract suite, and use the installer only from the exact checkout that
-should become active. Prefer explicit copy installation over symlinks so an
-uncommitted source edit does not silently change runtime behaviour.
+[the smoke-test documentation](docs/testing/agent-native-review-smoke.md)
+for its requirements.
