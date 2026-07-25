@@ -918,8 +918,6 @@ def run_smoke(
             "request_id": request_id,
             "scenarios": list(SCENARIO_IDS),
             "workspace_unchanged": True,
-            "live_install_ready": False,
-            "live_install_blocker": "separate SSJ adapter acceptance is required",
             "_release_proof": proof,
         }
 
@@ -960,7 +958,7 @@ def parse_args(arguments: list[str] | None = None) -> argparse.Namespace:
         "--result-path",
         type=Path,
         help=(
-            "Write a durable agent-native release proof only after an "
+            "Write a durable agent-native smoke proof only after an "
             "allowlisted adapter passes every validation."
         ),
     )
@@ -981,7 +979,6 @@ def main(arguments: list[str] | None = None) -> int:
             "status": "not-run",
             "host": args.host,
             "reason": str(error),
-            "live_install_ready": False,
         }
         print(json.dumps(result, indent=2, sort_keys=True))
         return 2
@@ -990,7 +987,6 @@ def main(arguments: list[str] | None = None) -> int:
             "status": "failed",
             "host": args.host,
             "reason": str(error),
-            "live_install_ready": False,
         }
         print(json.dumps(result, indent=2, sort_keys=True))
         return 1

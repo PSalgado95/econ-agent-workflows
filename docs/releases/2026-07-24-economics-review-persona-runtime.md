@@ -181,35 +181,22 @@ python tests/run_agent_native_smoke.py --host codex --checkout . --result-path <
 
 It requires a trusted host adapter and validates four real runtime scenarios,
 the installed personas and schemas, host-level safety attestation, and
-byte-identical fixture state. An unavailable adapter returns the release-
-blocking result `not-run`; static or synthetic tests cannot convert it into a
-pass. See
+byte-identical fixture state. An unavailable adapter returns `not-run`. This is
+an optional maintainer test and does not block a normal local installation. See
 [`docs/testing/agent-native-review-smoke.md`](../testing/agent-native-review-smoke.md)
 for the adapter and receipt contract.
 
-## Release gate
+## Local installation
 
-The source is ready for review and may be merged independently. Live forced
-installation remains blocked until the agent-native smoke passes and the
-separately owned SSJ adapter:
+The proof-receipt installation gate was removed after review because it created
+a circular local workflow: the new runtime could not be installed until it had
+already been exercised. Install the reviewed package directly:
 
-1. emits `ssj-model-validity` as `econ-domain-assessment/v1`;
-2. stops requesting a retired reviewer identity; and
-3. passes the core request/report integration checks.
+```text
+python install.py --force
+python install.py --check
+```
 
-Do not run live `python install.py --force` or
-`python install_claude.py --force` before that prerequisite is accepted.
-
-The installers enforce the rule for default runtime homes. A forced live
-install requires `--release-gate <release-gate.json>` with a strict
-`econ-agent-workflows-release-gate/v1` receipt. It embeds an allowlisted
-`econ-review-agent-native-release-proof/v1` and independently accepted SSJ
-evidence; every component is bound to the current HEAD and deterministic
-tracked-source digest. The initial trusted-adapter allowlist is empty, and the
-repository contains no accepted receipt, so no synthetic artifact can open the
-gate.
-
-After both proofs exist for the exact reviewed checkout, run the installer with
-the receipt, run the corresponding `--check`, and restart the runtime.
-Repository source and runtime copies are separate; a merge or source edit does
-not refresh installed skills. Temporary-home installer tests remain ungated.
+The force path still removes only the exact package-owned retired files listed
+by the installer. It does not use globs to delete unknown skills, agents, or
+references. Restart Codex after installation so the skill registry refreshes.
