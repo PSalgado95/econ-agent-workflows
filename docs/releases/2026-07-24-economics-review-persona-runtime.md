@@ -176,7 +176,7 @@ These commands do not touch a live installation.
 The separate agent-native release smoke is:
 
 ```text
-python tests/run_agent_native_smoke.py --host codex --checkout .
+python tests/run_agent_native_smoke.py --host codex --checkout . --result-path <agent-native-release-proof.json>
 ```
 
 It requires a trusted host adapter and validates four real runtime scenarios,
@@ -200,6 +200,16 @@ separately owned SSJ adapter:
 Do not run live `python install.py --force` or
 `python install_claude.py --force` before that prerequisite is accepted.
 
-After the gate passes, install from the exact reviewed checkout, run the
-corresponding `--check`, and restart the runtime. Repository source and runtime
-copies are separate; a merge or source edit does not refresh installed skills.
+The installers enforce the rule for default runtime homes. A forced live
+install requires `--release-gate <release-gate.json>` with a strict
+`econ-agent-workflows-release-gate/v1` receipt. It embeds an allowlisted
+`econ-review-agent-native-release-proof/v1` and independently accepted SSJ
+evidence; every component is bound to the current HEAD and deterministic
+tracked-source digest. The initial trusted-adapter allowlist is empty, and the
+repository contains no accepted receipt, so no synthetic artifact can open the
+gate.
+
+After both proofs exist for the exact reviewed checkout, run the installer with
+the receipt, run the corresponding `--check`, and restart the runtime.
+Repository source and runtime copies are separate; a merge or source edit does
+not refresh installed skills. Temporary-home installer tests remain ungated.

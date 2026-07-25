@@ -309,6 +309,112 @@ class PersonaCatalogueContractsTest(unittest.TestCase):
         self.assertEqual(all_roles, self.roles)
         self.assertIn("Six roles are a context-and-cost target, never a cap.", self.catalog_text)
 
+    def test_every_surface_and_depth_has_an_exact_frozen_core(self) -> None:
+        expected = {
+            ("plan-design", "quick"): ["specification", "design"],
+            ("plan-design", "standard"): [
+                "specification",
+                "claim-discipline",
+                "design",
+            ],
+            ("implementation-code", "quick"): [
+                "transformation-and-sample",
+                "code-quality",
+            ],
+            ("implementation-code", "standard"): [
+                "transformation-and-sample",
+                "code-quality",
+                "reproducibility",
+            ],
+            ("empirical-results", "quick"): [
+                "specification",
+                "inference",
+                "output-consistency",
+            ],
+            ("empirical-results", "standard"): [
+                "specification",
+                "inference",
+                "output-consistency",
+                "claim-discipline",
+                "robustness",
+            ],
+            ("replication-handoff", "quick"): [
+                "provenance",
+                "reproducibility",
+                "bundle",
+            ],
+            ("replication-handoff", "standard"): [
+                "provenance",
+                "output-consistency",
+                "reproducibility",
+                "bundle",
+            ],
+        }
+        for surface in self.matrix:
+            for depth in ("quick", "standard", "full"):
+                with self.subTest(surface=surface, depth=depth):
+                    actual = select_from_catalog(
+                        self.roles,
+                        self.matrix,
+                        [surface],
+                        depth,
+                    )
+                    expected_depth = "quick" if depth == "quick" else "standard"
+                    self.assertEqual(actual, expected[(surface, expected_depth)])
+
+    def test_every_conditional_trigger_has_an_exact_composed_roster(self) -> None:
+        trigger_table = section(
+            self.catalog_text,
+            "## Conditional triggers",
+            "### Cross-language fold",
+        )
+        rows = {
+            trigger.strip(): role_tokens(additions, self.roles)
+            for trigger, additions in re.findall(
+                r"^\| ([^|]+) \| ([^|]+) \|\s*$",
+                trigger_table,
+                re.MULTILINE,
+            )
+            if role_tokens(additions, self.roles)
+        }
+        cases = {
+            "Source lineage": {"provenance"},
+            "Joins": {"transformation-and-sample"},
+            "Non-trivial estimator": {"estimation-practice"},
+            "P-values": {"inference"},
+            "Substantive tables": {
+                "output-perception",
+                "output-consistency",
+            },
+            "Code": {"code-quality"},
+            "Causal": {"design"},
+            "Event time": {"dynamics"},
+            "Baseline placement": {"robustness"},
+            "Cross-software": {"software-equivalence"},
+            "Rerun": {"reproducibility"},
+            "The compact review package": {"bundle"},
+        }
+        self.assertEqual(len(rows), len(cases))
+        base = ["specification", "design"]
+        for prefix, expected_additions in cases.items():
+            matches = [
+                additions
+                for trigger, additions in rows.items()
+                if trigger.startswith(prefix)
+            ]
+            with self.subTest(trigger=prefix):
+                self.assertEqual(matches, [expected_additions])
+                self.assertEqual(
+                    select_from_catalog(
+                        self.roles,
+                        self.matrix,
+                        ["plan-design"],
+                        "quick",
+                        matches[0],
+                    ),
+                    ordered_union(self.roles, base, expected_additions),
+                )
+
 
 class OrchestrationContractsTest(unittest.TestCase):
     def test_queue_backpressure_idle_capacity_and_timeout_semantics_are_explicit(self) -> None:
@@ -432,6 +538,19 @@ class OrchestrationContractsTest(unittest.TestCase):
 
 
 class LocalAssetContractsTest(unittest.TestCase):
+    def test_econ_work_note_gate_is_local_and_named(self) -> None:
+        skill = read(REPO / "skills" / "econ-work" / "SKILL.md")
+        reference = read(
+            REPO / "skills" / "econ-work" / "references" / "execution_reference.md"
+        )
+        self.assertIn("local **Reader-facing note gate**", skill)
+        self.assertIn("## Reader-facing note gate", reference)
+        self.assertIn(
+            "passes the local **Reader-facing note gate** above",
+            reference,
+        )
+        self.assertNotIn("`econ-review` Stage 6", skill + reference)
+
     def test_every_active_local_reference_resolves_within_its_skill(self) -> None:
         markdown_link = re.compile(r"\[[^\]]+\]\(([^)]+)\)")
         package_path = re.compile(

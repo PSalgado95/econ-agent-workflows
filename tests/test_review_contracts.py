@@ -57,6 +57,7 @@ def valid_request() -> dict[str, Any]:
         "run_id": "fixture-run",
         "invocation": "direct",
         "caller": None,
+        "resolution_context": None,
         "surfaces": ["empirical-results"],
         "depth": "standard",
         "promotion": False,
@@ -137,6 +138,7 @@ def valid_report() -> dict[str, Any]:
         ],
         "findings": [],
         "warnings": [],
+        "diagnostic_gaps": [],
         "process_failures": [],
         "supplemental_assessments": [],
         "promotion_gate": {
@@ -150,6 +152,47 @@ def valid_report() -> dict[str, Any]:
             "out_of_scope_drift": [],
         },
         "failure": None,
+    }
+
+
+def canonical_finding() -> dict[str, Any]:
+    return {
+        "finding_id": "F1",
+        "severity": "P1",
+        "trust_effect": "promotion-blocking",
+        "issue_origin": "inference",
+        "fix_class": "gated",
+        "affected_labels": ["table-main"],
+        "issue_followup_type": "empirical-problem",
+        "title": "Inference convention is not documented",
+        "why_it_matters": "The promoted uncertainty claim cannot be audited.",
+        "evidence_refs": ["E1"],
+        "evidence_locations": [
+            {
+                "evidence_id": "E1",
+                "path": "results/table.tex",
+                "locator": "line 12",
+                "quote": None,
+            }
+        ],
+        "recommended_action": "Document and verify the inference convention.",
+        "user_judgement_required": True,
+        "confidence": 100,
+        "sources": [{"kind": "reviewer-role", "source_id": "inference"}],
+        "disagreement": None,
+    }
+
+
+def canonical_gap() -> dict[str, Any]:
+    return {
+        "gap": "Cluster-count evidence is absent.",
+        "trust_effect": "promotion-blocking",
+        "issue_origin": "inference",
+        "affected_labels": ["table-main"],
+        "why_it_matters": "Finite-sample reliability cannot be assessed.",
+        "evidence_refs": ["E1"],
+        "recommended_action": "Add the realised cluster count.",
+        "sources": [{"kind": "reviewer-role", "source_id": "inference"}],
     }
 
 
@@ -370,6 +413,7 @@ class ReviewSchemaContractsTest(unittest.TestCase):
             {
                 "valid",
                 "wrapped-valid",
+                "ambiguous-wrapper",
                 "malformed",
                 "wrong-role",
                 "unsupported-evidence",
@@ -424,6 +468,233 @@ class ReviewSchemaContractsTest(unittest.TestCase):
         self.assertIn("## Parent-only responsibilities", protocol)
         self.assertIn("assign stable `F<n>` identifiers", protocol)
         self.assertIn("assign or recommend the overall verdict", protocol)
+
+    def test_initial_and_targeted_nested_requests_share_the_public_contract(self) -> None:
+        initial = valid_request()
+        initial["invocation"] = "nested"
+        initial["caller"] = "econ-lfg/v1"
+        self.validators["request"].validate(initial)
+        self.assertIsNone(initial["resolution_context"])
+
+        rereview = copy.deepcopy(initial)
+        rereview["run_id"] = "fixture-rereview"
+        rereview["resolution_context"] = {
+            "prior_run_id": "fixture-run",
+            "finding_outcomes": [
+                {
+                    "finding_id": "F1",
+                    "outcome": "fixed",
+                    "changed_paths": ["analysis/model.py"],
+                    "affected_labels": ["table-main"],
+                    "prior_evidence_refs": ["E1"],
+                },
+                {
+                    "finding_id": "F2",
+                    "outcome": "researcher-rejected",
+                    "changed_paths": [],
+                    "affected_labels": ["baseline"],
+                    "prior_evidence_refs": ["E1"],
+                },
+                {
+                    "finding_id": "F3",
+                    "outcome": "deferred",
+                    "changed_paths": [],
+                    "affected_labels": ["appendix-robustness"],
+                    "prior_evidence_refs": ["E1"],
+                },
+            ],
+        }
+        self.validators["request"].validate(rereview)
+
+        missing_context = copy.deepcopy(initial)
+        missing_context.pop("resolution_context")
+        self.assertTrue(
+            list(self.validators["request"].iter_errors(missing_context))
+        )
+
+        malformed_context = copy.deepcopy(rereview)
+        malformed_context["resolution_context"]["finding_outcomes"][0][
+            "outcome"
+        ] = "silently-ignore"
+        self.assertTrue(
+            list(self.validators["request"].iter_errors(malformed_context))
+        )
+
+        direct_with_history = copy.deepcopy(rereview)
+        direct_with_history["invocation"] = "direct"
+        direct_with_history["caller"] = None
+        self.assertTrue(
+            list(self.validators["request"].iter_errors(direct_with_history))
+        )
+
+        nested_without_caller = copy.deepcopy(initial)
+        nested_without_caller["caller"] = None
+        self.assertTrue(
+            list(self.validators["request"].iter_errors(nested_without_caller))
+        )
+
+        lfg = (REPO / "skills" / "econ-lfg" / "SKILL.md").read_text(
+            encoding="utf-8"
+        )
+        self.assertIn("one complete `econ-review-request/v1` object", lfg)
+        self.assertIn("Consume the returned `econ-review-report/v1`", lfg)
+        self.assertNotIn("econ-review-for-caller/v1", lfg)
+
+    def test_report_cross_field_safety_coverage_and_promotion_invariants(self) -> None:
+        validator = self.validators["report"]
+
+        unavailable = valid_report()
+        unavailable["safety"] = {
+            "mode": "unavailable",
+            "attestation": None,
+            "side_effecting_tools_disabled": False,
+        }
+        unavailable["coverage"] = "not-run"
+        unavailable["verdict"] = "blocked"
+        unavailable["selected_roles"][0].update(
+            state="unavailable",
+            reason="safety-unavailable",
+        )
+        unavailable["state_canary"]["status"] = "not-run"
+        validator.validate(unavailable)
+
+        for path, value in (
+            (("coverage",), "degraded"),
+            (("verdict",), "indeterminate"),
+            (("selected_roles", 0, "state"), "completed"),
+            (("state_canary", "status"), "unchanged"),
+            (("safety", "side_effecting_tools_disabled"), True),
+        ):
+            with self.subTest(unavailable_defect=path):
+                broken = copy.deepcopy(unavailable)
+                target: Any = broken
+                for key in path[:-1]:
+                    target = target[key]
+                target[path[-1]] = value
+                self.assertTrue(list(validator.iter_errors(broken)))
+
+        full = valid_report()
+        full["supplemental_assessments"] = [
+            {
+                "assessment_id": "optional-1",
+                "assessment_type": "auxiliary-check",
+                "required": False,
+                "state": "failed",
+                "reason": "Optional evidence was unavailable.",
+            }
+        ]
+        validator.validate(full)
+
+        full_with_failed_required = copy.deepcopy(full)
+        full_with_failed_required["supplemental_assessments"][0][
+            "required"
+        ] = True
+        self.assertTrue(
+            list(validator.iter_errors(full_with_failed_required))
+        )
+
+        for path, value in (
+            (("safety", "mode"), "unavailable"),
+            (("safety", "side_effecting_tools_disabled"), False),
+            (("selected_roles", 0, "state"), "failed"),
+            (("state_canary", "status"), "drift-detected"),
+            (("parent_status",), "failed"),
+            (("verdict",), "blocked"),
+        ):
+            with self.subTest(full_defect=path):
+                broken = copy.deepcopy(valid_report())
+                target = broken
+                for key in path[:-1]:
+                    target = target[key]
+                target[path[-1]] = value
+                self.assertTrue(list(validator.iter_errors(broken)))
+
+        full_with_process_failure = copy.deepcopy(valid_report())
+        full_with_process_failure["process_failures"] = [
+            {
+                "stage": "dispatch",
+                "code": "unexpected-retry",
+                "message": "A review child required an undeclared retry.",
+                "affected_roles": ["inference"],
+            }
+        ]
+        self.assertTrue(
+            list(validator.iter_errors(full_with_process_failure))
+        )
+
+        clean_with_finding = copy.deepcopy(valid_report())
+        clean_with_finding["findings"] = [canonical_finding()]
+        self.assertTrue(list(validator.iter_errors(clean_with_finding)))
+
+        issues_without_finding = copy.deepcopy(valid_report())
+        issues_without_finding["verdict"] = "issues-found"
+        self.assertTrue(list(validator.iter_errors(issues_without_finding)))
+
+        unrequested_but_blocked = copy.deepcopy(valid_report())
+        unrequested_but_blocked["promotion_gate"]["status"] = "blocked"
+        self.assertTrue(list(validator.iter_errors(unrequested_but_blocked)))
+
+        passed = valid_report()
+        passed["request_summary"]["promotion"] = True
+        passed["promotion_gate"] = {
+            "requested": True,
+            "status": "passed",
+            "reasons": [],
+        }
+        validator.validate(passed)
+
+        for path, value in (
+            (("coverage",), "degraded"),
+            (("verdict",), "issues-found"),
+            (("safety", "mode"), "unavailable"),
+            (("selected_roles", 0, "state"), "failed"),
+            (("state_canary", "status"), "drift-detected"),
+        ):
+            with self.subTest(promotion_defect=path):
+                broken = copy.deepcopy(passed)
+                target = broken
+                for key in path[:-1]:
+                    target = target[key]
+                target[path[-1]] = value
+                self.assertTrue(list(validator.iter_errors(broken)))
+
+        passed_with_gap = copy.deepcopy(passed)
+        passed_with_gap["diagnostic_gaps"] = [canonical_gap()]
+        self.assertTrue(list(validator.iter_errors(passed_with_gap)))
+
+    def test_nested_report_preserves_resolution_fields_and_diagnostic_gaps(self) -> None:
+        report = valid_report()
+        report["verdict"] = "issues-found"
+        report["findings"] = [canonical_finding()]
+        report["diagnostic_gaps"] = [canonical_gap()]
+        self.validators["report"].validate(report)
+
+        round_tripped = json.loads(json.dumps(report))
+        finding = round_tripped["findings"][0]
+        for field in (
+            "fix_class",
+            "affected_labels",
+            "issue_followup_type",
+            "evidence_locations",
+            "user_judgement_required",
+            "confidence",
+        ):
+            with self.subTest(field=field):
+                self.assertEqual(finding[field], report["findings"][0][field])
+                missing = copy.deepcopy(report)
+                missing["findings"][0].pop(field)
+                self.assertTrue(
+                    list(self.validators["report"].iter_errors(missing))
+                )
+        self.assertEqual(
+            round_tripped["diagnostic_gaps"],
+            report["diagnostic_gaps"],
+        )
+        missing_gaps = copy.deepcopy(report)
+        missing_gaps.pop("diagnostic_gaps")
+        self.assertTrue(
+            list(self.validators["report"].iter_errors(missing_gaps))
+        )
 
 
 if __name__ == "__main__":

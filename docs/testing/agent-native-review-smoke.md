@@ -10,10 +10,12 @@ python tests/run_agent_native_smoke.py --host codex --checkout .
 ```
 
 The runner installs the checkout into a temporary Codex home, creates and
-commits a disposable fixture repository, records a byte-level workspace
-snapshot, and hands four scenarios to a trusted Codex host adapter:
+commits a disposable fixture repository, records byte-level workspace and
+complete repository-state snapshots, and hands four scenarios to a trusted
+Codex host adapter:
 
-1. a safe review that dispatches three installed personas;
+1. a safe review of substantive outputs that dispatches four installed
+   personas, including `output-perception`;
 2. a missing-attestation run that must dispatch no child and return `not-run`;
 3. a malformed-child run that must retain the invalid lifecycle and degrade
    coverage; and
@@ -27,7 +29,10 @@ the smoke.
 ## Trusted host adapter
 
 Configure the adapter with `--driver <executable>` or
-`ECON_REVIEW_CODEX_SMOKE_DRIVER`. The runner calls:
+`ECON_REVIEW_CODEX_SMOKE_DRIVER`. Configuration alone does not establish
+trust: the executable's SHA-256 must also appear in the shared, host-specific
+reviewed allowlist in `release_gate.py`. That allowlist is intentionally empty
+until a real adapter receives independent review. The runner calls:
 
 ```text
 <driver> --request <absolute-request-json> --receipt <absolute-receipt-json>
@@ -35,8 +40,14 @@ Configure the adapter with `--driver <executable>` or
 
 The request identifies the temporary runtime, installed skill, disposable
 workspace, contract schemas, scenario requests, expected ordered rosters, and
-fault injections. The adapter must exercise the installed skill through the
-real host and write `econ-review-agent-native-smoke-receipt/v1`.
+fault injections. It also carries exact digests for the installed protocols,
+personas, and schemas. The adapter must exercise the installed skill through
+the real host and write `econ-review-agent-native-smoke-receipt/v1`, bound to
+the exact request, runtime-integrity manifest, and approved adapter digest.
+
+The adapter has a 300-second default deadline. Set another positive deadline
+with `--driver-timeout-seconds`. A timeout is a structured failed smoke, never
+an unavailable or passing result.
 
 The receipt is accepted only when each dispatched child is bound to
 host-effective-policy metadata observed after configuration precedence. The
@@ -52,8 +63,17 @@ cannot substitute for that metadata. The adapter is trusted to report the
 host's effective policy; reviewer children are not.
 
 The runner then validates all child payloads and final reports against the
-installed v1 schemas, verifies persona hashes and roster order, checks every
-scenario-specific outcome, and compares pre/post workspace bytes and git state.
+installed v1 schemas. Child evidence IDs, evidence locations, paths, issue
+origins, and diagnostic-gap references must resolve to the exact request
+manifest. It also verifies persona hashes and roster order, checks every
+scenario-specific outcome, and compares pre/post workspace bytes, symbolic or
+detached HEAD, commit ID, raw index state, and porcelain status.
+
+After a trusted run passes, `--result-path <path>` atomically writes
+`econ-review-agent-native-release-proof/v1`. The proof binds the validated
+request and receipt to checkout HEAD, a SHA-256 of the archived source tree,
+the approved adapter digest, and the installed runtime digests. No proof file
+is written for `not-run` or failed results.
 
 ## Fail-closed result
 

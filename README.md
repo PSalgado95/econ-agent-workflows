@@ -158,7 +158,7 @@ python install_claude.py --claude-home <temporary-claude-home> --check
 Static checks do not replace the agent-native release smoke:
 
 ```text
-python tests/run_agent_native_smoke.py --host codex --checkout .
+python tests/run_agent_native_smoke.py --host codex --checkout . --result-path <agent-native-release-proof.json>
 ```
 
 That command requires a trusted host adapter able to attest the effective
@@ -188,19 +188,30 @@ This gate matters because a forced migration removes the retired core reviewer
 registrations while existing SSJ workflows may still depend on one. Do not run
 a live forced install from this version before the adapter prerequisite passes.
 
-After that prerequisite is accepted, install from the exact reviewed checkout:
+The live installer enforces this boundary. A default-home `--force` requires an
+`econ-agent-workflows-release-gate/v1` receipt that embeds the allowlisted
+agent-native proof and independently accepted SSJ evidence. All three objects
+must identify the current checkout HEAD and the same deterministic
+`git archive HEAD` digest. Package-owned install sources must also be clean.
+The repository ships no accepted receipt and no placeholder adapter digest.
+
+After both prerequisites are accepted for the exact reviewed checkout:
 
 ```text
-python install.py --force
+python install.py --force --release-gate <release-gate.json>
 python install.py --check
 ```
 
 or, for Claude Code:
 
 ```text
-python install_claude.py --force
+python install_claude.py --force --release-gate <release-gate.json>
 python install_claude.py --check
 ```
+
+Temporary or other custom homes remain available without release evidence.
+When a default-home health check finds drift before the gate is satisfied, it
+reports the blocker rather than suggesting an unauthorized forced repair.
 
 Restart the relevant runtime after installation so its skill registry refreshes.
 Repository edits do not update installed copies automatically.

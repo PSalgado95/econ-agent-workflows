@@ -7,11 +7,11 @@ Use this reference during `econ-lfg` Stage 4 after `econ-review` returns retaine
 For every retained finding, inspect these fields before choosing a route:
 
 - finding ID;
-- fix class: `parent-resolvable`, `gated`, `manual`, or `advisory`;
+- fix class: `safe-automatic`, `gated`, `manual`, or `advisory`;
 - trust effect or promotion effect;
 - issue origin;
 - affected labels, such as plan labels, output IDs, bundle IDs, branch/worktree names, or evidence IDs;
-- evidence path and whether the evidence path is strong enough to act on;
+- evidence locations and whether they are strong enough to act on;
 - missing diagnostic surfaces, if any;
 - whether the finding conflicts with a researcher-anchored, plan-backed, agent-owned, or execution-discovered choice.
 
@@ -23,7 +23,7 @@ Use these route tokens exactly in the review-resolution closeout:
 
 | Route token | Use when | Typical examples |
 | --- | --- | --- |
-| `fix-now` | The fix is parent-resolvable, mechanical, or missing work already required by the saved plan, and it does not touch the researcher-level trigger list. | Path repair, stale cross-reference, missing metadata, stale bundle manifest, validator rerun, missing diagnostic already required by the plan. |
+| `fix-now` | The fix is `safe-automatic`, mechanical, or missing work already required by the saved plan, and it does not touch the researcher-level trigger list. | Path repair, stale cross-reference, missing metadata, stale bundle manifest, validator rerun, missing diagnostic already required by the plan. |
 | `revise-plan-choice` | Review evidence shows an agent-owned plan or work default should change, and the better path remains inside the initial task intent. | Diagnostic order, figure priority, note framing, implementation route, wording that narrows a claim to accepted evidence. |
 | `ask-user` | The fix touches the researcher-level trigger list or would override a researcher-anchored choice. | Baseline, sample, estimand, identification, benchmark treatment, output promotion, claim budget, substantive interpretation. |
 | `defer-with-rationale` | The finding is legitimate but outside the prompt, not needed for trust in the requested output, or better handled as follow-up work. | Optional robustness extension, future package audit, non-blocking broader cleanup. |
@@ -31,7 +31,7 @@ Use these route tokens exactly in the review-resolution closeout:
 
 ## Mapping From econ-review Fix Classes
 
-- `parent-resolvable` usually maps to `fix-now`, unless the authority test shows the edit would change a researcher-level choice.
+- `safe-automatic` usually maps to `fix-now`, unless the authority test shows the edit would change a researcher-level choice.
 - `gated` maps to `ask-user` when it changes what gets promoted, shown, emphasized, or treated as the main output. If it is outside the requested output, map it to `defer-with-rationale`.
 - `manual` usually maps to `ask-user`. It may map to `fix-now` only when the missing work is already required by the saved plan, the needed inputs and rerun authority are present, and no researcher-level trigger is touched.
 - `advisory` maps to `advisory-only` or `defer-with-rationale`.

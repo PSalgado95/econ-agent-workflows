@@ -94,7 +94,14 @@ Do not treat a script run, generated output, or partial closeout as enough to pr
 
 ### Stage 3: Review
 
-Invoke `econ-review` using the private `caller_contract: econ-lfg/v1` review-for-caller contract and the review route from the plan or work closeout. Consume the structured findings inline. The review creates no files and performs no fixes; this parent owns revision and re-review.
+Invoke `econ-review` with one complete `econ-review-request/v1` object and the
+review route from the plan or work closeout. Set `invocation` to `nested`,
+`caller` to `econ-lfg/v1`, and `resolution_context` to `null` for this first
+review. Populate every other required request field, including the bounded
+scope, evidence manifest, triggers, timeout policy, and supplemental assessment
+declarations. Do not pass a persona choice or a private caller/report contract.
+Consume the returned `econ-review-report/v1` inline. The review creates no files
+and performs no fixes; this parent owns revision and re-review.
 
 Select the lightest review tier that protects the output by applying `econ-review`'s escalation triggers; when in doubt, choose the stricter tier.
 
@@ -107,21 +114,37 @@ Capture:
 - missing diagnostic surfaces; and
 - whether the panel was degraded.
 
-Validate that the response uses `econ-review-for-caller/v1` and contains every required field. Retry missing or malformed reviewer roles and a malformed or wrong-version parent envelope once. If a promotion-tier panel remains degraded, pause and ask whether to proceed with the named missing coverage; do not enter revision or delivery as though the review were complete. At quick or standard tier, carry the degraded status and missing roles as explicit diagnostic gaps, and do not deliver while any resulting trust-affecting gap remains unresolved.
+Validate the response against `econ-review-report/v1` and require every selected
+role lifecycle, canonical finding field, diagnostic gap, assessment lifecycle,
+coverage field, verdict, safety record, canary, and promotion gate. Preserve and
+stop on an unknown report version. Retry missing or malformed reviewer roles and
+a malformed same-version parent envelope once. If a promotion-tier panel remains
+degraded, pause and ask whether to proceed with the named missing coverage; do
+not enter revision or delivery as though the review were complete. At quick or
+standard tier, carry degraded status and missing roles as explicit diagnostic
+gaps, and do not deliver while any resulting trust-affecting gap remains
+unresolved.
 
 ### Stage 4: Review-resolution pass
 
 Do not deliver immediately after review. Use `references/review_resolution_reference.md` to classify each retained finding. Review findings are evidence for the loop, not orders to change the research object.
 
-For every retained finding, inspect its finding ID, fix class, trust or promotion effect, issue origin, affected labels, evidence path, missing diagnostic surfaces, and authority source. Then assign exactly one route token:
+For every retained finding, inspect its finding ID, fix class, trust or
+promotion effect, issue origin, affected labels, evidence locations, issue
+follow-up type, user-judgement flag, confidence, missing diagnostic surfaces,
+and authority source. Then assign exactly one route token:
 
-- `fix-now`: parent-resolvable, mechanical, or plan-required work that should be handled before delivery;
+- `fix-now`: `safe-automatic`, mechanical, or plan-required work that should be handled before delivery;
 - `revise-plan-choice`: review evidence shows an agent-owned planning default should change;
 - `ask-user`: the fix would override a researcher-anchored choice or touch the researcher-level trigger list;
 - `defer-with-rationale`: legitimate follow-up outside the prompt or not needed for the requested output;
 - `advisory-only`: useful note that does not affect trust, promotion, or the requested output.
 
-Apply this policy. Every revision-stage `econ-work` invocation and every targeted `econ-review` invocation must include `caller_contract: econ-lfg/v1`; the private contract applies throughout the child loop, not just its first pass.
+Apply this policy. Every revision-stage `econ-work` invocation includes
+`caller_contract: econ-lfg/v1` and consumes `econ-work-for-caller/v1`. Every
+targeted `econ-review` invocation instead uses a complete
+`econ-review-request/v1` and consumes `econ-review-report/v1`; there is no
+review-specific private caller contract.
 - Fix `fix-now` findings through `econ-work` or a bounded local revision pass.
 - Revise `revise-plan-choice` findings when the new path remains inside the initial prompt's intent.
 - Pause for `ask-user` findings and write a decision memo when the decision is non-trivial.
@@ -137,7 +160,15 @@ If revisions materially change the plan's assumptions, record that divergence in
 
 ### Stage 5: Targeted re-review
 
-After `fix-now` or `revise-plan-choice` revisions, run targeted `econ-review` with `caller_contract: econ-lfg/v1` on changed or previously problematic surfaces. Pass the resolved finding IDs with their outcomes (fixed / researcher-rejected / deferred), the changed surfaces, affected labels, and previous evidence paths, so the re-review verifies fixes landed and does not re-litigate decisions the researcher already made.
+After `fix-now` or `revise-plan-choice` revisions, run targeted `econ-review` on
+changed or previously problematic surfaces. Build another complete
+`econ-review-request/v1` with `invocation: nested`, `caller: econ-lfg/v1`, and a
+non-null `resolution_context`. That context names the prior run and, for each
+resolved finding, its ID, outcome (`fixed`, `researcher-rejected`, or
+`deferred`), changed paths, affected labels, and prior evidence references. The
+new request's normal surfaces, scope, manifest, and triggers still define what
+is reviewed; resolution context never suppresses new evidence or reuses the old
+roster blindly.
 
 Escalate to broader review only when revisions changed the baseline, sample, estimand, specification, inference, benchmark treatment, note argument, or primary output family.
 

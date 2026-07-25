@@ -20,6 +20,7 @@ import run_agent_native_smoke as smoke  # noqa: E402
 
 REFERENCES = REPO / "skills" / "econ-review" / "references"
 PERSONAS = REFERENCES / "personas"
+TEST_DRIVER_DIGEST = "a" * 64
 
 
 def validator(filename: str) -> Draft202012Validator:
@@ -50,6 +51,45 @@ def child_output(run_id: str, role: str) -> dict[str, object]:
         "open_questions": [],
         "diagnostic_gaps": [],
         "coverage_note": f"{role} completed the bounded smoke review.",
+    }
+
+
+def child_finding(role: str) -> dict[str, object]:
+    return {
+        "severity": "P1",
+        "trust_effect": "baseline-defining",
+        "issue_origin": role,
+        "finding_type": "finding",
+        "fix_class": "manual",
+        "affected_labels": ["smoke-table"],
+        "issue_followup_type": "empirical-problem",
+        "title": "Smoke finding",
+        "why_it_matters": "The smoke must bind findings to declared evidence.",
+        "evidence_refs": ["E1"],
+        "evidence_locations": [
+            {
+                "evidence_id": "E1",
+                "path": "results/table.csv",
+                "locator": "row 2",
+                "quote": None,
+            }
+        ],
+        "recommended_action": "Inspect the declared table.",
+        "user_judgement_required": True,
+        "safe_autofix": False,
+        "confidence": 100,
+    }
+
+
+def diagnostic_gap(role: str) -> dict[str, object]:
+    return {
+        "gap": "A declared diagnostic is unavailable.",
+        "trust_effect": "robustness-relevant",
+        "issue_origin": role,
+        "affected_labels": ["smoke-table"],
+        "why_it_matters": "The missing diagnostic limits interpretation.",
+        "evidence_refs": ["E1"],
+        "recommended_action": "Produce the diagnostic.",
     }
 
 
@@ -154,6 +194,7 @@ def report_for(
         "selected_roles": [selected_role(role, states[role]) for role in roles],
         "findings": [],
         "warnings": [],
+        "diagnostic_gaps": [],
         "process_failures": failures,
         "supplemental_assessments": assessments,
         "promotion_gate": {
@@ -194,9 +235,8 @@ def complete_request_and_receipt() -> tuple[dict[str, object], dict[str, object]
     host_request = smoke.build_host_request(
         host="codex",
         request_id="smoke-fixture",
-        runtime_home=Path("runtime"),
+        runtime_home=REPO,
         workspace=Path("workspace"),
-        checkout=REPO,
         receipt_path=Path("receipt.json"),
     )
     scenarios: list[dict[str, object]] = []
@@ -230,6 +270,9 @@ def complete_request_and_receipt() -> tuple[dict[str, object], dict[str, object]
         "request_id": "smoke-fixture",
         "host": "codex",
         "driver_kind": "trusted-host-adapter",
+        "trusted_driver_sha256": TEST_DRIVER_DIGEST,
+        "request_sha256": smoke.canonical_json_sha256(host_request),
+        "runtime_integrity": host_request["runtime_integrity"],
         "scenarios": scenarios,
     }
     return host_request, receipt
@@ -249,6 +292,7 @@ class AgentNativeSmokeContractTest(unittest.TestCase):
         smoke.validate_smoke_receipt(
             receipt,
             host_request,
+            trusted_driver_sha256=TEST_DRIVER_DIGEST,
             installed_personas=PERSONAS,
             reviewer_validator=self.reviewer_validator,
             report_validator=self.report_validator,
@@ -274,6 +318,15 @@ class AgentNativeSmokeContractTest(unittest.TestCase):
         ):
             self.validate(host_request, receipt)
 
+    def test_missing_attestation_rejects_counterfeit_attestation(self) -> None:
+        host_request, receipt = complete_request_and_receipt()
+        receipt["scenarios"][1]["safety_attestation"] = attestation()
+        with self.assertRaisesRegex(
+            smoke.SmokeValidationError,
+            "safety_attestation must be absent",
+        ):
+            self.validate(host_request, receipt)
+
     def test_invalid_child_cannot_be_upgraded_to_full_coverage(self) -> None:
         host_request, receipt = complete_request_and_receipt()
         invalid = receipt["scenarios"][2]
@@ -281,7 +334,7 @@ class AgentNativeSmokeContractTest(unittest.TestCase):
         invalid["report"]["verdict"] = "clean"
         with self.assertRaisesRegex(
             smoke.SmokeValidationError,
-            "must degrade coverage",
+            "final report is invalid|must degrade coverage",
         ):
             self.validate(host_request, receipt)
 
@@ -294,7 +347,7 @@ class AgentNativeSmokeContractTest(unittest.TestCase):
         ssj["report"]["promotion_gate"]["status"] = "passed"
         with self.assertRaisesRegex(
             smoke.SmokeValidationError,
-            "required SSJ input is not recorded missing",
+            "final report is invalid|required SSJ input is not recorded missing",
         ):
             self.validate(host_request, receipt)
 
@@ -316,6 +369,106 @@ class AgentNativeSmokeContractTest(unittest.TestCase):
         ):
             self.validate(host_request, receipt)
 
+    def test_substantive_output_scenario_requires_output_perception(self) -> None:
+        host_request, receipt = complete_request_and_receipt()
+        safe = receipt["scenarios"][0]
+        safe["dispatches"] = [
+            row for row in safe["dispatches"] if row["role"] != "output-perception"
+        ]
+        safe["report"]["selected_roles"] = [
+            row
+            for row in safe["report"]["selected_roles"]
+            if row["role"] != "output-perception"
+        ]
+        with self.assertRaisesRegex(
+            smoke.SmokeValidationError,
+            "selected roles .* do not match",
+        ):
+            self.validate(host_request, receipt)
+
+    def test_receipt_must_bind_exact_request_and_runtime_integrity(self) -> None:
+        host_request, receipt = complete_request_and_receipt()
+        cases = (
+            ("request_sha256", "0" * 64, "exact smoke request"),
+            ("runtime_integrity", {}, "runtime integrity manifest"),
+            ("trusted_driver_sha256", "0" * 64, "approved adapter digest"),
+        )
+        for field, value, message in cases:
+            with self.subTest(field=field):
+                broken = copy.deepcopy(receipt)
+                broken[field] = value
+                with self.assertRaisesRegex(
+                    smoke.SmokeValidationError,
+                    message,
+                ):
+                    self.validate(host_request, broken)
+
+    def test_child_evidence_and_origin_must_match_request_manifest(self) -> None:
+        host_request, receipt = complete_request_and_receipt()
+        safe_output = receipt["scenarios"][0]["dispatches"][0]["output"]
+        role = safe_output["role"]
+        safe_output["findings"] = [child_finding(role)]
+        safe_output["diagnostic_gaps"] = [diagnostic_gap(role)]
+        self.validate(host_request, receipt)
+
+        mutations = (
+            (
+                "reviewed-unknown",
+                lambda output: output["evidence_reviewed"].append("E99"),
+                "reviewed unknown evidence IDs",
+            ),
+            (
+                "finding-unknown",
+                lambda output: (
+                    output["findings"][0].__setitem__("evidence_refs", ["E99"]),
+                    output["findings"][0]["evidence_locations"][0].__setitem__(
+                        "evidence_id",
+                        "E99",
+                    ),
+                ),
+                "finding cites unknown evidence IDs",
+            ),
+            (
+                "finding-path",
+                lambda output: output["findings"][0]["evidence_locations"][0].__setitem__(
+                    "path",
+                    "analysis/model.py",
+                ),
+                "does not match the request manifest",
+            ),
+            (
+                "finding-origin",
+                lambda output: output["findings"][0].__setitem__(
+                    "issue_origin",
+                    "inference",
+                ),
+                "finding issue_origin must match",
+            ),
+            (
+                "gap-reference",
+                lambda output: output["diagnostic_gaps"][0].__setitem__(
+                    "evidence_refs",
+                    ["E99"],
+                ),
+                "diagnostic gap cites unknown evidence IDs",
+            ),
+            (
+                "gap-origin",
+                lambda output: output["diagnostic_gaps"][0].__setitem__(
+                    "issue_origin",
+                    "inference",
+                ),
+                "diagnostic-gap issue_origin must match",
+            ),
+        )
+        for label, mutate, message in mutations:
+            with self.subTest(case=label):
+                broken = copy.deepcopy(receipt)
+                output = broken["scenarios"][0]["dispatches"][0]["output"]
+                mutate(output)
+                with self.assertRaisesRegex(smoke.SmokeValidationError, message):
+                    self.validate(host_request, broken)
+
     def test_workspace_snapshot_detects_byte_changes_and_additions(self) -> None:
         with tempfile.TemporaryDirectory() as temporary:
             root = Path(temporary)
@@ -326,6 +479,56 @@ class AgentNativeSmokeContractTest(unittest.TestCase):
             (root / "new.txt").write_text("new\n", encoding="utf-8")
             self.assertNotEqual(before, smoke.snapshot_workspace(root))
 
+    def test_repository_snapshot_detects_clean_head_metadata_changes(self) -> None:
+        fixture = REPO / "tests" / "fixtures" / "agent_native_smoke" / "workspace"
+        with tempfile.TemporaryDirectory() as temporary:
+            repository = Path(temporary) / "fixture"
+            smoke.initialize_fixture_repository(fixture, repository)
+            before = smoke.git_repository_state(repository)
+
+            smoke.run_checked(
+                ["git", "checkout", "--quiet", "--detach", "HEAD"],
+                cwd=repository,
+            )
+            detached = smoke.git_repository_state(repository)
+            self.assertEqual("", detached["porcelain"])
+            self.assertNotEqual(before, detached)
+            self.assertEqual("detached", detached["head_mode"])
+            self.assertEqual(before["head_commit"], detached["head_commit"])
+
+            smoke.run_checked(
+                [
+                    "git",
+                    "-c",
+                    "user.name=Agent Native Smoke",
+                    "-c",
+                    "user.email=smoke.invalid@example.invalid",
+                    "commit",
+                    "--quiet",
+                    "--allow-empty",
+                    "-m",
+                    "Metadata-only mutation",
+                ],
+                cwd=repository,
+            )
+            committed = smoke.git_repository_state(repository)
+            self.assertEqual("", committed["porcelain"])
+            self.assertNotEqual(detached["head_commit"], committed["head_commit"])
+
+    def test_repository_snapshot_detects_clean_raw_index_flag_changes(self) -> None:
+        fixture = REPO / "tests" / "fixtures" / "agent_native_smoke" / "workspace"
+        with tempfile.TemporaryDirectory() as temporary:
+            repository = Path(temporary) / "fixture"
+            smoke.initialize_fixture_repository(fixture, repository)
+            before = smoke.git_repository_state(repository)
+            smoke.run_checked(
+                ["git", "update-index", "--assume-unchanged", "README.md"],
+                cwd=repository,
+            )
+            after = smoke.git_repository_state(repository)
+            self.assertEqual("", after["porcelain"])
+            self.assertNotEqual(before["index"], after["index"])
+
     def test_no_configured_driver_is_release_blocking_not_run(self) -> None:
         variable = "ECON_REVIEW_CODEX_SMOKE_DRIVER"
         with patch.dict(os.environ, {}, clear=False):
@@ -335,6 +538,45 @@ class AgentNativeSmokeContractTest(unittest.TestCase):
                 "no trusted codex smoke driver",
             ):
                 smoke.resolve_driver("codex", None)
+
+    def test_unreviewed_explicit_driver_is_release_blocking_not_run(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            fake_driver = Path(temporary) / "fake-driver.exe"
+            fake_driver.write_bytes(b"not an independently reviewed adapter")
+            with self.assertRaisesRegex(
+                smoke.SmokeNotRun,
+                "not in the reviewed adapter allowlist",
+            ):
+                smoke.resolve_driver("codex", str(fake_driver))
+
+    def test_stalled_driver_becomes_structured_validation_failure(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            with self.assertRaisesRegex(
+                smoke.SmokeValidationError,
+                "timed out after",
+            ):
+                smoke.run_host_driver(
+                    [sys.executable, "-c", "import time; time.sleep(1)"],
+                    cwd=Path(temporary),
+                    timeout_seconds=0.01,
+                )
+
+    def test_driver_timeout_must_be_positive(self) -> None:
+        with self.assertRaises(SystemExit):
+            smoke.parse_args(["--driver-timeout-seconds", "0"])
+
+    def test_not_run_never_writes_release_proof(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            result_path = Path(temporary) / "proof.json"
+            with patch.object(
+                smoke,
+                "run_smoke",
+                side_effect=smoke.SmokeNotRun("no approved adapter"),
+            ):
+                with patch("builtins.print"):
+                    code = smoke.main(["--result-path", str(result_path)])
+            self.assertEqual(2, code)
+            self.assertFalse(result_path.exists())
 
     def test_unknown_receipt_version_fails_closed(self) -> None:
         host_request, receipt = complete_request_and_receipt()

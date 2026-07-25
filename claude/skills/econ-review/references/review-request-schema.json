@@ -9,6 +9,7 @@
     "run_id",
     "invocation",
     "caller",
+    "resolution_context",
     "surfaces",
     "depth",
     "promotion",
@@ -41,6 +42,17 @@
         "null"
       ],
       "minLength": 1,
+      "default": null
+    },
+    "resolution_context": {
+      "oneOf": [
+        {
+          "type": "null"
+        },
+        {
+          "$ref": "#/$defs/resolutionContext"
+        }
+      ],
       "default": null
     },
     "surfaces": {
@@ -354,6 +366,130 @@
         }
       },
       "default": []
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "invocation": {
+            "const": "direct"
+          }
+        },
+        "required": [
+          "invocation"
+        ]
+      },
+      "then": {
+        "properties": {
+          "caller": {
+            "type": "null"
+          },
+          "resolution_context": {
+            "type": "null"
+          }
+        }
+      },
+      "else": {
+        "properties": {
+          "caller": {
+            "type": "string",
+            "minLength": 1
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "resolution_context": {
+            "type": "object"
+          }
+        },
+        "required": [
+          "resolution_context"
+        ]
+      },
+      "then": {
+        "properties": {
+          "invocation": {
+            "const": "nested"
+          }
+        }
+      }
+    }
+  ],
+  "$defs": {
+    "resolutionContext": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "prior_run_id",
+        "finding_outcomes"
+      ],
+      "properties": {
+        "prior_run_id": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$"
+        },
+        "finding_outcomes": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 100,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "finding_id",
+              "outcome",
+              "changed_paths",
+              "affected_labels",
+              "prior_evidence_refs"
+            ],
+            "properties": {
+              "finding_id": {
+                "type": "string",
+                "pattern": "^F[1-9][0-9]*$"
+              },
+              "outcome": {
+                "type": "string",
+                "enum": [
+                  "fixed",
+                  "researcher-rejected",
+                  "deferred"
+                ]
+              },
+              "changed_paths": {
+                "type": "array",
+                "maxItems": 200,
+                "uniqueItems": true,
+                "items": {
+                  "type": "string",
+                  "minLength": 1
+                }
+              },
+              "affected_labels": {
+                "type": "array",
+                "maxItems": 200,
+                "uniqueItems": true,
+                "items": {
+                  "type": "string",
+                  "minLength": 1
+                }
+              },
+              "prior_evidence_refs": {
+                "type": "array",
+                "maxItems": 200,
+                "uniqueItems": true,
+                "items": {
+                  "type": "string",
+                  "pattern": "^E[1-9][0-9]*$"
+                }
+              }
+            }
+          }
+        }
+      }
     }
   }
 }

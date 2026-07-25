@@ -1,12 +1,16 @@
 from __future__ import annotations
 
 import hashlib
+import io
+import json
 import os
 import subprocess
 import sys
 import tempfile
 import unittest
+from contextlib import redirect_stdout
 from pathlib import Path
+from unittest.mock import patch
 
 
 REPO = Path(__file__).resolve().parents[1]
@@ -14,6 +18,13 @@ sys.path.insert(0, str(REPO))
 
 import install  # noqa: E402
 import install_claude  # noqa: E402
+import check_install  # noqa: E402
+from release_gate import (  # noqa: E402
+    AGENT_NATIVE_PROOF_VERSION,
+    RELEASE_GATE_VERSION,
+    RELEASE_SCENARIOS,
+    SSJ_ACCEPTANCE_VERSION,
+)
 
 
 EXPECTED_STALE_AGENTS = (
@@ -204,6 +215,47 @@ class InstallContractsTest(unittest.TestCase):
                     for name in EXPECTED_STALE_COMMANDS
                 )
             )
+
+    def release_gate_payload(self) -> dict[str, object]:
+        head = install.checkout_head(REPO)
+        source = install.checkout_source_sha256(REPO)
+        digest = "1" * 64
+        return {
+            "schema_version": RELEASE_GATE_VERSION,
+            "checkout_head": head,
+            "checkout_source_sha256": source,
+            "agent_native": {
+                "schema_version": AGENT_NATIVE_PROOF_VERSION,
+                "status": "passed",
+                "host": "codex",
+                "request_id": "smoke-reviewed-adapter",
+                "checkout_head": head,
+                "checkout_source_sha256": source,
+                "trusted_adapter_sha256": digest,
+                "request_sha256": digest,
+                "runtime_integrity": {
+                    "protocols": {"safe-dispatch-protocol.md": digest},
+                    "personas": {"specification.md": digest},
+                    "schemas": {"review-request-schema.json": digest},
+                },
+                "receipt_sha256": digest,
+                "scenarios": list(RELEASE_SCENARIOS),
+                "workspace_unchanged": True,
+                "created_at_utc": "2026-07-24T00:00:00Z",
+            },
+            "ssj_adapter": {
+                "schema_version": SSJ_ACCEPTANCE_VERSION,
+                "status": "accepted",
+                "checkout_head": head,
+                "checkout_source_sha256": source,
+                "assessment_schema_version": "econ-domain-assessment/v1",
+                "assessment_type": "ssj-model-validity",
+                "retired_reviewer_requested": False,
+                "integration_tests_passed": True,
+                "evidence_sha256": digest,
+                "accepted_at_utc": "2026-07-24T00:00:00Z",
+            },
+        }
 
     def test_exact_literal_stale_inventories_and_claude_mapping(self) -> None:
         self.assertEqual(install.STALE_AGENT_FILES, EXPECTED_STALE_AGENTS)
@@ -404,6 +456,166 @@ class InstallContractsTest(unittest.TestCase):
                         (root / "skills" / "gpt-pro-handoff").exists()
                     )
                     self.run_script(script, option, root, "--check")
+
+    def test_force_skip_auxiliary_removes_only_exact_owned_tree(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            base = Path(temporary)
+            cases = (
+                ("install.py", "--codex-home", base / "codex"),
+                ("install_claude.py", "--claude-home", base / "claude"),
+            )
+            for script, option, root in cases:
+                with self.subTest(runtime=script):
+                    self.run_script(script, option, root)
+                    auxiliary = root / "skills" / "gpt-pro-handoff"
+                    self.assertTrue(auxiliary.is_dir())
+                    unrelated = root / "skills" / "gpt-pro-handoff-local"
+                    unrelated.mkdir(parents=True)
+                    sentinel = unrelated / "sentinel.txt"
+                    sentinel.write_text("preserve\n", encoding="utf-8")
+
+                    self.run_script(
+                        script, option, root, "--skip-auxiliary"
+                    )
+                    self.assertTrue(auxiliary.is_dir())
+                    self.assertEqual(
+                        sentinel.read_text(encoding="utf-8"), "preserve\n"
+                    )
+
+                    self.run_script(
+                        script,
+                        option,
+                        root,
+                        "--force",
+                        "--skip-auxiliary",
+                    )
+                    self.assertFalse(auxiliary.exists())
+                    self.assertEqual(
+                        sentinel.read_text(encoding="utf-8"), "preserve\n"
+                    )
+
+    def test_force_skip_auxiliary_removes_seeded_legacy_tree(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            base = Path(temporary)
+            cases = (
+                ("install.py", "--codex-home", base / "codex"),
+                ("install_claude.py", "--claude-home", base / "claude"),
+            )
+            for script, option, root in cases:
+                with self.subTest(runtime=script):
+                    auxiliary = root / "skills" / "gpt-pro-handoff"
+                    auxiliary.mkdir(parents=True)
+                    (auxiliary / "legacy.txt").write_text(
+                        "legacy\n", encoding="utf-8"
+                    )
+
+                    self.run_script(
+                        script, option, root, "--skip-auxiliary"
+                    )
+                    self.assertTrue(auxiliary.is_dir())
+
+                    self.run_script(
+                        script,
+                        option,
+                        root,
+                        "--force",
+                        "--skip-auxiliary",
+                    )
+                    self.assertFalse(auxiliary.exists())
+
+    def test_default_live_force_requires_release_gate_before_mutation(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            home = Path(temporary) / "default-codex"
+            with patch(
+                "install.default_runtime_homes",
+                return_value=frozenset({home.resolve()}),
+            ):
+                with self.assertRaisesRegex(
+                    RuntimeError,
+                    "pass --release-gate",
+                ):
+                    install.enforce_live_release_gate(
+                        runtime="Codex",
+                        home=home,
+                        force=True,
+                        release_gate=None,
+                        repo=REPO,
+                    )
+            self.assertFalse(home.exists())
+
+    def test_unapproved_smoke_adapter_cannot_authorize_release(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            gate = Path(temporary) / "release-gate.json"
+            gate.write_text(
+                json.dumps(self.release_gate_payload()),
+                encoding="utf-8",
+            )
+            with self.assertRaisesRegex(
+                RuntimeError,
+                "adapter digest that is not approved",
+            ):
+                install.validate_release_gate(gate, REPO)
+
+    def test_checkout_bound_release_gate_validates_with_approved_adapter(
+        self,
+    ) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            gate = Path(temporary) / "release-gate.json"
+            payload = self.release_gate_payload()
+            gate.write_text(json.dumps(payload), encoding="utf-8")
+            digest = payload["agent_native"]["trusted_adapter_sha256"]
+            with patch.dict(
+                install.TRUSTED_SMOKE_ADAPTER_SHA256,
+                {"codex": frozenset({digest})},
+            ):
+                self.assertEqual(
+                    install.validate_release_gate(gate, REPO),
+                    payload,
+                )
+
+    def test_release_gate_is_bound_to_checkout_head(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            gate = Path(temporary) / "release-gate.json"
+            payload = self.release_gate_payload()
+            payload["checkout_head"] = "0" * 40
+            gate.write_text(json.dumps(payload), encoding="utf-8")
+            with self.assertRaisesRegex(
+                RuntimeError,
+                "different checkout HEAD",
+            ):
+                install.validate_release_gate(gate, REPO)
+
+    def test_default_home_check_reports_gate_blocker_not_force_repair(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            home = Path(temporary) / "default-codex"
+            output = io.StringIO()
+            with (
+                patch(
+                    "check_install.is_default_runtime_home",
+                    return_value=True,
+                ),
+                patch(
+                    "check_install.enforce_live_release_gate",
+                    side_effect=RuntimeError("missing reviewed release proof"),
+                ),
+                redirect_stdout(output),
+            ):
+                result = check_install.run_check(
+                    runtime="Codex",
+                    home=home,
+                    skills_dir=home / "skills",
+                    agents_dir=home / "agents",
+                    references_dir=home
+                    / "references"
+                    / "econ-agent-workflows",
+                    check_generated=False,
+                    repo=REPO,
+                )
+            text = output.getvalue()
+            self.assertEqual(result, 1)
+            self.assertIn("release-gated and remains blocked", text)
+            self.assertIn("missing reviewed release proof", text)
+            self.assertNotIn("Exact repair command", text)
 
 
 if __name__ == "__main__":

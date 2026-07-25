@@ -15,12 +15,11 @@ from install import (
     STALE_SKILL_DIRS,
     copy_file,
     copy_tree,
+    enforce_live_release_gate,
     remove_empty_directory,
     remove_stale_file,
     remove_stale_tree,
 )
-
-AUXILIARY_NAMES = frozenset(name for _source, name in AUXILIARY_SKILLS)
 
 # Exact historical command-wrapper inventory. Generated Claude skills are now
 # directly invocable; no command wrapper is current.
@@ -76,6 +75,14 @@ def parse_args() -> argparse.Namespace:
         "--check",
         action="store_true",
         help="Report-only health check; mutate nothing and exit 1 on failure.",
+    )
+    parser.add_argument(
+        "--release-gate",
+        type=Path,
+        help=(
+            "Checkout-bound econ-agent-workflows-release-gate/v1 receipt. "
+            "Required for --force into a default live runtime home."
+        ),
     )
     return parser.parse_args()
 
@@ -134,10 +141,22 @@ def main() -> int:
             references_dir=references_dir,
             check_generated=True,
             repo=repo,
+            release_gate=args.release_gate,
         )
 
     if not package.is_dir():
         raise SystemExit("claude/ not found. Run `python build_claude.py` first.")
+
+    try:
+        enforce_live_release_gate(
+            runtime="Claude Code",
+            home=claude_home,
+            force=args.force,
+            release_gate=args.release_gate,
+            repo=repo,
+        )
+    except RuntimeError as error:
+        raise SystemExit(str(error)) from error
 
     current_agents, current_references = package_files(package)
     selected_skills = CORE_SKILLS if args.skip_auxiliary else CORE_SKILLS + AUXILIARY_SKILLS
@@ -185,6 +204,13 @@ def main() -> int:
         )
 
     if args.force:
+        if args.skip_auxiliary:
+            message = remove_stale_tree(
+                skills_dir / AUXILIARY_SKILLS[0][1],
+                root=claude_home,
+            )
+            if message:
+                messages.append(message)
         for stale in STALE_SKILL_DIRS:
             message = remove_stale_tree(skills_dir / stale, root=claude_home)
             if message:

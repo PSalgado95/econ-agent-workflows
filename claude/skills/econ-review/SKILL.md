@@ -59,7 +59,12 @@ continue a workflow, or make a promotion decision from that payload.
 
 A workflow caller supplies one complete `econ-review-request/v1` object. Validate
 it against `review-request-schema.json` before doing anything else. The caller
-does not select personas or pass raw reviewer outputs.
+does not select personas or pass raw reviewer outputs. An initial review sets
+`resolution_context` to `null`. A targeted re-review supplies the prior run ID
+and one or more bounded finding outcomes (`fixed`, `researcher-rejected`, or
+`deferred`) with changed paths, affected labels, and prior evidence references.
+Resolution context is trace evidence, not authority to suppress a role, finding,
+diagnostic gap, or changed-surface concern.
 
 ### Direct invocation
 
@@ -70,6 +75,7 @@ Use these defaults:
 - `run_id`: a new stable identifier for this run
 - `invocation`: `direct`
 - `caller`: `null`
+- `resolution_context`: `null`
 - `depth`: `standard`
 - `promotion`: `false`
 - `interpretation`: `false`
@@ -337,11 +343,14 @@ Never auto-revert any drift or overwrite user work.
 
 ## Stage 10: Synthesize deterministically
 
-Keep actionable findings, review warnings, and review-process failures distinct.
-Map child diagnostic gaps into review warnings without erasing that they are
-missing-evidence observations. Map accepted supplemental observations into the
-canonical taxonomy with assessment provenance; do not copy their suggested IDs
-or verdict language.
+Keep actionable findings, review warnings, diagnostic gaps, and review-process
+failures distinct. Preserve every accepted child finding's normalized
+`fix_class`, `affected_labels`, `issue_followup_type`, `evidence_locations`,
+`user_judgement_required`, and `confidence` in the canonical finding. Preserve
+child diagnostic gaps in the report's top-level `diagnostic_gaps` collection
+with source provenance; do not disguise missing evidence as an ordinary warning.
+Map accepted supplemental observations into the canonical taxonomy with
+assessment provenance; do not copy their suggested IDs or verdict language.
 
 Deduplicate only the same factual claim with overlapping evidence and the same
 canonical issue origin. Preserve distinct interpretations and genuine
@@ -390,9 +399,8 @@ A degraded or not-run report never returns `clean`.
 Promotion:
 
 - not requested -> `not-requested`;
-- requested -> `passed` only with full coverage, unchanged canary, accepted
-  required assessments, and no unresolved `P0`, `P1`, `baseline-defining`, or
-  `promotion-blocking` finding;
+- requested -> `passed` only with full coverage, unchanged canary, a clean
+  verdict, accepted required assessments, and no unresolved finding;
 - otherwise -> `blocked`, with explicit reasons.
 
 A later user override is a separate action outside this report. It never changes
@@ -406,7 +414,7 @@ Construct every required field in `econ-review-report/v1`:
 - safety mode and host attestation;
 - immutable coverage and verdict;
 - every selected role and terminal state;
-- canonical findings and warnings;
+- canonical findings, warnings, and diagnostic gaps;
 - process failures;
 - every declared supplemental assessment and state;
 - promotion gate;

@@ -16,6 +16,8 @@ from install import (
     STALE_AGENT_FILES,
     STALE_REFERENCE_FILES,
     STALE_SKILL_DIRS,
+    enforce_live_release_gate,
+    is_default_runtime_home,
     source_agents,
     source_references,
 )
@@ -107,6 +109,7 @@ def run_check(
     references_dir: Path,
     check_generated: bool,
     repo: Path,
+    release_gate: Path | None = None,
 ) -> int:
     """Check a runtime install without creating, deleting, or replacing files."""
     is_claude = runtime == "Claude Code"
@@ -190,11 +193,33 @@ def run_check(
 
     failures = [message for ok, message in results if not ok]
     if failures:
+        if is_default_runtime_home(home, runtime):
+            try:
+                enforce_live_release_gate(
+                    runtime=runtime,
+                    home=home,
+                    force=True,
+                    release_gate=release_gate,
+                    repo=repo,
+                )
+            except RuntimeError as error:
+                print(
+                    f"\n{len(failures)} check(s) failed. Live repair is "
+                    f"release-gated and remains blocked:\n  {error}"
+                )
+                print(
+                    "Run the trusted agent-native smoke with a durable result, "
+                    "accept the SSJ adapter, and assemble an "
+                    "econ-agent-workflows-release-gate/v1 receipt bound to this HEAD."
+                )
+                return 1
         repair = (
             f"python install_claude.py --claude-home \"{home}\" --force"
             if is_claude
             else f"python install.py --codex-home \"{home}\" --force"
         )
+        if release_gate is not None:
+            repair += f' --release-gate "{release_gate.expanduser().resolve()}"'
         print(f"\n{len(failures)} check(s) failed. Exact repair command:")
         print(f"  {repair}")
         return 1
@@ -214,6 +239,11 @@ def parse_args() -> argparse.Namespace:
         "--home",
         type=Path,
         help="Runtime home. Defaults to CODEX_HOME/CLAUDE_CONFIG_DIR or the user home.",
+    )
+    parser.add_argument(
+        "--release-gate",
+        type=Path,
+        help="Checkout-bound release receipt for an authorized live repair.",
     )
     return parser.parse_args()
 
@@ -236,6 +266,7 @@ def main() -> int:
         references_dir=home / "references" / "econ-agent-workflows",
         check_generated=is_claude,
         repo=repo,
+        release_gate=args.release_gate,
     )
 
 

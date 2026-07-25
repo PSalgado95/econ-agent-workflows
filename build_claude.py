@@ -93,9 +93,18 @@ def deny_scan(out: Path) -> list[str]:
             continue
         if "__pycache__" in path.parts:
             continue
+        relative = path.relative_to(out)
         try:
             text = path.read_text(encoding="utf-8")
-        except (UnicodeDecodeError, OSError):
+        except UnicodeDecodeError:
+            violations.append(
+                f"{relative}:0: unreadable-text :: invalid UTF-8"
+            )
+            continue
+        except OSError as error:
+            violations.append(
+                f"{relative}:0: unreadable-text :: {type(error).__name__}"
+            )
             continue
         for lineno, line in enumerate(text.splitlines(), 1):
             if line.strip().startswith("<!-- GENERATED FROM CODEX SOURCE"):
@@ -103,7 +112,7 @@ def deny_scan(out: Path) -> list[str]:
             for pattern in DENY_PATTERNS:
                 if re.search(pattern, line):
                     violations.append(
-                        f"{path.relative_to(out)}:{lineno}: {pattern} :: "
+                        f"{relative}:{lineno}: {pattern} :: "
                         f"{line.strip()[:100]}"
                     )
     return violations
