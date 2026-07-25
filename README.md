@@ -20,7 +20,7 @@ although these applications have received less testing.
 
 ## The research workflow
 
-The seven core skills cover distinct parts of this process. They can be used
+The five core skills cover distinct parts of this process. They can be used
 separately or combined as the research develops.
 
 | Research task | Skill | What it does |
@@ -29,12 +29,15 @@ separately or combined as the research develops.
 | Plan the research | `econ-plan` | Turns an idea or concrete task into a sequence of research steps |
 | Carry out the analysis | `econ-work` | Works through data, code, models, results, and their interpretation |
 | Review the research | `econ-review` | Checks the design, evidence, results, and claims |
-| Investigate an unexpected result | `econ-debug` | Traces its likely source and identifies the evidence needed to resolve it |
-| Run the full research cycle | `econ-lfg` | Coordinates planning, execution, review, and revision while preserving researcher decisions |
 | Carry lessons into later work | `econ-compound` | Retains verified lessons from completed research for use in later projects |
 
-`econ-lfg` runs this cycle for a defined research task. It pauses when a decision
-would change the research question, empirical design, interpretation, or scope.
+Revision is a stage in the cycle: findings from the review feed back into the
+work before lessons are retained.
+
+Two additional skills support the core workflow. `econ-debug` investigates
+unexpected empirical or computational results. `econ-lfg` coordinates the full
+cycle for a defined research task, pausing when a decision would change the
+research question, empirical design, interpretation, or scope.
 
 The repository also includes the auxiliary skill `gpt-pro-handoff`, which
 prepares an external GPT Pro review package when the researcher explicitly
