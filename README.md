@@ -31,19 +31,15 @@ separately or combined as the research develops.
 | Review the research | `econ-review` | Checks the design, evidence, results, and claims |
 | Carry lessons into later work | `econ-compound` | Retains verified lessons from completed research for use in later projects |
 
-Revision is a stage in the cycle: findings from the review feed back into the
-work before lessons are retained.
-
 Two additional skills support the core workflow. `econ-debug` investigates
 unexpected empirical or computational results. `econ-lfg` coordinates the full
 cycle for a defined research task, pausing when a decision would change the
 research question, empirical design, interpretation, or scope.
 
-The repository also includes the auxiliary skill `gpt-pro-handoff`, which
-prepares an external GPT Pro review package when the researcher explicitly
-requests one.
+An auxiliary skill, `gpt-pro-handoff`, prepares an external GPT Pro review
+package when the researcher explicitly requests one.
 
-## What `econ-review` checks
+## The review process
 
 `econ-review` selects the checks that fit the research task and the available
 evidence. Depending on the material, it examines:
