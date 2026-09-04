@@ -1,4 +1,4 @@
 interface:
   display_name: "Econ Review"
   short_description: "Run a safe economics trust review"
-  default_prompt: "Use $econ-review to run a report-only review of this economics research object. Normalize the request, select only the relevant skill-local lenses, dispatch generic reviewer children only if the host attests a preventive read-only and non-escalating boundary, validate their versioned evidence, and return one immutable coverage and promotion report."
+  default_prompt: "Use $econ-review to run a report-only review of this economics research object. Normalize the request, select only the relevant skill-local lenses, dispatch generic reviewer children with bounded report-only prompts and a before/after state canary, validate their versioned evidence, and return one immutable coverage and promotion report."

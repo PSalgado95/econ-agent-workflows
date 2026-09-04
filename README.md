@@ -124,10 +124,3 @@ repository root:
 python -m unittest discover -s tests -v
 python build_claude.py --check
 ```
-
-An optional host-level smoke test is available for maintainers working on the
-read-only review boundary:
-
-```text
-python tests/run_agent_native_smoke.py --host codex --checkout .
-```

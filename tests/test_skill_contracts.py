@@ -417,6 +417,53 @@ class PersonaCatalogueContractsTest(unittest.TestCase):
 
 
 class OrchestrationContractsTest(unittest.TestCase):
+    def test_review_uses_bounded_prompts_and_a_state_canary_without_attestation_gate(self) -> None:
+        skill = read(REVIEW / "SKILL.md")
+        protocol = read(REFERENCES / "reviewer-protocol.md")
+        schema = read(REFERENCES / "review-report-schema.json")
+        openai = read(REVIEW / "agents" / "openai.yaml")
+        generated = "\n".join(
+            (
+                read(REPO / "claude" / "skills" / "econ-review" / "SKILL.md"),
+                read(
+                    REPO
+                    / "claude"
+                    / "skills"
+                    / "econ-review"
+                    / "references"
+                    / "reviewer-protocol.md"
+                ),
+                read(
+                    REPO
+                    / "claude"
+                    / "skills"
+                    / "econ-review"
+                    / "references"
+                    / "review-report-schema.json"
+                ),
+            )
+        )
+
+        combined = "\n".join((skill, protocol, schema, openai, generated))
+        normalized_skill = re.sub(r"\s+", " ", skill)
+        self.assertIn("prompt-and-canary", combined)
+        self.assertIn("generic child dispatch is unavailable", skill)
+        self.assertIn("attempts any prohibited action", protocol)
+        self.assertIn("Never auto-revert any drift", skill)
+        self.assertIn("If the scope is inside a Git repository", normalized_skill)
+        self.assertIn("A standalone file outside Git", normalized_skill)
+
+        for obsolete in (
+            "host-read-only",
+            "transport-read-only",
+            "host attestation",
+            "host-attested",
+            "side_effecting_tools_disabled",
+            "safety-preflight",
+        ):
+            with self.subTest(obsolete=obsolete):
+                self.assertNotIn(obsolete, combined)
+
     def test_queue_backpressure_idle_capacity_and_timeout_semantics_are_explicit(self) -> None:
         skill = read(REVIEW / "SKILL.md")
         normalized = re.sub(r"\s+", " ", skill)

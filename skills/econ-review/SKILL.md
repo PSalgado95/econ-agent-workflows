@@ -1,6 +1,6 @@
 ---
 name: econ-review
-description: "Run a report-only economics research review over plans, implementation, empirical results, or replication material. Normalize a versioned request, select skill-local reviewer personas deterministically, dispatch generic children only through an attested preventive read-only boundary, validate role-scoped evidence, and return one versioned review report with immutable coverage and promotion status."
+description: "Run a report-only economics research review over plans, implementation, empirical results, or replication material. Normalize a versioned request, select skill-local reviewer personas deterministically, dispatch generic children with bounded report-only prompts and a state canary, validate role-scoped evidence, and return one versioned review report with immutable coverage and promotion status."
 ---
 
 # Economics review
@@ -39,7 +39,7 @@ The workflow recognizes exactly:
 - `econ-review-request/v1`
 - `econ-reviewer-output/v1`
 - `econ-domain-assessment/v1`
-- `econ-review-report/v1`
+- `econ-review-report/v2`
 
 Unknown request versions fail before evidence selection, roster selection, or
 dispatch. Preserve the raw request and return `unsupported_request_version`;
@@ -182,42 +182,25 @@ Six roles are a target, not a cap. If the roster exceeds six, record one sentenc
 for each role beyond the applicable surface cores naming the trigger or fold
 that required it.
 
-## Stage 4: Prove the preventive safety boundary
+## Stage 4: Establish the report-only boundary
 
-Reviewer prompt rules are not a sandbox. Before spawning any child, require
-host-supplied evidence of the effective policy after all configuration
-precedence and live overrides.
+Use `prompt-and-canary` whenever generic child dispatch is available. The
+boundary has two parts:
 
-Valid safety modes, in order:
+1. every reviewer receives the complete, self-contained report-only contract
+   in Stage 6, including the bounded evidence manifest and explicit prohibited
+   actions;
+2. the parent records and compares the scoped repository and file state in
+   Stages 5 and 9.
 
-1. `host-read-only`: the host attests a per-child hard read-only filesystem,
-   non-escalating approval policy, and disabled side-effecting non-filesystem
-   tools;
-2. `transport-read-only`: a persona-free transport may be used only when
-   host-supplied spawn metadata or a supported preflight attests the same
-   effective policy;
-3. `unavailable`: do not dispatch.
+This is a practical behavioral boundary, not a claim that the host has disabled
+every side-effecting capability. Do not require a host adapter, policy proof,
+allowlist, special reviewer identity, or model override. If the host happens to
+offer stronger isolation, use it without changing the report contract.
 
-The attestation must prove all of these:
+Use `unavailable` only when generic child dispatch is unavailable. In that case:
 
-- the live workspace and repository are read-only, including no artifact writes;
-- approval or elevation cannot be requested or granted;
-- connector, MCP, messaging, browser, computer-control, and other side-effecting
-  tool surfaces are unavailable;
-- the child cannot broaden the policy.
-
-A configuration declaration, prompt promise, child self-report, model choice,
-or clean post-run canary is not attestation.
-
-This source version declares no read-only transport. The supported custom-agent
-configuration visible to this package can declare a filesystem sandbox but
-cannot by itself prove non-escalation and denial of every side-effecting tool
-after precedence. Therefore a transport declaration is unavailable unless a
-future supported host supplies the full effective-policy attestation.
-
-If safety is `unavailable`:
-
-- mark every selected role `unavailable` with reason `safety-unavailable`;
+- mark every selected role `unavailable` with reason `dispatch-unavailable`;
 - set `state_canary.status` to `not-run`;
 - set coverage to `not-run`;
 - set the verdict to `blocked`;
@@ -226,17 +209,21 @@ If safety is `unavailable`:
 
 ## Stage 5: Record the state baseline
 
-For an attested dispatch mode, record a read-only scoped baseline before the
-first child starts:
+For `prompt-and-canary`, record a read-only scoped baseline before the first
+child starts:
+
+- hashes and existence state of every in-scope evidence path.
+
+If the scope is inside a Git repository, additionally record:
 
 - current symbolic or detached HEAD/ref and commit;
 - complete index state;
-- hashes of every in-scope tracked evidence path;
-- hashes and existence state of every in-scope untracked evidence path;
+- tracked versus untracked state for each in-scope evidence path;
 - a repository-status snapshot sufficient to disclose out-of-scope drift.
 
 Use the request's scope and evidence manifest to define "in scope." The baseline
-is parent state held for comparison, not a live-workspace artifact.
+is parent state held for comparison, not a live-workspace artifact. A standalone
+file outside Git uses the same hash-and-existence comparison without Git fields.
 
 ## Stage 6: Assemble self-contained prompts
 
@@ -334,8 +321,10 @@ baseline.
 - unchanged scope -> `state_canary.status: unchanged`;
 - unexplained in-scope drift -> `drift-detected`, a process failure, and degraded
   coverage;
-- boundary failure attributed by host audit evidence to a child -> invalidate
-  that role's output and record the failure;
+- a prohibited action visible in a child's return or host activity record ->
+  invalidate that role's output and record `prohibited-reviewer-action`;
+- boundary drift attributable to a child -> invalidate that role's output and
+  record the failure;
 - out-of-scope drift -> disclose it without degrading coverage by itself.
 
 Never auto-revert any drift or overwrite user work.
@@ -413,10 +402,10 @@ the original coverage, verdict, or promotion gate.
 
 ## Stage 12: Validate and emit the report
 
-Construct every required field in `econ-review-report/v1`:
+Construct every required field in `econ-review-report/v2`:
 
 - parent status and request summary;
-- safety mode and host attestation;
+- safety mode;
 - immutable coverage and verdict;
 - every selected role and terminal state;
 - canonical findings, warnings, and diagnostic gaps;

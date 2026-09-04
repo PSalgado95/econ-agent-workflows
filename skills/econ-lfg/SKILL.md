@@ -99,7 +99,7 @@ review route from the plan or work closeout. Set `invocation` to `nested`,
 review. Populate every other required request field, including the bounded
 scope, evidence manifest, triggers, timeout policy, and supplemental assessment
 declarations. Do not pass a persona choice or a private caller/report contract.
-Consume the returned `econ-review-report/v1` inline. The review creates no files
+Consume the returned `econ-review-report/v2` inline. The review creates no files
 and performs no fixes; this parent owns revision and re-review.
 
 Select the lightest review tier that protects the output by applying `econ-review`'s escalation triggers; when in doubt, choose the stricter tier.
@@ -113,7 +113,7 @@ Capture:
 - missing diagnostic surfaces; and
 - whether the panel was degraded.
 
-Validate the response against `econ-review-report/v1` and require every selected
+Validate the response against `econ-review-report/v2` and require every selected
 role lifecycle, canonical finding field, diagnostic gap, assessment lifecycle,
 coverage field, verdict, safety record, canary, and promotion gate. Preserve and
 stop on an unknown report version. Retry missing or malformed reviewer roles and
@@ -152,7 +152,7 @@ finding was returned.
 Apply this policy. Every revision-stage `econ-work` invocation includes
 `caller_contract: econ-lfg/v1` and consumes `econ-work-for-caller/v1`. Every
 targeted `econ-review` invocation instead uses a complete
-`econ-review-request/v1` and consumes `econ-review-report/v1`; there is no
+`econ-review-request/v1` and consumes `econ-review-report/v2`; there is no
 review-specific private caller contract.
 - Fix `fix-now` findings and gaps through `econ-work` or a bounded local revision pass.
 - Revise `revise-plan-choice` findings or gaps when the new path remains inside the initial prompt's intent.
