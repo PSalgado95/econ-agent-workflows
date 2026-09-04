@@ -1,7 +1,7 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://econ-agent-workflows.local/schemas/econ-review-report-v1.json",
-  "title": "econ-review-report/v1",
+  "$id": "https://econ-agent-workflows.local/schemas/econ-review-report-v2.json",
+  "title": "econ-review-report/v2",
   "type": "object",
   "additionalProperties": false,
   "required": [
@@ -24,7 +24,7 @@
   ],
   "properties": {
     "schema_version": {
-      "const": "econ-review-report/v1"
+      "const": "econ-review-report/v2"
     },
     "run_id": {
       "type": "string",
@@ -78,28 +78,15 @@
       "type": "object",
       "additionalProperties": false,
       "required": [
-        "mode",
-        "attestation",
-        "side_effecting_tools_disabled"
+        "mode"
       ],
       "properties": {
         "mode": {
           "type": "string",
           "enum": [
-            "host-read-only",
-            "transport-read-only",
+            "prompt-and-canary",
             "unavailable"
           ]
-        },
-        "attestation": {
-          "type": [
-            "string",
-            "null"
-          ],
-          "minLength": 1
-        },
-        "side_effecting_tools_disabled": {
-          "type": "boolean"
         }
       }
     },
@@ -307,16 +294,6 @@
           "parent_status": {
             "const": "completed"
           },
-          "safety": {
-            "properties": {
-              "attestation": {
-                "type": "null"
-              },
-              "side_effecting_tools_disabled": {
-                "const": false
-              }
-            }
-          },
           "coverage": {
             "const": "not-run"
           },
@@ -328,10 +305,14 @@
               "properties": {
                 "state": {
                   "const": "unavailable"
+                },
+                "reason": {
+                  "const": "dispatch-unavailable"
                 }
               },
               "required": [
-                "state"
+                "state",
+                "reason"
               ]
             }
           },
@@ -361,17 +342,7 @@
           "safety": {
             "properties": {
               "mode": {
-                "enum": [
-                  "host-read-only",
-                  "transport-read-only"
-                ]
-              },
-              "attestation": {
-                "type": "string",
-                "minLength": 1
-              },
-              "side_effecting_tools_disabled": {
-                "const": true
+                "const": "prompt-and-canary"
               }
             }
           },
@@ -636,6 +607,24 @@
           "verdict": {
             "const": "blocked"
           },
+          "selected_roles": {
+            "items": {
+              "properties": {
+                "state": {
+                  "enum": [
+                    "invalid",
+                    "failed",
+                    "timed_out",
+                    "cancelled",
+                    "unavailable"
+                  ]
+                }
+              },
+              "required": [
+                "state"
+              ]
+            }
+          },
           "promotion_gate": {
             "properties": {
               "status": {
@@ -645,6 +634,144 @@
                 ]
               }
             }
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "coverage": {
+            "const": "degraded"
+          }
+        },
+        "required": [
+          "coverage"
+        ]
+      },
+      "then": {
+        "properties": {
+          "selected_roles": {
+            "contains": {
+              "type": "object",
+              "properties": {
+                "state": {
+                  "const": "completed"
+                }
+              },
+              "required": [
+                "state"
+              ]
+            }
+          }
+        },
+        "anyOf": [
+          {
+            "properties": {
+              "selected_roles": {
+                "contains": {
+                  "type": "object",
+                  "properties": {
+                    "state": {
+                      "enum": [
+                        "invalid",
+                        "failed",
+                        "timed_out",
+                        "cancelled",
+                        "unavailable"
+                      ]
+                    }
+                  },
+                  "required": [
+                    "state"
+                  ]
+                }
+              }
+            }
+          },
+          {
+            "properties": {
+              "supplemental_assessments": {
+                "contains": {
+                  "type": "object",
+                  "properties": {
+                    "required": {
+                      "const": true
+                    },
+                    "state": {
+                      "not": {
+                        "const": "accepted"
+                      }
+                    }
+                  },
+                  "required": [
+                    "required",
+                    "state"
+                  ]
+                }
+              }
+            }
+          },
+          {
+            "properties": {
+              "state_canary": {
+                "properties": {
+                  "status": {
+                    "const": "drift-detected"
+                  }
+                },
+                "required": [
+                  "status"
+                ]
+              }
+            }
+          },
+          {
+            "properties": {
+              "process_failures": {
+                "minItems": 1
+              }
+            }
+          }
+        ]
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "parent_status": {
+            "const": "completed"
+          },
+          "safety": {
+            "properties": {
+              "mode": {
+                "const": "prompt-and-canary"
+              }
+            },
+            "required": [
+              "mode"
+            ]
+          }
+        },
+        "required": [
+          "parent_status",
+          "safety"
+        ]
+      },
+      "then": {
+        "properties": {
+          "state_canary": {
+            "properties": {
+              "status": {
+                "enum": [
+                  "unchanged",
+                  "drift-detected"
+                ]
+              }
+            },
+            "required": [
+              "status"
+            ]
           }
         }
       }
@@ -998,7 +1125,7 @@
           "type": "string",
           "enum": [
             "request-validation",
-            "safety-preflight",
+            "boundary-setup",
             "baseline-canary",
             "selection",
             "dispatch",

@@ -23,7 +23,7 @@ VERSIONS = {
     "request": "econ-review-request/v1",
     "reviewer": "econ-reviewer-output/v1",
     "domain": "econ-domain-assessment/v1",
-    "report": "econ-review-report/v1",
+    "report": "econ-review-report/v2",
 }
 
 
@@ -113,7 +113,7 @@ def valid_domain_assessment() -> dict[str, Any]:
 
 def valid_report() -> dict[str, Any]:
     return {
-        "schema_version": "econ-review-report/v1",
+        "schema_version": "econ-review-report/v2",
         "run_id": "fixture-run",
         "parent_status": "completed",
         "request_summary": {
@@ -122,9 +122,7 @@ def valid_report() -> dict[str, Any]:
             "promotion": False,
         },
         "safety": {
-            "mode": "host-read-only",
-            "attestation": "Effective child policy was attested by the host.",
-            "side_effecting_tools_disabled": True,
+            "mode": "prompt-and-canary",
         },
         "coverage": "full",
         "verdict": "clean",
@@ -560,7 +558,7 @@ class ReviewSchemaContractsTest(unittest.TestCase):
             encoding="utf-8"
         )
         self.assertIn("one complete `econ-review-request/v1` object", lfg)
-        self.assertIn("Consume the returned `econ-review-report/v1`", lfg)
+        self.assertIn("Consume the returned `econ-review-report/v2`", lfg)
         self.assertNotIn("econ-review-for-caller/v1", lfg)
 
     def test_report_cross_field_safety_coverage_and_promotion_invariants(self) -> None:
@@ -569,24 +567,59 @@ class ReviewSchemaContractsTest(unittest.TestCase):
         unavailable = valid_report()
         unavailable["safety"] = {
             "mode": "unavailable",
-            "attestation": None,
-            "side_effecting_tools_disabled": False,
         }
         unavailable["coverage"] = "not-run"
         unavailable["verdict"] = "blocked"
         unavailable["selected_roles"][0].update(
             state="unavailable",
-            reason="safety-unavailable",
+            reason="dispatch-unavailable",
         )
         unavailable["state_canary"]["status"] = "not-run"
         validator.validate(unavailable)
+
+        no_completed_reviewer = valid_report()
+        no_completed_reviewer["coverage"] = "not-run"
+        no_completed_reviewer["verdict"] = "blocked"
+        no_completed_reviewer["selected_roles"][0].update(
+            state="failed",
+            reason="child-error",
+        )
+        validator.validate(no_completed_reviewer)
+
+        obsolete_safety_metadata = valid_report()
+        obsolete_safety_metadata["safety"]["attestation"] = "legacy-proof"
+        self.assertTrue(list(validator.iter_errors(obsolete_safety_metadata)))
+
+        not_run_with_completed_role = copy.deepcopy(no_completed_reviewer)
+        not_run_with_completed_role["selected_roles"][0].update(
+            state="completed",
+            reason=None,
+        )
+        self.assertTrue(list(validator.iter_errors(not_run_with_completed_role)))
+
+        degraded_without_completed_role = copy.deepcopy(no_completed_reviewer)
+        degraded_without_completed_role["coverage"] = "degraded"
+        degraded_without_completed_role["verdict"] = "indeterminate"
+        self.assertTrue(list(validator.iter_errors(degraded_without_completed_role)))
+
+        degraded_without_cause = valid_report()
+        degraded_without_cause["coverage"] = "degraded"
+        degraded_without_cause["verdict"] = "indeterminate"
+        self.assertTrue(list(validator.iter_errors(degraded_without_cause)))
+
+        prompt_canary_not_run = copy.deepcopy(no_completed_reviewer)
+        prompt_canary_not_run["state_canary"]["status"] = "not-run"
+        self.assertTrue(list(validator.iter_errors(prompt_canary_not_run)))
+
+        unavailable_with_wrong_reason = copy.deepcopy(unavailable)
+        unavailable_with_wrong_reason["selected_roles"][0]["reason"] = "host-proof-missing"
+        self.assertTrue(list(validator.iter_errors(unavailable_with_wrong_reason)))
 
         for path, value in (
             (("coverage",), "degraded"),
             (("verdict",), "indeterminate"),
             (("selected_roles", 0, "state"), "completed"),
             (("state_canary", "status"), "unchanged"),
-            (("safety", "side_effecting_tools_disabled"), True),
         ):
             with self.subTest(unavailable_defect=path):
                 broken = copy.deepcopy(unavailable)
@@ -618,7 +651,6 @@ class ReviewSchemaContractsTest(unittest.TestCase):
 
         for path, value in (
             (("safety", "mode"), "unavailable"),
-            (("safety", "side_effecting_tools_disabled"), False),
             (("selected_roles", 0, "state"), "failed"),
             (("state_canary", "status"), "drift-detected"),
             (("parent_status",), "failed"),
