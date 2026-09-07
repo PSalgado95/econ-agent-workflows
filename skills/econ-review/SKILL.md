@@ -345,8 +345,23 @@ Never auto-revert any drift or overwrite user work.
 
 ## Stage 10: Synthesize deterministically
 
-Check the decisive evidence behind worker claims before accepting them. Preserve
-the distinction between parent observations (`parent-review` sources) and child
+Check the decisive evidence behind worker claims before accepting them. For a
+finding that could change the research conclusion or promotion decision, inspect
+the underlying code, definitions, tables, or outputs directly, including relevant
+context and settled research decisions; a worker's quotation alone is not enough.
+
+When a consequential interpretation remains uncertain and a second opinion would
+help, use a bounded independent challenge within the existing delegation budget.
+Provide the disputed question, relevant evidence, scope, and settled decisions;
+ask what supports or contradicts the claim. Group related questions when useful
+and choose model and effort for the assignment using the delegation reference.
+This is discretionary, not an additional required review stage. The coordinator
+may verify substantive claims itself and retains responsibility for the conclusion.
+Record material disagreement or missing evidence honestly; uncertainty neither
+confirms nor refutes a finding. Not commissioning a second opinion does not itself
+degrade coverage, but material unresolved evidence gaps still affect the verdict.
+
+Preserve the distinction between parent observations (`parent-review` sources) and child
 observations (`reviewer-role` sources); do not infer independent agreement from
 a grouped assignment or from role count.
 
