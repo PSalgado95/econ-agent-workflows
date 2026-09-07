@@ -1,17 +1,17 @@
 ---
 name: econ-debug
-description: "Diagnose an anomalous empirical or computational result — a sign flip, an observation-count cliff, an implausible magnitude, unexplained pre-trends, a failed check, a convergence failure — by tracing the full causal chain from cause to symptom before any fix. Use when the user says debug, my results look wrong, the coefficient flipped, N dropped, why is this number, this can't be right, or diagnose an estimate. Not for planning (econ-plan), not for review or trust verdicts (econ-review), and not for pure software debugging with no research object — route a broken build, failing unit test, or app bug with no estimate, sample, or output at stake to compound-engineering's ce-debug."
+description: "Diagnose unexpected estimates, sample changes, or computational results in economics research."
 ---
 
 <!-- GENERATED FROM CODEX SOURCE - DO NOT EDIT. Edit the Codex sources and run build_claude.py. -->
 
 # Economist Debugging Workflow
 
-Find why a research number is wrong, then fix it. The object under investigation is a research result — an estimate, a realised sample, a diagnostic, a computed model object — not application code. This file is the contract; it adapts the ce-debug diagnosis loop to research anomalies.
+Determine whether a surprising research number is wrong, and correct an evidenced implementation error when repair is authorised. The object under investigation is a research result — an estimate, a realised sample, a diagnostic, a computed model object — not application code. This file is the contract; it adapts the ce-debug diagnosis loop to research anomalies.
 
 ## Core principles
 
-- **Investigate before fixing.** No fix until the full causal chain from cause to symptom is explained with no gaps (the iron rule below).
+- **Investigate before fixing.** Support the diagnosis with a reproducing example and a causal explanation that distinguishes the leading alternatives before changing the live analysis.
 - **One change at a time.** Test one hypothesis and change one thing. Changing several things "to see what helps" hides which change mattered and is how a symptom patch masquerades as a cause.
 - **Observed beats assumed.** Assumed values lie; a printed count, a `describe`, or a boundary check does not. Ground every hypothesis in something you actually observed.
 - **When stuck, diagnose why.** After two or three exhausted hypotheses, stop and read the pattern — different subsystems implicated, contradictory evidence, an environment or vintage mismatch — rather than trying harder along the same line.
@@ -20,30 +20,19 @@ Find why a research number is wrong, then fix it. The object under investigation
 
 Invoke on an anomalous empirical or computational output: a sign flip against theory or a prior run, an observation-count cliff, an implausible magnitude, unexplained pre-trends, a broken identity or accounting residual, a convergence or feasibility failure, a failed object-defining check, or a plain "this number can't be right". If the request is a pure software fault with no estimate, sample, or output at stake, hand it to the Compound Engineering debug skill (`compound-engineering:ce-debug` when available) and stop.
 
-## Iron rule
+## Diagnosis and repair authority
 
-Investigate before fixing. Do not apply, propose, or commit any fix until the full causal chain from cause to symptom is explained with no gaps. "Somehow the merge inflates the coefficient" is a gap, not a chain. A fix that changes the number without a gap-free chain is a symptom patch: the real cause is still live, and the next run will surprise you again.
+A surprising sign or magnitude is not itself a bug. Trace the anomaly through the relevant data construction, specification, estimation, or numerical steps. “The coefficient looks right after this edit” is not evidence of a repair. State what the evidence establishes and what remains uncertain; do not demand impossible certainty or conceal an unexplained step.
 
-## Diagnose-then-fix gate
+Use reversible tests on isolated copies to discriminate between hypotheses before changing the live analysis. Label a candidate fix as a hypothesis until the reproduction and affected checks support it.
 
-Once the root cause is confirmed, present the diagnosis before touching anything:
+Present the diagnosis in economic terms before applying a repair: what changed in the research object, why it produced the anomaly, the supporting file or output locations, and the minimal correction and validation.
 
-- the causal chain from cause to symptom, with the file, line, or output cell each step cites;
-- the proposed fix and which files or specifications it changes;
-- the minimal reproduction and the checks that will refresh after the fix;
-- whether an existing check should have caught this, and why it did not.
-
-Then ask (blocking) how to proceed. Offer, at minimum:
-
-- **Fix it now** — proceed to the fix and the post-fix audit refresh below;
-- **Diagnosis only** — stop after the written diagnosis; make no edit. This is a real end state, not a fallback: the researcher may want to own the fix;
-- **Rethink the design** — when the root cause is a wrong baseline, estimand, sample rule, or benchmark rather than a slip, route to `econ-plan` (see Exits).
-
-Default to no edit until the researcher chooses. In an autonomous parent run where no answer can be collected, stay diagnosis-only and return the recommended fix to the parent rather than applying it silently.
+When the user or authorised parent already requested a fix, apply a supported, reversible implementation correction within that authority without another permission menu. A diagnosis-only request remains diagnosis-only. Ask before changing an intended baseline, estimand, sample rule, benchmark, identification strategy, or other researcher-owned choice, or before an unauthorised costly rerun or destructive overwrite. In a parent run, return an unresolved research choice to the parent rather than deciding it silently.
 
 ## Assumption audit
 
-Before forming hypotheses, list every "this must be true" belief the surprising output rests on, and mark each **verified** (you read the code, checked the state, or ran it) or **assumed**. Most stuck debugging is a correct hypothesis tested against a wrong assumption. Cover at least:
+Before forming hypotheses, identify the consequential assumptions behind the surprising output and mark each **verified** (you read the code, checked the state, or ran it) or **assumed**. Most stuck debugging is a correct hypothesis tested against a wrong assumption. Cover the relevant parts of:
 
 - the **sample rule** — which rows the active filter actually keeps, and whether it matches the intended population;
 - **merge cardinality** — one-to-one, one-to-many, or many-to-many, and whether a silent many-to-many inflated the panel;
@@ -67,7 +56,7 @@ Localise the anomaly to the subsystem that produced it, then investigate there:
 - **software convention** → cross-package defaults: a default that differs between Stata, R, Python, or a solver (degrees-of-freedom corrections, small-sample adjustments, base levels, NA handling, integer vs float division). Reach for the `software-equivalence` lens — rebuild the disputed object in a second language and compare — when a convention gap is plausible.
 - **genuine economics** → the number may be real and surprising. Do not fix it away: write a surprise memo and return the evidence boundary and next research decision to the user.
 
-If two or three hypotheses point at different subsystems and none confirms, that divergence is itself a signal that the problem is a design choice, not a localised slip — route to `econ-plan` rather than forcing a fix.
+If several hypotheses fail, reassess the evidence and identify the next discriminating check. Failure to localise a bug is not evidence that the research design is wrong. Route to `econ-plan` only when the evidence reveals an actual design or definition choice.
 
 ## Reproduce minimally
 
@@ -75,17 +64,17 @@ Build a minimal script that reproduces the anomaly on the smallest input that st
 
 ## Questions
 
-Asking a good blocking question is part of the job, not an interruption. Use the platform's blocking-question tool (`AskUserQuestion`; the Claude build translates it), not plain chat text. Ask whenever the anomaly could be intended behaviour rather than a bug — a deliberate baseline choice, a sample restriction the researcher imposed on purpose, a benchmark defined a particular way. Ask one decision per question, with the context that makes it answerable: what the choice affects, the plausible readings with their consequences, and a recommended conservative default. Ask as many separate questions as the anomaly warrants; there is no question budget. Never present a genuine judgement call as a multiple-choice menu, and never bury it in a summary.
+Read the relevant request, plan, definitions, and code before asking whether the observed behaviour was intended. Ask only when that cannot be resolved from the evidence and the answer changes the diagnosis or repair authority. Use `AskUserQuestion` when available, otherwise ordinary chat. Explain the economic consequence and your recommendation; do not repeat answered questions or turn routine debugging into an approval interview.
 
 ## Exits
 
-- **Fix applied** → hand the changed surface to a targeted `econ-review` scoped to what changed (the edited script, the refreshed outputs, the affected audits), not a full re-review.
+- **Fix applied** → verify the changed surface and refreshed audits, then report the diagnosis and evidence. Do not automatically invoke `econ-review`; return to a formal review only when the user explicitly selected it or an already-authorised end-to-end caller includes it.
 - **Design problem discovered** → the anomaly is a wrong baseline, estimand, sample definition, or benchmark, not a coding slip. Route back to `econ-plan`; a fix cannot repair a definition.
 - **Genuine surprising finding** → the number is real. Route to the surprise-memo path in `econ-work`: write the memo (HTML via `econ-html-memo` when installed, plain standalone HTML under the same content discipline otherwise), state the minimal validation and open explanation, and ask only for the research decision or local check needed to continue.
 
 ## Hard stops
 
-- Do not apply or propose a fix before the full causal chain from cause to symptom is explained with no gaps.
+- Do not apply an unsupported fix to the live analysis or present a hypothesis as a confirmed diagnosis.
 - Do not fix a number without first reproducing it minimally, and do not close without refreshing the sample counts, missingness, and merge diagnostics the change touched.
 - Do not "fix away" a result that is actually a genuine, correctly computed finding — write the surprise memo and report it locally instead.
 - Do not treat an intended baseline or a deliberate sample restriction as a bug — when in doubt, ask first.

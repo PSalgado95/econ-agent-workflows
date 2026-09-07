@@ -68,7 +68,7 @@ targeted re-review surface.
 
 ## Researcher-Level Trigger List
 
-Pause for the researcher when the finding or proposed fix would change any of these:
+Pause when the finding or proposed fix would make a new choice about, or override existing authority on, any of these:
 
 - research question or decision problem;
 - estimand or descriptive target;
@@ -81,13 +81,13 @@ Pause for the researcher when the finding or proposed fix would change any of th
 - note scope, claim budget, or substantive interpretation;
 - destructive overwrite, expensive rerun, access-sensitive action, or release/sharing decision.
 
-These are decision blockers even when the review finding is persuasive. A review finding can justify presenting the decision clearly; it cannot itself decide the economics.
+Restoring an explicitly agreed definition after an evidenced implementation error is not a new definition choice: it may be `fix-now` when the plan requires that correction, the necessary inputs and rerun authority are present, and the correction is verified and re-reviewed. A changed estimate alone does not settle an ambiguous intended definition. New or conflicting research choices remain decision blockers even when the review finding is persuasive. A review finding can justify presenting the decision clearly; it cannot itself decide the economics.
 
 When pausing, return the finding ID, evidence path, affected labels, recommended conservative path, decision memo path when one was written, and exact resume prompt or command.
 
 ## Decision Memo Protocol
 
-For any non-trivial `ask-user` blocker, write an economist-facing HTML decision memo before asking the researcher to decide.
+For an `ask-user` blocker that needs evidence synthesis, write an economist-facing decision memo before asking, using HTML unless the user requests another format. Reuse a suitable existing memo. For a single clear decision that can be explained with its evidence and consequences in a short question, ask directly; do not create a document just to obtain permission. A write-access failure must not prevent stating the decision and evidence in chat.
 
 When the installed runtime provides them, prefer these skills:
 
@@ -120,7 +120,7 @@ Output location:
 - otherwise write to `docs/decision-memos/<YYYY-MM-DD>-<slug>.html` under the current task workspace;
 - treat the repo containing `skills/econ-lfg/SKILL.md` as a package/source repo, not a runtime memo destination, unless the user's research task is explicitly about this package repo.
 
-For trivial one-question blockers with no evidence synthesis needed, the agent may ask directly. Do not use that exception for baseline, sample, estimand, identification, benchmark, promotion, claim-budget, or interpretation decisions.
+The need for a memo depends on the evidence synthesis and trade-offs, not only on the name of the decision. Default to a memo when the decision concerns identification, the estimand, or the sample definition and would change the headline result; ask directly when the choice is binary and its evidence fits in one paragraph. Researcher-owned choices still require an answer before the affected branch proceeds.
 
 ## Re-Review and Closeout
 

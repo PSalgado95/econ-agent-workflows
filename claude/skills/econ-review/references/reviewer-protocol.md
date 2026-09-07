@@ -39,7 +39,8 @@ drift.
 
 ## Reviewer responsibilities
 
-1. Use exactly the role named in the payload and only its persona remit.
+1. Use only the roles explicitly assigned in the payload, applying each persona
+   to its own v1 output. Do not choose extra roles or spawn other agents.
 2. Read the supplied evidence manifest and relevant evidence paths. Do not
    invent missing fields or infer a value from a filename.
 3. Report a missing trust-critical surface as a diagnostic gap rather than
@@ -104,6 +105,17 @@ is suppressed. At `75` or `100`, include a precise evidence locator and the
 verbatim motivating line or value when available. Confidence never substitutes
 for an evidence reference.
 
+## Proportionate review
+
+For each concern, explain how it can change the estimand, realised sample,
+estimate, uncertainty, interpretation, or ability to reproduce the result.
+A missing check is a diagnostic gap only when it leaves a material claim or
+required workflow unsupported; an absent preferred file name or test framework
+is not enough. Accept equivalent evidence in the bounded manifest, and do not
+request an entire new robustness programme for a narrowly scoped correction.
+Do not manufacture findings to fill a role. These limits do not excuse missing
+trust-critical evidence or permit dropping a selected lens.
+
 ## Evidence rules
 
 - Every finding and diagnostic gap names one or more supplied evidence IDs.
@@ -117,7 +129,9 @@ for an evidence reference.
 
 ## Output boundary
 
-Return exactly the fields defined by `reviewer-output-schema.json`. The child
+For each assigned role, return exactly the fields defined by
+`reviewer-output-schema.json`. For a grouped assignment, put these objects in
+the single `reviews` array specified by the parent. The child
 status is always `completed`; parent-side validation converts malformed,
 role-mismatched, or unsupported output into the corresponding terminal state.
 The reviewer may return empty arrays with an honest `coverage_note`.

@@ -1,7 +1,7 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://econ-agent-workflows.local/schemas/econ-review-report-v2.json",
-  "title": "econ-review-report/v2",
+  "$id": "https://econ-agent-workflows.local/schemas/econ-review-report-v3.json",
+  "title": "econ-review-report/v3",
   "type": "object",
   "additionalProperties": false,
   "required": [
@@ -20,11 +20,12 @@
     "supplemental_assessments",
     "promotion_gate",
     "state_canary",
-    "failure"
+    "failure",
+    "delegation"
   ],
   "properties": {
     "schema_version": {
-      "const": "econ-review-report/v2"
+      "const": "econ-review-report/v3"
     },
     "run_id": {
       "type": "string",
@@ -246,6 +247,58 @@
           "$ref": "#/$defs/parentFailure"
         }
       ]
+    },
+    "delegation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "max_starts",
+        "max_concurrent",
+        "budget_changes",
+        "workers"
+      ],
+      "properties": {
+        "max_starts": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "max_concurrent": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "budget_changes": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "previous_max_starts",
+              "previous_max_concurrent",
+              "reason"
+            ],
+            "properties": {
+              "previous_max_starts": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "previous_max_concurrent": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "reason": {
+                "type": "string",
+                "minLength": 1
+              }
+            }
+          }
+        },
+        "workers": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/worker"
+          }
+        }
+      }
     }
   },
   "allOf": [
@@ -307,7 +360,7 @@
                   "const": "unavailable"
                 },
                 "reason": {
-                  "const": "dispatch-unavailable"
+                  "const": "review-unavailable"
                 }
               },
               "required": [
@@ -831,7 +884,11 @@
         "role",
         "state",
         "reason",
-        "accepted_findings"
+        "accepted_findings",
+        "review_method",
+        "worker_ids",
+        "evidence_reviewed",
+        "coverage_note"
       ],
       "properties": {
         "role": {
@@ -858,8 +915,94 @@
         "accepted_findings": {
           "type": "integer",
           "minimum": 0
+        },
+        "review_method": {
+          "type": "string",
+          "enum": [
+            "parent",
+            "independent",
+            "unreviewed"
+          ]
+        },
+        "worker_ids": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "evidence_reviewed": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "pattern": "^E[1-9][0-9]*$"
+          }
+        },
+        "coverage_note": {
+          "type": "string",
+          "minLength": 1
         }
-      }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "review_method": {
+                "const": "independent"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "worker_ids": {
+                "minItems": 1
+              },
+              "state": {
+                "const": "completed"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "review_method": {
+                "const": "unreviewed"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "state": {
+                "not": {
+                  "const": "completed"
+                }
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "state": {
+                "const": "completed"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "review_method": {
+                "enum": [
+                  "parent",
+                  "independent"
+                ]
+              }
+            }
+          }
+        }
+      ]
     },
     "source": {
       "type": "object",
@@ -873,7 +1016,8 @@
           "type": "string",
           "enum": [
             "reviewer-role",
-            "domain-assessment"
+            "domain-assessment",
+            "parent-review"
           ]
         },
         "source_id": {
@@ -1218,6 +1362,61 @@
         },
         "raw_payload_preserved": {
           "type": "boolean"
+        }
+      }
+    },
+    "worker": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "worker_id",
+        "roles",
+        "model",
+        "effort",
+        "reason",
+        "state"
+      ],
+      "properties": {
+        "worker_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "roles": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "$ref": "#/$defs/role"
+          }
+        },
+        "model": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "minLength": 1
+        },
+        "effort": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "minLength": 1
+        },
+        "reason": {
+          "type": "string",
+          "minLength": 1
+        },
+        "state": {
+          "type": "string",
+          "enum": [
+            "completed",
+            "invalid",
+            "failed",
+            "timed_out",
+            "cancelled",
+            "unavailable"
+          ]
         }
       }
     }

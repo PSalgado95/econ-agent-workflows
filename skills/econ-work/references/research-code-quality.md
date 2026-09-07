@@ -32,7 +32,11 @@ Whenever research code is written or changed, the first pass should satisfy this
 
 A passing script run is not enough for substantial research code. Protect object-defining facts close to where they are created: row counts, unique keys, merge cardinality, support bounds, denominators, timing, weighting, array dimensions, convergence, residuals, accounting identities, output freshness, expected file counts, and one-row-per-unit assumptions.
 
-Use named tests when checks are reusable, collaborator-facing, replication-facing, library-like, or protect a bug that should not recur. Do not require a full test suite for every exploratory script, but do not bury durable checks inside production functions as temporary debug code.
+Use named tests when they protect a recurring economic calculation, a real collaborator or replication workflow, a public interface, or a bug that should not recur. The code role informs the stakes; it is not by itself a reason to add a test suite. Do not require a full test suite for every exploratory script, but do not bury durable checks inside production functions as temporary debug code.
+
+Prioritise identification and estimand alignment; timing; units and shock scaling; signs and transformations; sample construction and missingness; weights and denominators; uncertainty; calibration; and accounting or equilibrium identities. Check only what the change can affect, starting with transparent small cases. Reuse valid checks rather than rerunning them at every stage, and stop when the relevant failure modes are covered or the remaining limitation is explicit. A matching sign is never a target to engineer.
+
+Make the estimand or model experiment visible near the entrypoint. Connect variable names and key parameters to economic definitions, units, timing conventions, and calibration sources. Prefer inspectable construction steps over abstractions that hide the sample or economic assumptions.
 
 ## Provenance Ladder
 
@@ -82,12 +86,12 @@ def solve_baseline():
     return solve_household(beta, sigma, grid)
 ```
 
-Triage question: would removing this option, object, or branch change any current result, figure, table, or meaningful check? If not, remove it.
+Triage question: does this option, object, or branch serve a current research result, a real interface, or a meaningful check? Simplify within the requested scope; do not refactor unrelated working code just to enforce a preference.
 
 - Keep code scanable. Keep simple calls, signatures, dicts, and conditionals on one line when they stay readable. Prefer removing unnecessary arguments over reformatting a long call, especially keyword arguments that restate defaults. Repeated `f(x=x, y=y, z=z)` forwarding is a sign of the wrong interface.
 - Comments explain reasoning. Keep comments that connect code to equations, explain ordering, flag data quirks, cite a source, or mark meaningful blocks. Delete comments that restate the next line. Avoid formal docstring boilerplate on internal helpers.
 - Modules follow the research workflow. One module should have one substantive job: data construction, calibration or estimation, model solution, experiments, tables, or figures. Merge tiny modules that split one conceptual step across many files.
-- Tests protect claims. Keep tests that check a proposition, identity, special case, residual, or data assumption the project relies on. Delete tests that only freeze glue code.
+- Tests protect claims. Keep tests that check a proposition, identity, special case, residual, or data assumption the project relies on. Do not add tests that merely freeze incidental implementation details. Preserve interface and orchestration tests when they protect a real handoff, data boundary, or failure mode.
 
 Before finishing an edit, scan the diff for defensive checks on the wrong provenance rung, exploded calls and restated defaults, one-use wrapper layers, boilerplate docstrings, dead branches and fallback routes, and names that put plumbing before economics.
 

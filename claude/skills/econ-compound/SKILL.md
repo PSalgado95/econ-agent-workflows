@@ -1,6 +1,6 @@
 ---
 name: econ-compound
-description: "Capture, refresh, or search durable economics research lessons — reusable rules about sources, data construction, sample and measurement, specification and inference, robustness, theory and calibration, interpretation, reproducibility, or handoff practice — as bounded precedent for future work. Use after a plan, work, review, note, data, model, or handoff task when the user says to save or remember a lesson, to update or retire a stale one, or to check whether prior notes already cover a situation ('remember this for next time', 'have we learned this before', 'is this note still right'). Not for project-state updates (those belong in the plan, note, or issue), one-off closeout facts, prose-style preferences, or pure software lessons."
+description: "Capture, find, or update reusable lessons from economics research."
 ---
 
 <!-- GENERATED FROM CODEX SOURCE - DO NOT EDIT. Edit the Codex sources and run build_claude.py. -->

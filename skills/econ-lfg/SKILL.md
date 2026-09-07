@@ -1,6 +1,6 @@
 ---
 name: econ-lfg
-description: "Run a bounded economics research task end to end from a single prompt, orchestrating econ-plan, econ-work, econ-review, revision, and re-review under one goal-backed loop. Use when the user explicitly wants hands-off, one-prompt execution — 'run this the whole way', 'plan, do it, review it, and deliver', 'take this end to end' — for an empirical, model-computation, writing-from-evidence, or hybrid task, pausing only for research-level decisions the user must make. Not for a single planning, execution, or review step (use econ-plan, econ-work, or econ-review directly), not for deciding the research question itself, and not for pure software work with no research object."
+description: "Complete a bounded economics research task end to end when the user requests autonomous execution."
 ---
 
 # Econ LFG
@@ -22,7 +22,7 @@ The required order is:
 3. invoke `econ-work`;
 4. invoke `econ-review`;
 5. resolve review findings through a revision pass;
-6. run targeted re-review;
+6. run targeted re-review when revisions or new evidence require it;
 7. deliver only when the result is resolved, consciously deferred, or genuinely blocked.
 
 Do not skip the saved-plan gate. For non-trivial tasks, `econ-plan` must produce or refresh a saved plan before `econ-work` begins.
@@ -31,7 +31,7 @@ Route pure software work to the current Compound Engineering workflow instead of
 
 ## Input
 
-Treat the arguments passed with this invocation, or the user's current request, as the autonomous task to run end to end. Inspect any named files and the available project context before asking questions. Use that evidence to make each question precise, then ask whatever is needed — one decision per question — until the objective, research object, scope, assumptions, outputs, audience, and relevant constraints define a shared bounded task. Do not guess missing task context merely to start sooner. If the prompt would require deciding the research question itself, use `econ-brainstorm` or `econ-plan` to build the task first.
+Treat the arguments passed with this invocation, or the user's current request, as the autonomous task to run end to end. Inspect any named files and the available project context before asking questions. Use the request, prior decisions, and that evidence to define the bounded task. Ask only for an unresolved choice that materially changes the economics, authority, or feasible deliverable. State reversible assumptions and proceed; do not repeat an intake interview when the user has already supplied the task. If the prompt would require deciding the research question itself, use `econ-brainstorm` or `econ-plan` to build the task first.
 
 Once the bounded task is agreed and the run begins, work autonomously. Return with a question only when newly discovered evidence would materially change the agreed task, a researcher-level decision is required, required access is missing, or new external or destructive authority is needed.
 
@@ -39,9 +39,9 @@ Once the bounded task is agreed and the run begins, work autonomously. Return wi
 
 Use the host platform's goal or persistence primitive when available. If the run is already inside a goal, continue under that goal. If no active goal exists and a goal primitive is available, create one whose objective names the requested research output and the required `econ-plan -> econ-work -> econ-review -> revision -> re-review` loop.
 
-If no goal primitive is available, continue only when the host session itself can reasonably persist the loop. In the closeout, state that the run used session-local persistence rather than a goal-backed runtime. Do not pretend a goal was created.
+If no goal primitive is available, execute the loop in the current foreground session using the available task list or saved progress record. Lack of a goal primitive is not itself a research blocker. State session-local persistence in the execution record and mention it to the user only when it limits completion or resumption. Do not claim a goal was created or promise work after the session ends.
 
-Mark the goal complete only when the final deliverable is produced and review-resolution is handled. Mark it blocked only when the same user-level economics decision or external-access blocker prevents meaningful progress after repeated attempts.
+Mark the goal complete only when the final deliverable is produced and review-resolution is handled. Mark the affected branch blocked when a genuine unresolved economics decision or access limit prevents progress. Continue independent authorised work; do not repeat an identical failed action or question without new evidence.
 
 ## Authority hierarchy
 
@@ -99,10 +99,10 @@ review route from the plan or work closeout. Set `invocation` to `nested`,
 review. Populate every other required request field, including the bounded
 scope, evidence manifest, triggers, timeout policy, and supplemental assessment
 declarations. Do not pass a persona choice or a private caller/report contract.
-Consume the returned `econ-review-report/v2` inline. The review creates no files
+Consume the returned `econ-review-report/v3` inline. This nested review creates no files
 and performs no fixes; this parent owns revision and re-review.
 
-Select the lightest review tier that protects the output by applying `econ-review`'s escalation triggers; when in doubt, choose the stricter tier.
+Select review depth and scope from the actual research risks and `econ-review` triggers, not from a general preference for stricter review. When the triggers leave two depths equally defensible and the result is promotion-bound or will leave the workspace (a paper draft, a coauthor, a referee, a replication package), take the stricter one. Record the chosen depth, whether promotion was requested, and the reason in the execution record. The selected lenses define coverage, not mandatory child agents. Apply the shared delegation policy and preserve the broader research question. This explicitly requested end-to-end workflow authorises its nested formal review stage.
 
 Capture:
 - retained findings;
@@ -113,11 +113,12 @@ Capture:
 - missing diagnostic surfaces; and
 - whether the panel was degraded.
 
-Validate the response against `econ-review-report/v2` and require every selected
+Validate the response against `econ-review-report/v3` and require every selected
 role lifecycle, canonical finding field, diagnostic gap, assessment lifecycle,
 coverage field, verdict, safety record, canary, and promotion gate. Preserve and
-stop on an unknown report version. Retry missing or malformed reviewer roles and
-a malformed same-version parent envelope once. If a promotion-tier panel remains
+stop on an unknown report version. For missing or malformed worker returns, reassess whether a local check or a
+targeted follow-up can finish coverage; replacement starts count toward the
+delegation budget. Retry a malformed same-version parent envelope once. If a promotion-tier panel remains
 degraded, pause and ask whether to proceed with the named missing coverage; do
 not enter revision or delivery as though the review were complete. At quick or
 standard tier, carry degraded status and missing roles as explicit diagnostic
@@ -152,7 +153,7 @@ finding was returned.
 Apply this policy. Every revision-stage `econ-work` invocation includes
 `caller_contract: econ-lfg/v1` and consumes `econ-work-for-caller/v1`. Every
 targeted `econ-review` invocation instead uses a complete
-`econ-review-request/v1` and consumes `econ-review-report/v2`; there is no
+`econ-review-request/v1` and consumes `econ-review-report/v3`; there is no
 review-specific private caller contract.
 - Fix `fix-now` findings and gaps through `econ-work` or a bounded local revision pass.
 - Revise `revise-plan-choice` findings or gaps when the new path remains inside the initial prompt's intent.
@@ -161,13 +162,15 @@ review-specific private caller contract.
 
 The direct-fix boundary, the researcher-level trigger list, and the decision-memo contract are defined in `references/review_resolution_reference.md`; apply them exactly.
 
-When a non-trivial researcher-level decision blocks progress, write an economist-facing HTML decision memo before asking. When the installed runtime provides them, prefer the `econ-html-memo` skill for the memo shape and validation, and the `econ-writing` skill for prose discipline. If those skills are unavailable in the runtime, use the fallback memo contract in `references/review_resolution_reference.md` rather than failing on a dangling dependency. The memo must say what decision arose, what the outputs or review findings show, what the agent recommends and why, what changes under each choice, what stays unchanged, and what the agent will do next after the researcher decides.
+When a researcher-level decision needs evidence synthesis, write an economist-facing decision memo before asking, using HTML unless another format was requested. A clear single decision can be asked directly with its evidence and consequences; follow the proportional memo contract in the reference. When the installed runtime provides them, prefer the `econ-html-memo` skill for the memo shape and validation, and the `econ-writing` skill for prose discipline. If those skills are unavailable in the runtime, use the fallback memo contract in `references/review_resolution_reference.md` rather than failing on a dangling dependency. The memo must say what decision arose, what the outputs or review findings show, what the agent recommends and why, what changes under each choice, what stays unchanged, and what the agent will do next after the researcher decides.
 
 Write runtime decision memos to the active research workspace. If the saved plan names a memo, note, or output directory, use it. Otherwise write to `docs/decision-memos/<YYYY-MM-DD>-<slug>.html` under the current task workspace. Do not write runtime decision memos into this package/source repo unless the task is explicitly about this repo.
 
 If revisions materially change the plan's assumptions, record that divergence in the work closeout or a follow-up plan recommendation. Do not rewrite the saved plan as a progress log.
 
 ### Stage 5: Targeted re-review
+
+If the initial review is complete and no revision, new evidence, or unresolved coverage issue requires another pass, proceed to delivery. Do not manufacture a revision or repeat an unchanged review.
 
 After `fix-now` or `revise-plan-choice` revisions to findings or diagnostic
 gaps, run targeted `econ-review` on changed or previously problematic surfaces.
@@ -187,26 +190,14 @@ Escalate to broader review only when revisions changed the baseline, sample, est
 Repeat the review-resolution pass until:
 - no blocking or worth-fixing findings or diagnostic gaps remain;
 - remaining findings and gaps are consciously deferred with rationale;
-- the run hits the same user-level decision blocker repeatedly; or
+- a researcher-level decision prevents further meaningful work on the affected branch; or
 - external access or missing data prevents meaningful progress.
 
 ### Stage 6: Deliver
 
-Deliver a compact final closeout with:
-- original objective;
-- saved plan path;
-- what was inspected, changed, run, and regenerated, plus code role;
-- outputs refreshed, inherited, inspected-only, or scaffolded;
-- interpretation brief, note brief, note, figure, or bundle status;
-- review tier, surface, and panel status;
-- review findings fixed, with finding IDs and targeted re-review result;
-- review findings deferred or advisory, with finding IDs, rationale, and the durable residual sink each landed on (bundle residual section, approved issue, or dated `docs/residual-findings/<slug>.md`);
-- decision memo path, when one was written;
-- blockers or user decisions, if any;
-- verification performed;
-- remaining risks;
-- reusable lesson checkpoint; and
-- recommended next command, if any.
+Lead the final closeout with the research outcome and usable deliverable. Explain what the evidence supports, what changed, and the limitations that matter for interpretation or reuse. Then give the saved plan and main output paths, what was actually regenerated versus only inspected, the validation result, and the review conclusion. Translate internal terms when explaining them to the researcher; do not lead with schemas, stages, or agent status.
+
+Keep detailed stage and code-role bookkeeping in the execution record, including the review depth chosen and any delegated worker's model, effort, and reason. Preserve finding and gap IDs for fixes and residuals, their targeted re-review outcomes, and durable residual paths. Disclose degraded coverage or a blocked promotion plainly; neither can be hidden by a shorter closeout. Include a decision memo or resume instruction only when one is needed. Do not create a follow-up merely to fill a final field.
 
 If the autonomous run explicitly included compounding and produced a durable reusable lesson, invoke `econ-compound` after review-resolution. If compounding was in scope but no durable lesson emerged, report `Reusable lesson: none` and write nothing. When compounding was not in scope, keep any candidate in the closeout without interrupting the run or writing a learning note.
 

@@ -6,16 +6,17 @@ This file contains the detailed evidence read order and method guardrails used
 to assemble a bounded reviewer prompt. It does not select roles or define child
 output. Use:
 
-- `persona-catalog.md` for deterministic roster selection;
+- `persona-catalog.md` for coverage selection, separate from worker assignments;
 - `reviewer-protocol.md` for the common child contract;
 - `reviewer-output-schema.json` for role output;
 - the request, domain-assessment, and report schemas for workflow boundaries.
 
 ## Surface-specific read order
 
-Read only paths in the validated evidence manifest. Missing surfaces remain
-missing; do not discover unrelated project material merely because it may be
-useful.
+Children read only their bounded evidence manifest and report missing evidence.
+The coordinator may discover newly relevant material within the authorised
+research scope, append evidence IDs, and revise coverage. The surface orders
+below guide inspection; they must not replace the central research question.
 
 ### `plan-design`
 

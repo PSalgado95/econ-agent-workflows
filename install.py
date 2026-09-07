@@ -51,8 +51,8 @@ STALE_AGENT_FILES = (
 )
 
 # Separate exact inventories for other package-owned surfaces retired by prior
-# releases. In particular, ssj-code-taste.md and every unknown file are not
-# stale and must survive a forced upgrade.
+# releases. Every unknown file is outside package ownership and must survive a
+# forced upgrade.
 STALE_SKILL_DIRS = ("econ-reviewer",)
 STALE_REFERENCE_FILES = (
     "code-taste.md",

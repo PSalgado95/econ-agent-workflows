@@ -2,12 +2,12 @@
 
 This file is the authoritative catalogue for `econ-review`. Personas are prompt
 assets, not registered agents, commands, skills, or user-selectable products.
-The parent selects the roster before dispatch and embeds exactly one persona in
-each self-contained reviewer prompt.
+The parent selects checks for coverage. It may apply lenses locally or group
+related lenses in one bounded worker assignment. Lens count is not agent count.
 
 ## Canonical role order
 
-All ordered unions, queue positions, lifecycle rows, and finding-source lists use
+All ordered unions, coverage rows, and finding-source lists use
 this order:
 
 1. `provenance`
@@ -125,9 +125,9 @@ numerical validity. Also add:
 4. Add every conditional role, including all fold co-selections.
 5. Apply the promotion modifier.
 6. Deduplicate and sort by canonical role order.
-7. Freeze the complete roster before dispatch. Every retained role is required.
+7. Record the coverage inventory, then decide separately which checks merit delegation.
+   Reassess coverage as relevant evidence emerges within the authorised scope.
 
-Six roles are a context-and-cost target, never a cap. Do not truncate a
-necessary roster. When more than six roles are selected, the parent records one
-sentence for every role beyond the applicable surface cores explaining the
-trigger or fold that required it.
+Do not turn this inventory into a mandatory child queue. Relevant lenses may be
+covered by the parent. Explain material scope choices and disclose unchecked
+concerns; delegation budgets limit workers, not the questions the parent can ask.

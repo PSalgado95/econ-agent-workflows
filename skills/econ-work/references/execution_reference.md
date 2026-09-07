@@ -1,6 +1,6 @@
 # Execution reference
 
-Read this file only when you need a template or checklist during execution.
+Read this file only when the current stage needs it. These templates specify information to preserve, not a requirement to create a separate file or repeat every heading. Reuse existing evidence surfaces; combine brief sections for bounded work. Formal caller envelopes and review contracts retain every required field.
 
 ## Interpretation brief template
 
@@ -18,7 +18,7 @@ Read this file only when you need a template or checklist during execution.
 
 ## Note brief template
 
-The note brief is a delta on `interpretation_brief.md`: start from that brief and record only what changes now that a specific reader is in view. Do not restate the main finding, supporting facts, or limitations already in the interpretation brief.
+The note brief is a delta on the recorded interpretation brief: start from that brief and record only what changes now that a specific reader is in view. Do not restate the main finding, supporting facts, or limitations already in the interpretation brief.
 
 ```md
 ## Note brief (delta on the interpretation brief)
@@ -78,7 +78,7 @@ Log each Class A and Class B choice (see `econ-work` "Choice classes") as one ro
 - [label] | class: A|B|C | choice: | alternatives worth stress-testing: | status: provisional|settled
 ```
 
-Keep Class A rows `provisional` until the researcher confirms; record credible alternatives for Class B rows so they can be stress-tested later.
+Record Class A choices already supplied by the researcher or approved plan as `settled`, citing that authority. Keep genuinely unresolved choices `provisional` and do not execute the affected branch; record credible alternatives for Class B rows so they can be stress-tested later.
 
 ## Analysis surface simplification checklist
 
@@ -126,7 +126,7 @@ evidence path in the closeout.
 
 ## Verification ladder
 
-Run the rungs that apply; each gives an example check.
+Select rungs by the changed economic object and its plausible failure modes. Record what each completed check establishes. Reuse a completed check on unchanged evidence; do not repeat a full ladder merely because the workflow reaches closeout.
 1. input integrity — the named inputs exist and match the expected signature or vintage, not just the folder.
 2. code and helper integrity — a helper that defines bins, keys, denominators, or timing returns what the object needs on a small known case.
 3. research-code-quality floor — entrypoints visible, object-defining parameters named, no stale debug or test fragments in tracked code.
@@ -143,7 +143,7 @@ Run the rungs that apply; each gives an example check.
 
 ## Minimal artefacts glossary
 
-Create the minimal version of any of these when it is absent rather than working without it:
+For each applicable need, use an existing file or a short labelled section; create a separate artefact only when it improves traceability or handoff. Do not create irrelevant or empty ledgers:
 - **Model-spec ledger** — a stable list of the realised specification(s): estimator, sample, fixed effects, weights, inference, and the output each maps to.
 - **Output specification / manifest** — what each canonical output family should contain and where it is written, so a changed output can be checked against intent.
 - **Workflow note** — the running execution note (what was inspected, changed, run, regenerated, and what remains), kept separate from the reader-facing note.
@@ -207,7 +207,7 @@ Do not include raw restricted data, confidential evidence, or long logs in issue
 
 ## Closeout
 
-Use this as the completion gate for `econ-work` runs. The run is complete only when every applicable item is stated (or explicitly marked not applicable); a script run, a generated file, or one passing check is not completion.
+Use this as a completeness check, not a mandatory chat form. Lead the researcher-facing closeout with the economic finding, implication, or usable artefact, followed by the validation and limitations needed to assess it. Keep detailed bookkeeping in the execution note; combine related items and omit inapplicable fields rather than displaying empty categories. A script run alone is not completion.
 
 1. objective and outcome;
 2. what was inspected, changed, run, and regenerated, plus code role when code changed;
@@ -216,13 +216,14 @@ Use this as the completion gate for `econ-work` runs. The run is complete only w
 5. verification performed and what it proved;
 6. interpretation and note status: interpretation brief, note brief, note or figures, and surprise memo with any unresolved research decision;
 7. review route and bundle status, plus the issue checkpoint when the work is issue-linked;
-8. blockers, risks, and open questions, plus choice-register updates and any durable residual sink (see below);
-9. reusable lesson checkpoint (one line, format below);
-10. recommended next command.
+8. delegated workers, if any: the task, the model and effort chosen, the reason, and whether the return passed its completion check;
+9. blockers, risks, and open questions, plus choice-register updates and any durable residual sink (see below);
+10. reusable lesson checkpoint (one line, format below);
+11. recommended next command.
 
 Durable residual sink: deferred or advisory findings that affect trust must land on a durable surface before delivery — the review bundle's residual section, a GitHub issue (with approval), or a dated `docs/residual-findings/<slug>.md` — with finding IDs preserved. Never close out with trust-affecting residuals recorded only in chat.
 
-For trivial one-off work, use a compact closeout, but still state what was checked, changed, run, or regenerated, output status, remaining risk, and next step.
+For trivial one-off work, give the result or artefact, what was actually checked, and any material limitation. Do not invent a follow-up or reusable lesson merely to fill a field.
 
 Reusable lesson checkpoint format:
 - `Reusable lesson checkpoint: none` when the run did not reveal a reusable lesson. Keep this to one compact line.
