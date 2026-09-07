@@ -1,6 +1,6 @@
 # Plan template
 
-Use this template when saving or substantially refreshing a plan.
+Use this as a menu of planning information, not a form to reproduce in full. Save only relevant sections and combine overlapping ones. A compact plan still fixes the research objective, assumptions and scope, evidence, execution steps, and verification. Do not create empty sections or enumerate every omission.
 
 ```md
 ---
@@ -237,7 +237,7 @@ Confirm that the saved plan makes these explicit:
 - reader contract;
 - `domain_mode`, `round_type`, `reporting_class`, `task_family`, and `code_role`;
 - note contract when reporting is in scope;
-- task-family sections included or explicitly omitted;
+- relevant task-family sections included; irrelevant sections omitted without ceremony;
 - sparse labels for nontrivial decisions, outputs, and work units;
 - `F1`, `F2`, ... reserved for review findings;
 - origin trace for nontrivial decisions/outputs;
@@ -252,7 +252,7 @@ Confirm that the saved plan makes these explicit:
 - source/data/measurement plans specify required registries, identifiers, and audits;
 - research-code plans specify `code_role` and the research code quality contract when code is in scope;
 - ordinary analysis/writing plans omit irrelevant source/corpus machinery;
-- material plan-shaping questions asked with the blocking question tool or explicitly resolved;
+- material plan-shaping choices resolved from the request and evidence, or asked using an available question tool or ordinary chat; any affected unresolved branch explicitly blocked;
 - all file, folder, script, output, and evidence references use repo-relative paths;
 - user-named files, issues, outputs, datasets, registers, or documents were inspected or explicitly marked unavailable;
 - decisions include rationale, not only tasks.

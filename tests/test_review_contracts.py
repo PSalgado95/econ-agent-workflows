@@ -23,7 +23,7 @@ VERSIONS = {
     "request": "econ-review-request/v1",
     "reviewer": "econ-reviewer-output/v1",
     "domain": "econ-domain-assessment/v1",
-    "report": "econ-review-report/v2",
+    "report": "econ-review-report/v3",
 }
 
 
@@ -86,13 +86,13 @@ def valid_request() -> dict[str, Any]:
 def valid_domain_assessment() -> dict[str, Any]:
     return {
         "schema_version": "econ-domain-assessment/v1",
-        "assessment_id": "ssj-1",
-        "assessment_type": "ssj-model-validity",
-        "subject": "Steady-state Jacobian implementation",
+        "assessment_id": "domain-1",
+        "assessment_type": "structural-model-validity",
+        "subject": "Structural model implementation",
         "status": "complete",
         "producer": {
             "kind": "skill",
-            "name": "econ-ssj-work",
+            "name": "econ-model-check",
             "version": "1",
         },
         "evidence_reviewed": ["E1"],
@@ -107,13 +107,13 @@ def valid_domain_assessment() -> dict[str, Any]:
             }
         ],
         "limitations": [],
-        "coverage_note": "The declared SSJ object was assessed.",
+        "coverage_note": "The declared domain object was assessed.",
     }
 
 
 def valid_report() -> dict[str, Any]:
     return {
-        "schema_version": "econ-review-report/v2",
+        "schema_version": "econ-review-report/v3",
         "run_id": "fixture-run",
         "parent_status": "completed",
         "request_summary": {
@@ -132,8 +132,13 @@ def valid_report() -> dict[str, Any]:
                 "state": "completed",
                 "reason": None,
                 "accepted_findings": 0,
+                "review_method": "parent",
+                "worker_ids": [],
+                "evidence_reviewed": ["E1"],
+                "coverage_note": "Parent checked the stated inference convention.",
             }
         ],
+        "delegation": {"max_starts": 0, "max_concurrent": 0, "budget_changes": [], "workers": []},
         "findings": [],
         "warnings": [],
         "diagnostic_gaps": [],
@@ -558,7 +563,7 @@ class ReviewSchemaContractsTest(unittest.TestCase):
             encoding="utf-8"
         )
         self.assertIn("one complete `econ-review-request/v1` object", lfg)
-        self.assertIn("Consume the returned `econ-review-report/v2`", lfg)
+        self.assertIn("Consume the returned `econ-review-report/v3`", lfg)
         self.assertNotIn("econ-review-for-caller/v1", lfg)
 
     def test_report_cross_field_safety_coverage_and_promotion_invariants(self) -> None:
@@ -572,7 +577,8 @@ class ReviewSchemaContractsTest(unittest.TestCase):
         unavailable["verdict"] = "blocked"
         unavailable["selected_roles"][0].update(
             state="unavailable",
-            reason="dispatch-unavailable",
+            reason="review-unavailable",
+            review_method="unreviewed",
         )
         unavailable["state_canary"]["status"] = "not-run"
         validator.validate(unavailable)

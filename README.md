@@ -51,14 +51,27 @@ evidence. Depending on the material, it examines:
 - whether tables, figures, code, and written claims agree; and
 - whether the analysis can be reproduced from the supplied material.
 
-When useful, the review can ask reviewers to reproduce selected results
-independently in another programming language. They compare the constructed
-sample, variables, estimates, tables, and figures. Because the second version
-is written independently, discrepancies can reveal coding errors in the
-original analysis.
+When useful and authorised, the work stage can prepare an independent
+implementation of selected results in another programming language. The review
+then inspects the supplied comparison of samples, variables, estimates, tables,
+and figures. Reviewers do not create scripts or run new replications: they are
+report-only. Cross-language work is a targeted diagnostic, not a default
+requirement.
 
-The economist invokes one review skill. `econ-review` chooses and combines the
-relevant specialist checks internally.
+The researcher explicitly selects `econ-review`, or requests an end-to-end
+`econ-lfg` run that includes it. Ordinary checking and debugging do not silently
+activate the formal workflow. The coordinator retains the broader research task.
+
+Review lenses describe coverage, not a roster of child agents. The coordinator
+can cover them directly or delegate related checks together. The delegation
+reference in `skills/econ-work/references/delegation_reference.md` governs both
+work and review: Sol Low is a useful supporting default, Luna handles easy
+searches with effort chosen for the task, and stronger independent judgment is
+used selectively. Other hosts use available equivalents. Each run distinguishes
+parent checks from independent checks and records worker settings and budgets.
+
+Reports use `econ-review-report/v3`; v2 reports must not be silently reinterpreted
+because their coverage does not distinguish parent and worker checks.
 
 ## Installation
 
@@ -121,6 +134,7 @@ Run the contract suite and verify the generated Claude package from the
 repository root:
 
 ```text
+python -m pip install jsonschema
 python -m unittest discover -s tests -v
 python build_claude.py --check
 ```

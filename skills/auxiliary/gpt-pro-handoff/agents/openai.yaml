@@ -1,4 +1,6 @@
 interface:
   display_name: "GPT Pro Handoff"
-  short_description: "Explicit user-requested GPT Pro packages only"
-  default_prompt: "I explicitly request $gpt-pro-handoff in this current user turn. Prepare the bounded GPT Pro handoff package I describe from this workspace."
+  short_description: "Prepare an explicitly requested GPT Pro package"
+  default_prompt: "Use $gpt-pro-handoff to prepare the external GPT Pro package I explicitly request in this current user turn."
+policy:
+  allow_implicit_invocation: false

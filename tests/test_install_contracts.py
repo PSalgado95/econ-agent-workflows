@@ -111,7 +111,7 @@ class InstallContractsTest(unittest.TestCase):
             stale_agents = EXPECTED_STALE_AGENTS
             sentinels = {
                 agents / "econ-review-readonly-transport.toml": "TRANSPORT",
-                agents / "econ-ssj-model-validity-reviewer.toml": "SSJ",
+                agents / "separately-owned-agent.toml": "EXTERNAL-AGENT",
                 agents / "unrelated-agent.toml": "UNKNOWN-AGENT",
             }
         else:
@@ -121,7 +121,7 @@ class InstallContractsTest(unittest.TestCase):
             )
             sentinels = {
                 agents / "econ_review_readonly_transport.md": "TRANSPORT",
-                agents / "econ_ssj_model_validity_reviewer.md": "SSJ",
+                agents / "separately_owned_agent.md": "EXTERNAL-AGENT",
                 agents / "unrelated_agent.md": "UNKNOWN-AGENT",
             }
         for name in stale_agents:
@@ -131,7 +131,7 @@ class InstallContractsTest(unittest.TestCase):
 
         sentinels.update(
             {
-                references / "ssj-code-taste.md": "SSJ-REFERENCE",
+                references / "separately-owned-reference.md": "EXTERNAL-REFERENCE",
                 references / "unknown-reference.md": "UNKNOWN-REFERENCE",
                 root / "skills" / "unrelated-skill" / "sentinel.txt": "UNKNOWN-SKILL",
             }
@@ -229,8 +229,8 @@ class InstallContractsTest(unittest.TestCase):
         explicitly_preserved = {
             "econ-review-readonly-transport.toml",
             "econ_review_readonly_transport.md",
-            "econ-ssj-model-validity-reviewer.toml",
-            "econ_ssj_model_validity_reviewer.md",
+            "separately-owned-agent.toml",
+            "separately_owned_agent.md",
             "unrelated-agent.toml",
             "unrelated_agent.md",
         }

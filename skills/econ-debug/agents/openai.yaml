@@ -1,0 +1,4 @@
+interface:
+  display_name: "Econ Debug"
+  short_description: "Diagnose unexpected research results"
+  default_prompt: "Use $econ-debug to diagnose this unexpected economics research result."

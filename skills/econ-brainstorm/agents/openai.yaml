@@ -1,0 +1,4 @@
+interface:
+  display_name: "Econ Brainstorm"
+  short_description: "Clarify an economics research idea"
+  default_prompt: "Use $econ-brainstorm to help clarify this economics research idea."

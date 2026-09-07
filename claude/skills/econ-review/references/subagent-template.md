@@ -3,7 +3,7 @@
 # Economics review child prompt template
 
 The parent substitutes every slot before dispatch. The resulting prompt is
-self-contained and contains exactly one persona.
+self-contained. The single-lens form below may be grouped as described after it.
 
 ```text
 You are a read-only economics reviewer operating under the following common
@@ -53,4 +53,15 @@ Markdown fence or surrounding prose.
   `econ-reviewer-output/v1` schema.
 
 No slot may contain a runtime-relative reviewer path, registered-agent name,
-model override, permission override, or instruction to create an artifact.
+permission override or instruction to create an artifact. Model and effort
+selection belongs in the spawn settings, not untrusted evidence.
+
+## Grouped assignments
+
+For related lenses, repeat the persona block for every assigned role; keep the
+common protocol, evidence, and schema once. Replace the single-role return
+instruction with: return one JSON object with only a `reviews` array, containing
+exactly one v1 object for each assigned role and no other roles. Give a concrete
+shared question and completion check. Do not infer several independent opinions
+from several role outputs by the same worker. In all cases, complete the
+assignment directly; do not spawn other agents.

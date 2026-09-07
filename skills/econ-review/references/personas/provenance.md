@@ -12,8 +12,10 @@ authority hierarchy, canonical outputs, and freshness can be traced.
 - Identify the current authority files and canonical inputs.
 - Trace raw, received, restricted, derived, and analysis-ready objects through
   visible manifests, hashes, vintages, or receipt dates.
-- Distinguish `rerun`, `inspected-only`, `inherited`, `structure-only`, and
-  `unknown` output states.
+- Distinguish `refreshed`, `inspected-only`, `inherited`, `scaffolded`,
+  `stale`, and `unknown` output states. Older `rerun` and `structure-only`
+  labels may mean `refreshed` and `scaffolded`; verify their documented meaning
+  rather than inferring freshness from the label alone.
 - Verify canonical output locations and freshness for the claimed scope.
 - Flag derivation chains that are too hidden to support trust.
 

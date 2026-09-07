@@ -1,6 +1,6 @@
 ---
 name: econ-brainstorm
-description: "Hold the research conversation before a plan exists, turning a vague economics idea into a saved scope memo through one short question at a time — the researcher answers in fragments; the skill carries the structure. Use when the user wants to brainstorm, think through an idea, explore a direction, figure out what to study or what the first paper should be, or is not sure yet what the question is. Not for writing the plan itself (econ-plan), executing analysis (econ-work), or verdicts on external methods or papers."
+description: "Clarify an economics research idea before planning the analysis."
 ---
 
 # Economist Brainstorm Workflow
@@ -13,11 +13,11 @@ Treat the arguments passed with this invocation, or the user's current request, 
 
 Every session ends with a saved or refreshed scope memo at `docs/plans/YYYY-MM-DD-<slug>-scope.md` (or the repo's plan convention), with `readiness: scoping-only` in its frontmatter, plus a one-line receipt naming the exit ramp taken. The memo is the session state: brainstorms resume across sessions by reading it, so an inline-only summary is not a valid completion.
 
-The skill is read-only on the project: no code changes, no data mutation, no estimation. The only file access is reading — to resume a memo, or to verify an availability claim.
+The research code and data are read-only: no code changes, data mutation, or estimation. Writing the scope memo and an explicitly accepted mock exhibit are the only exceptions. Read project material to resume the discussion or verify an availability claim.
 
 ## Questions
 
-Ask one short question at a time with the platform's blocking-question tool (`request_user_input`; the Claude build translates it), never a stacked list. Match the researcher's energy: casual, fragmentary answers are fine — organising them is the skill's job, not theirs. Every question carries the context that makes it answerable — why it matters for the direction, the plausible answers with their tradeoffs — and, where sensible, a suggested default. There is no question budget.
+Ask one short question at a time using `request_user_input` when available, otherwise ordinary chat; never require a tool the host does not provide. Build on the fragments and answers already supplied rather than restarting the interview. Match the researcher's energy: casual, fragmentary answers are fine — organising them is the skill's job, not theirs. Every question carries the context that makes it answerable — why it matters for the direction, the plausible answers with their tradeoffs — and, where sensible, a suggested default. There is no question budget.
 
 Ask what the researcher is already thinking before offering your own framings — their half-formed version carries context, and an early agent framing is easy to fixate on.
 

@@ -307,7 +307,7 @@ class PersonaCatalogueContractsTest(unittest.TestCase):
             all_triggers,
         )
         self.assertEqual(all_roles, self.roles)
-        self.assertIn("Six roles are a context-and-cost target, never a cap.", self.catalog_text)
+        self.assertIn("Lens count is not agent count.", self.catalog_text)
 
     def test_every_surface_and_depth_has_an_exact_frozen_core(self) -> None:
         expected = {
@@ -464,27 +464,18 @@ class OrchestrationContractsTest(unittest.TestCase):
             with self.subTest(obsolete=obsolete):
                 self.assertNotIn(obsolete, combined)
 
-    def test_queue_backpressure_idle_capacity_and_timeout_semantics_are_explicit(self) -> None:
+    def test_delegation_policy_is_shared_and_not_a_mandatory_roster(self) -> None:
         skill = read(REVIEW / "SKILL.md")
-        normalized = re.sub(r"\s+", " ", skill)
-        phrases = (
-            "`queued`: selected roles not yet started, in canonical order",
-            "Do not hard-code a capacity.",
-            "Start roles strictly from the head of `queued`.",
-            "refill from the queue without waiting for unrelated running children",
-            "Do not use fixed waves or an all-settle barrier before refill.",
-            "retry it only after the next owned terminal event",
-            "yield to the host once and retry the head role once",
-            "mark the head role and every",
-            "`capacity-unavailable`",
-            "never spin, shrink the roster, skip ahead",
-            "`timed_out` is valid only when the host enforces",
-            "Every selected role ends in exactly one state",
-            "Synthesis begins only after every selected role is terminal.",
-        )
-        for phrase in phrases:
-            with self.subTest(phrase=phrase):
-                self.assertIn(re.sub(r"\s+", " ", phrase), normalized)
+        work = read(REPO / "skills/econ-work/SKILL.md")
+        reference = read(REPO / "skills/econ-work/references/delegation_reference.md")
+        self.assertIn("delegation_reference.md", skill)
+        self.assertIn("delegation_reference.md", work)
+        self.assertIn("Judgment work and review do not require the parent's", reference)
+        for stale in (
+            "fill every child slot", "Never drop, replace, or demote a role",
+            "The child inherits the parent", "always run at parent class",
+        ):
+            self.assertNotIn(stale, skill + work + reference)
 
     def test_child_prompt_is_self_contained_and_parent_owns_verdict_and_ids(self) -> None:
         template_text = read(REFERENCES / "subagent-template.md")
