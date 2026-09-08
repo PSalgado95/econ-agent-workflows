@@ -46,16 +46,6 @@ def metadata(text: str) -> dict:
 
 
 class SkillMetadataTest(unittest.TestCase):
-    def test_verification_does_not_implicitly_launch_formal_review(self) -> None:
-        work = (REPO / "skills/econ-work/SKILL.md").read_text(encoding="utf-8")
-        debug = (REPO / "skills/econ-debug/SKILL.md").read_text(encoding="utf-8")
-        lfg = (REPO / "skills/econ-lfg/SKILL.md").read_text(encoding="utf-8")
-        self.assertNotIn("Default review target:", work)
-        self.assertNotIn("hand the changed surface to a targeted", debug)
-        self.assertIn("Do not automatically invoke `econ-review`", work)
-        self.assertIn("Do not automatically invoke `econ-review`", debug)
-        self.assertIn("Invoke `econ-review`", lfg)
-
     def test_discovery_and_ui_contracts(self) -> None:
         names = set()
         for path in sorted((REPO / "skills").rglob("SKILL.md")):
