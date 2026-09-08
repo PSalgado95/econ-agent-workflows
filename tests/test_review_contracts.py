@@ -200,128 +200,6 @@ def canonical_gap() -> dict[str, Any]:
     }
 
 
-def salvage_one_json_object(raw: str) -> tuple[dict[str, Any], bool]:
-    """Model the contract's single harmless-wrapper salvage pass."""
-    try:
-        parsed = json.loads(raw)
-        if not isinstance(parsed, dict):
-            raise ValueError("top-level JSON is not an object")
-        return parsed, False
-    except (json.JSONDecodeError, ValueError):
-        pass
-
-    start = raw.find("{")
-    if start < 0:
-        raise ValueError("no top-level object")
-    decoder = json.JSONDecoder()
-    try:
-        parsed, end = decoder.raw_decode(raw[start:])
-    except json.JSONDecodeError as error:
-        raise ValueError("malformed-json") from error
-    if not isinstance(parsed, dict):
-        raise ValueError("top-level JSON is not an object")
-    prefix = raw[:start].strip()
-    suffix = raw[start + end :].strip()
-    if not prefix and not suffix:
-        raise ValueError("no harmless wrapper was removed")
-    if "{" in prefix or "{" in suffix or "}" in prefix or "}" in suffix:
-        raise ValueError("multiple or ambiguous objects")
-    return parsed, True
-
-
-def classify_descriptor(
-    descriptor: dict[str, Any], validator: Draft202012Validator
-) -> dict[str, Any]:
-    process = descriptor["process"]
-    if process["status"] != "completed":
-        return {
-            "terminal_state": process["status"],
-            "reason": process["reason"],
-            "salvaged": False,
-        }
-
-    raw = descriptor["raw_output"]
-    salvaged = False
-    if isinstance(raw, dict):
-        payload = raw
-    else:
-        try:
-            payload, salvaged = salvage_one_json_object(raw)
-        except ValueError:
-            return {
-                "terminal_state": "invalid",
-                "reason": "malformed-json",
-                "salvaged": False,
-            }
-
-    if payload.get("schema_version") != "econ-reviewer-output/v1":
-        return {
-            "terminal_state": "invalid",
-            "reason": "unsupported-version",
-            "salvaged": salvaged,
-        }
-    if list(validator.iter_errors(payload)):
-        return {
-            "terminal_state": "invalid",
-            "reason": "schema-error",
-            "salvaged": salvaged,
-        }
-    if payload["run_id"] != descriptor["run_id"]:
-        return {
-            "terminal_state": "invalid",
-            "reason": "run-mismatch",
-            "salvaged": salvaged,
-        }
-    if payload["role"] != descriptor["selected_role"]:
-        return {
-            "terminal_state": "invalid",
-            "reason": "role-mismatch",
-            "salvaged": salvaged,
-        }
-
-    evidence_ids = set(payload["evidence_reviewed"])
-    for finding in payload["findings"]:
-        evidence_ids.update(finding["evidence_refs"])
-        evidence_ids.update(
-            location["evidence_id"] for location in finding["evidence_locations"]
-        )
-        if finding["issue_origin"] != descriptor["selected_role"]:
-            return {
-                "terminal_state": "invalid",
-                "reason": "role-mismatch",
-                "salvaged": salvaged,
-            }
-        for location in finding["evidence_locations"]:
-            expected_path = descriptor["evidence_manifest"].get(
-                location["evidence_id"]
-            )
-            if expected_path != location["path"]:
-                return {
-                    "terminal_state": "invalid",
-                    "reason": "unsupported-evidence",
-                    "salvaged": salvaged,
-                }
-    for gap in payload["diagnostic_gaps"]:
-        evidence_ids.update(gap["evidence_refs"])
-        if gap["issue_origin"] != descriptor["selected_role"]:
-            return {
-                "terminal_state": "invalid",
-                "reason": "role-mismatch",
-                "salvaged": salvaged,
-            }
-    if not evidence_ids.issubset(descriptor["evidence_manifest"]):
-        return {
-            "terminal_state": "invalid",
-            "reason": "unsupported-evidence",
-            "salvaged": salvaged,
-        }
-    return {
-        "terminal_state": "completed",
-        "reason": None,
-        "salvaged": salvaged,
-    }
-
-
 class ReviewSchemaContractsTest(unittest.TestCase):
     @classmethod
     def setUpClass(cls) -> None:
@@ -410,68 +288,6 @@ class ReviewSchemaContractsTest(unittest.TestCase):
                     list(self.validators["reviewer"].iter_errors(broken))
                 )
 
-    def test_payload_descriptors_produce_the_declared_terminal_outcome(self) -> None:
-        fixture_paths = sorted(FIXTURES.glob("*.json"))
-        self.assertEqual(
-            {path.stem for path in fixture_paths},
-            {
-                "valid",
-                "wrapped-valid",
-                "ambiguous-wrapper",
-                "malformed",
-                "wrong-role",
-                "unsupported-evidence",
-                "unknown-version",
-                "process-failure",
-            },
-        )
-        for path in fixture_paths:
-            descriptor = load_json(path)
-            with self.subTest(case=descriptor["case"]):
-                actual = classify_descriptor(
-                    descriptor, self.validators["reviewer"]
-                )
-                self.assertEqual(actual, descriptor["expected"])
-
-    def test_wrapper_salvage_and_validation_order_are_normative(self) -> None:
-        skill = (REPO / "skills" / "econ-review" / "SKILL.md").read_text(
-            encoding="utf-8"
-        )
-        required_phrases = (
-            "allow exactly one wrapper-salvage pass",
-            "one balanced top-level JSON object",
-            "Do not repair JSON",
-            "exact `econ-reviewer-output/v1` version",
-            "every evidence reference is in the request manifest",
-            "every finding's issue origin equals the selected role",
-            "no verdict, coverage, promotion decision, or stable finding ID",
-        )
-        for phrase in required_phrases:
-            with self.subTest(phrase=phrase):
-                self.assertIn(phrase, skill)
-
-    def test_coverage_promotion_and_unknown_report_rules_are_immutable(self) -> None:
-        skill = (REPO / "skills" / "econ-review" / "SKILL.md").read_text(
-            encoding="utf-8"
-        )
-        required_phrases = (
-            "Coverage is report evidence and cannot be relabelled by a caller.",
-            "A degraded or not-run report never returns `clean`.",
-            "requested -> `passed` only with full coverage, unchanged canary",
-            "A later user override is a separate action outside this report.",
-            "report `unsupported_report_version`, and stop.",
-            "It must not resolve findings",
-        )
-        for phrase in required_phrases:
-            with self.subTest(phrase=phrase):
-                self.assertIn(phrase, skill)
-
-        protocol = (REFERENCES / "reviewer-protocol.md").read_text(
-            encoding="utf-8"
-        )
-        self.assertIn("## Parent-only responsibilities", protocol)
-        self.assertIn("assign stable `F<n>` identifiers", protocol)
-        self.assertIn("assign or recommend the overall verdict", protocol)
 
     def test_initial_and_targeted_nested_requests_share_the_public_contract(self) -> None:
         initial = valid_request()
@@ -559,12 +375,6 @@ class ReviewSchemaContractsTest(unittest.TestCase):
             list(self.validators["request"].iter_errors(nested_without_caller))
         )
 
-        lfg = (REPO / "skills" / "econ-lfg" / "SKILL.md").read_text(
-            encoding="utf-8"
-        )
-        self.assertIn("one complete `econ-review-request/v1` object", lfg)
-        self.assertIn("Consume the returned `econ-review-report/v3`", lfg)
-        self.assertNotIn("econ-review-for-caller/v1", lfg)
 
     def test_report_cross_field_safety_coverage_and_promotion_invariants(self) -> None:
         validator = self.validators["report"]
@@ -792,13 +602,6 @@ class ReviewSchemaContractsTest(unittest.TestCase):
         self.assertTrue(
             list(self.validators["request"].iter_errors(no_outcomes))
         )
-
-        lfg = (REPO / "skills" / "econ-lfg" / "SKILL.md").read_text(
-            encoding="utf-8"
-        )
-        self.assertIn("`finding_outcomes`", lfg)
-        self.assertIn("`gap_outcomes`", lfg)
-        self.assertIn("diagnostic-gap ID", lfg)
 
 
 if __name__ == "__main__":

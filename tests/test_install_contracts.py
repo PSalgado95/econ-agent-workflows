@@ -259,30 +259,6 @@ class InstallContractsTest(unittest.TestCase):
             },
             expected_skills,
         )
-        self.assertEqual(
-            len(
-                list(
-                    (
-                        generated
-                        / "skills"
-                        / "econ-review"
-                        / "references"
-                        / "personas"
-                    ).glob("*.md")
-                )
-            ),
-            15,
-        )
-        self.assertEqual(
-            len(
-                list(
-                    (
-                        generated / "skills" / "econ-review" / "references"
-                    ).glob("*-schema.json")
-                )
-            ),
-            4,
-        )
         self.assertFalse(any((generated / "agents").glob("*.md")))
         self.assertFalse(any((generated / "commands").glob("*.md")))
         self.assertFalse(

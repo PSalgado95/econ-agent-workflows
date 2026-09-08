@@ -112,7 +112,7 @@ skills/                         # canonical skill source
   econ-compound/
   auxiliary/
     gpt-pro-handoff/
-tests/                          # contract and installation tests
+tests/                          # installer, package, and report validation tests
 claude/
   skills/                       # generated Claude Code skills; do not edit
 build_claude.py                 # builds and checks claude/
@@ -125,14 +125,15 @@ The repository is the source of truth. Installed skill directories are runtime
 copies and do not update automatically when the repository changes.
 
 Edit the source under `skills/`, regenerate the committed Claude output when
-needed, run the tests, and then install from the exact checkout that should
-become active. Do not edit generated files under `claude/` directly.
+needed, run the relevant maintenance checks below, and then install from the
+exact checkout that should become active. Do not edit generated files under
+`claude/` directly.
 
 ### Delegation and review reports
 
 The [delegation reference](skills/econ-work/references/delegation_reference.md)
-guides model selection and budgets for both work and review. Sol Low is a useful
-supporting default; Luna can handle bounded tasks with reasoning effort chosen
+guides model selection and budgets for planning, work, and review. Sol Low is a
+useful supporting default; Luna can handle bounded tasks with reasoning effort chosen
 for the work. Stronger independent judgment is used selectively. Other hosts
 use available equivalents.
 
@@ -145,8 +146,17 @@ and worker checks and must not be silently treated as v3 reports.
 
 ### Verification
 
-Run the contract suite and verify the generated Claude package from the
-repository root:
+These checks are for a coding agent or contributor changing this repository.
+They are not run when a researcher invokes a skill. They check installation and
+migration, package files and metadata, and the schemas and Python validator used
+for review reports. They do not evaluate the quality of an agent's research or
+require particular prose, model recommendations, or reviewer combinations.
+
+Run the suite when changing the installer, builder, or report contracts. For a
+prose-only skill edit, inspect the instructions and linked references, regenerate
+the Claude package, and run `python build_claude.py --check`.
+
+Run the maintenance suite from the repository root:
 
 ```text
 python -m pip install jsonschema
