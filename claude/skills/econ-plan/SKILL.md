@@ -9,6 +9,8 @@ description: "Plan empirical or computational economics research from a question
 
 This skill owns planning, not execution. Stop after the saved plan unless the caller is `econ-lfg` or the current request explicitly asks for end-to-end execution. In those two cases return the saved plan to the caller and let `econ-work` continue in the same turn; no second instruction is needed. A direct invocation that merely mentions later execution still ends at the plan. This file is the contract; read `references/plan_template.md` only when writing or refreshing the saved plan, and `references/project_brief_template.md` only when the user approves a project-backbone document.
 
+Before delegating a planning investigation or specifying worker models, reasoning effort, or delegation budgets in a plan, read `../econ-work/references/delegation_reference.md` relative to this skill directory. Apply that shared policy to the particular assignment; its examples are starting choices, not fixed tiers. Reading it does not invoke `econ-work` or authorise execution.
+
 ## Direct invocation contract
 
 Every direct invocation ends in exactly one of two states:
