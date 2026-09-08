@@ -32,8 +32,11 @@ REVIEWER_MODEL = "inherit"
 READ_ONLY_TOOLS = "Read, Grep, Glob"
 DISABLE_MODEL_INVOCATION = frozenset({"gpt-pro-handoff", "econ-review"})
 
-OVERRIDES: dict[tuple[str, str], str] = {
-    ("econ-lfg", "## Goal-backed run"): (
+# Host-specific section replacements, keyed by installed skill name, the
+# markdown file's path relative to the skill root, and the H2 heading to
+# replace. The replacement runs from that heading to the next H2.
+OVERRIDES: dict[tuple[str, str, str], str] = {
+    ("econ-lfg", "SKILL.md", "## Goal-backed run"): (
         "## Goal-backed run\n"
         "\n"
         "Claude Code has no goal primitive. Persist the loop with the built-in "
@@ -49,6 +52,72 @@ OVERRIDES: dict[tuple[str, str], str] = {
         "when an unresolved economics decision or access limit prevents progress. "
         "Continue independent authorised work; do not repeat failed actions or "
         "questions without new evidence.\n"
+    ),
+    ("econ-work", "references/delegation_reference.md", "## Starting model choices"): (
+        "## Starting model choices\n"
+        "\n"
+        "The `Agent` tool accepts a `model` value. Use `sonnet` and `opus` only; "
+        "do not pass a smaller model for economics work. Reasoning effort is not "
+        "a per-call setting on this host; see Host settings.\n"
+        "\n"
+        "| Assignment | Starting choice | Adjustment |\n"
+        "| --- | --- | --- |\n"
+        "| Supporting investigation, code tracing, ordinary implementation and "
+        "checks | `sonnet` | `opus` when interacting logic, unresolved failures, "
+        "or a consequential definition are involved |\n"
+        "| Easy searches, locating definitions, extracting specified information "
+        "| `sonnet` | Keep `sonnet`; narrow the packet and stop rule instead of "
+        "raising the model |\n"
+        "| Independent challenge to a consequential economic argument | `opus`, "
+        "selectively | Reserve for verdict-changing or promotion-bound arguments; "
+        "a same-family child is not an independent model |\n"
+        "| Coordination and final research judgment | The user's selected model "
+        "and effort | Do not silently change the coordinator |\n"
+        "\n"
+        "Pass `model` explicitly on every worker start. Omitting it inherits the "
+        "session model, which silently runs a bounded worker at the "
+        "coordinator's tier.\n"
+    ),
+    ("econ-work", "references/delegation_reference.md", "## Host settings"): (
+        "## Host settings\n"
+        "\n"
+        "Workers are started with the `Agent` tool. Its contract, as checked on "
+        "2026-09-07:\n"
+        "\n"
+        "- `model`: pass explicitly on every start (`sonnet` or `opus`, per the "
+        "table above). The value passed is the value used, so record it as the "
+        "worker model.\n"
+        "- Reasoning effort: there is no per-call effort parameter. Workers "
+        "inherit the session's effort setting. Do not pass `reasoning_effort`; "
+        "the call is rejected. Record effort as `inherited` in the delegation "
+        "log, and steer depth through model choice and the packet's scope, "
+        "stop rule, and completion check.\n"
+        "- Context: a worker starts with fresh context and receives only its "
+        "prompt. Every packet must be self-contained; the worker cannot see the "
+        "conversation.\n"
+        "- `subagent_type`: leave at the general-purpose default. Do not "
+        "register or reference persona-bearing agent definitions.\n"
+        "- `mode`: omit, so the user's permission settings apply to the child. "
+        "No child may weaken the parent's permission boundary.\n"
+        "- `run_in_background: true` when the assignment is independent, so the "
+        "coordinator stays available and integrates returns as they arrive.\n"
+        "- `isolation: \"worktree\"` only for a worker that writes files inside "
+        "a Git repository; the coordinator integrates the worktree afterwards. "
+        "Review and bounded read-only assignments do not need it.\n"
+        "- Follow-up: use `SendMessage` with the existing worker's name to ask a "
+        "follow-up; this does not count as a new start. A capacity error is "
+        "backpressure: wait for an owned worker or continue locally; do not "
+        "spin.\n"
+        "\n"
+        "Verify the returned settings where exposed; do not assume inheritance "
+        "is a quality requirement. User-configured defaults are not a reason to "
+        "block review. Inspect their effect and override only within the user's "
+        "preferences. A different model or inherited effort does not itself "
+        "mean degraded coverage.\n"
+        "\n"
+        "Keep separate user-owned tasks distinct from subagents. Create a task "
+        "only when the user requests one; a worker assignment normally uses "
+        "child-agent tools.\n"
     ),
 }
 
@@ -194,10 +263,10 @@ def copy_skill(source: Path, destination: Path, installed_name: str) -> None:
         target = destination / relative
         if item.suffix == ".md":
             text = substitute(item.read_text(encoding="utf-8"))
+            for (skill, path, _heading), replacement in OVERRIDES.items():
+                if skill == installed_name and path == relative.as_posix():
+                    text = apply_section_override(text, replacement)
             if relative.as_posix() == "SKILL.md":
-                for (skill, _heading), replacement in OVERRIDES.items():
-                    if skill == installed_name:
-                        text = apply_section_override(text, replacement)
                 if installed_name in DISABLE_MODEL_INVOCATION:
                     text = inject_frontmatter(
                         text, {"disable-model-invocation": "true"}

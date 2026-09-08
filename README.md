@@ -3,7 +3,7 @@
 Research workflows for economists, inspired by
 [Compound Engineering](https://github.com/EveryInc/compound-engineering-plugin).
 
-It consists of a set of skills that structure the use of AI agents across the
+The skills structure the use of AI agents across the
 full research process, from developing an idea and writing a plan to carrying
 out the analysis, reviewing the evidence, and revising the work. Verified
 lessons from completed projects are carried into later work, allowing
@@ -17,6 +17,11 @@ Most development so far has come from empirical applications, including data
 construction, estimation, figures, tables, research notes, and replication.
 The skills can also be used for computational and theory-based research,
 although these applications have received less testing.
+
+The skills are designed to give capable models such as Astra and Fable room to
+exercise judgment. They provide guidance on research decisions, evidence, and
+economic interpretation, while leaving routine implementation choices to the
+agent.
 
 ## The research workflow
 
@@ -58,20 +63,15 @@ and figures. Reviewers do not create scripts or run new replications: they are
 report-only. Cross-language work is a targeted diagnostic, not a default
 requirement.
 
-The researcher explicitly selects `econ-review`, or requests an end-to-end
-`econ-lfg` run that includes it. Ordinary checking and debugging do not silently
-activate the formal workflow. The coordinator retains the broader research task.
+Ask for `econ-review` when you want a formal review. It is also included in an
+`econ-lfg` run. During ordinary analysis or debugging, the agent checks its work
+without starting a separate review.
 
-Review lenses describe coverage, not a roster of child agents. The coordinator
-can cover them directly or delegate related checks together. The delegation
-reference in `skills/econ-work/references/delegation_reference.md` governs both
-work and review: Sol Low is a useful supporting default, Luna handles easy
-searches with effort chosen for the task, and stronger independent judgment is
-used selectively. Other hosts use available equivalents. Each run distinguishes
-parent checks from independent checks and records worker settings and budgets.
-
-Reports use `econ-review-report/v3`; v2 reports must not be silently reinterpreted
-because their coverage does not distinguish parent and worker checks.
+The lead agent remains responsible for the research question, interpretation,
+and final conclusions. It can delegate focused tasks—such as finding relevant
+code or checking a particular result—to supporting agents, choosing their model
+and reasoning effort to suit the work. Reviews can combine related checks, with
+independent scrutiny reserved for questions that benefit from it.
 
 ## Installation
 
@@ -127,6 +127,21 @@ copies and do not update automatically when the repository changes.
 Edit the source under `skills/`, regenerate the committed Claude output when
 needed, run the tests, and then install from the exact checkout that should
 become active. Do not edit generated files under `claude/` directly.
+
+### Delegation and review reports
+
+The [delegation reference](skills/econ-work/references/delegation_reference.md)
+guides model selection and budgets for both work and review. Sol Low is a useful
+supporting default; Luna can handle bounded tasks with reasoning effort chosen
+for the work. Stronger independent judgment is used selectively. Other hosts
+use available equivalents.
+
+Review lenses define the checks to cover; they do not each require a separate
+agent. Reports distinguish checks performed by the lead agent from independent
+checks and record worker settings and budgets.
+
+Reports use `econ-review-report/v3`. Older v2 reports do not distinguish parent
+and worker checks and must not be silently treated as v3 reports.
 
 ### Verification
 

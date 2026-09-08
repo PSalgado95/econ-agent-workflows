@@ -48,6 +48,14 @@ settings. Workers may reason, challenge assumptions, and disagree; the parent
 checks decisive evidence and owns the synthesis. Decisions reserved for the
 researcher remain with the researcher.
 
+A small model is not restricted to trivial reasoning, and a review label does
+not automatically justify an expensive one. Assess cost per completed
+assignment, including retries and parent repairs; do not assume that matching
+model families shares a cache or guarantees savings. The starting choices for
+the current host are in the next section.
+
+## Starting model choices
+
 Where these models are available, use these defaults as a starting point:
 
 | Assignment | Starting choice | Adjustment |
@@ -58,10 +66,7 @@ Where these models are available, use these defaults as a starting point:
 | Coordination and final research judgment | The user's selected model and effort | Do not silently change the coordinator |
 
 On other hosts, choose available models with comparable roles rather than
-requesting unsupported names. A small model is not restricted to trivial
-reasoning, and a review label does not automatically justify an expensive one.
-Assess cost per completed assignment, including retries and parent repairs;
-do not assume that matching model families shares a cache or guarantees savings.
+requesting unsupported names.
 
 ## Scope, context, and resource budget
 

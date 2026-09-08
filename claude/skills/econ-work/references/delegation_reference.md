@@ -50,20 +50,24 @@ settings. Workers may reason, challenge assumptions, and disagree; the parent
 checks decisive evidence and owns the synthesis. Decisions reserved for the
 researcher remain with the researcher.
 
-Where these models are available, use these defaults as a starting point:
+A small model is not restricted to trivial reasoning, and a review label does
+not automatically justify an expensive one. Assess cost per completed
+assignment, including retries and parent repairs; do not assume that matching
+model families shares a cache or guarantees savings. The starting choices for
+the current host are in the next section.
+
+## Starting model choices
+
+The `Agent` tool accepts a `model` value. Use `sonnet` and `opus` only; do not pass a smaller model for economics work. Reasoning effort is not a per-call setting on this host; see Host settings.
 
 | Assignment | Starting choice | Adjustment |
 | --- | --- | --- |
-| Supporting investigation, code tracing, ordinary implementation and checks | GPT-5.6 Sol Low | Medium or High when interacting logic or unresolved failures justify it |
-| Easy searches, locating definitions, extracting specified information | GPT-5.6 Luna | Choose Low, Medium, High, or another supported effort based on the task; higher effort is reasonable for demanding but bounded checks |
-| Independent challenge to a consequential economic argument | GPT-6 Astra Low, selectively | Medium when difficult ambiguity warrants it |
+| Supporting investigation, code tracing, ordinary implementation and checks | `sonnet` | `opus` when interacting logic, unresolved failures, or a consequential definition are involved |
+| Easy searches, locating definitions, extracting specified information | `sonnet` | Keep `sonnet`; narrow the packet and stop rule instead of raising the model |
+| Independent challenge to a consequential economic argument | `opus`, selectively | Reserve for verdict-changing or promotion-bound arguments; a same-family child is not an independent model |
 | Coordination and final research judgment | The user's selected model and effort | Do not silently change the coordinator |
 
-On other hosts, choose available models with comparable roles rather than
-requesting unsupported names. A small model is not restricted to trivial
-reasoning, and a review label does not automatically justify an expensive one.
-Assess cost per completed assignment, including retries and parent repairs;
-do not assume that matching model families shares a cache or guarantees savings.
+Pass `model` explicitly on every worker start. Omitting it inherits the session model, which silently runs a bounded worker at the coordinator's tier.
 
 ## Scope, context, and resource budget
 
@@ -97,19 +101,20 @@ Do not launch an unknown expensive fallback. Continue locally when appropriate.
 
 ## Host settings
 
-Read the host's current spawn-tool contract before setting model, effort, or
-context inheritance. Pass both `model` and reasoning effort explicitly in each spawn request when
-supported. For the collaboration tool, these are `model` and `reasoning_effort`;
-use `fork_turns: "none"` or a bounded history when needed to permit overrides.
-If full-history inheritance prevents overrides, use a self-contained assignment
-with the necessary context instead. Verify the returned settings where exposed;
-do not assume inheritance is a quality requirement. User-configured defaults
-are not a reason to block review. Inspect their effect and override only within
-the user's preferences. A different model or lower effort does not itself
-mean degraded coverage. No child may weaken the parent's permission boundary.
+Workers are started with the `Agent` tool. Its contract, as checked on 2026-09-07:
 
-Keep separate user-owned tasks distinct from subagents. Create a task only when
-the user requests one; a worker assignment normally uses child-agent tools.
+- `model`: pass explicitly on every start (`sonnet` or `opus`, per the table above). The value passed is the value used, so record it as the worker model.
+- Reasoning effort: there is no per-call effort parameter. Workers inherit the session's effort setting. Do not pass `reasoning_effort`; the call is rejected. Record effort as `inherited` in the delegation log, and steer depth through model choice and the packet's scope, stop rule, and completion check.
+- Context: a worker starts with fresh context and receives only its prompt. Every packet must be self-contained; the worker cannot see the conversation.
+- `subagent_type`: leave at the general-purpose default. Do not register or reference persona-bearing agent definitions.
+- `mode`: omit, so the user's permission settings apply to the child. No child may weaken the parent's permission boundary.
+- `run_in_background: true` when the assignment is independent, so the coordinator stays available and integrates returns as they arrive.
+- `isolation: "worktree"` only for a worker that writes files inside a Git repository; the coordinator integrates the worktree afterwards. Review and bounded read-only assignments do not need it.
+- Follow-up: use `SendMessage` with the existing worker's name to ask a follow-up; this does not count as a new start. A capacity error is backpressure: wait for an owned worker or continue locally; do not spin.
+
+Verify the returned settings where exposed; do not assume inheritance is a quality requirement. User-configured defaults are not a reason to block review. Inspect their effect and override only within the user's preferences. A different model or inherited effort does not itself mean degraded coverage.
+
+Keep separate user-owned tasks distinct from subagents. Create a task only when the user requests one; a worker assignment normally uses child-agent tools.
 
 ## Sources and maintenance
 

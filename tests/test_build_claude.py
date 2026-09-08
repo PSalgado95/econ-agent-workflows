@@ -45,5 +45,24 @@ class BuildClaudeDenyScanTest(unittest.TestCase):
                 )
 
 
+class BuildClaudeDelegationOverrideTest(unittest.TestCase):
+    def test_delegation_reference_carries_claude_host_sections(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            out = Path(temporary) / "claude"
+            build_claude.build_tree(REPO, out)
+            text = (
+                out / "skills/econ-work/references/delegation_reference.md"
+            ).read_text(encoding="utf-8")
+
+            self.assertIn("## Starting model choices", text)
+            self.assertIn("## Host settings", text)
+            self.assertIn("`Agent` tool", text)
+            self.assertIn("Do not pass `reasoning_effort`", text)
+            self.assertIn("`sonnet`", text)
+            self.assertIn("`opus`", text)
+            for absent in ("haiku", "GPT-", "Sol Low", "Luna", "Astra", "fork_turns"):
+                self.assertNotIn(absent, text)
+
+
 if __name__ == "__main__":
     unittest.main()
