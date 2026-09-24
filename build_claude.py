@@ -32,8 +32,11 @@ REVIEWER_MODEL = "inherit"
 READ_ONLY_TOOLS = "Read, Grep, Glob"
 DISABLE_MODEL_INVOCATION = frozenset({"gpt-pro-handoff", "econ-review"})
 
-OVERRIDES: dict[tuple[str, str], str] = {
-    ("econ-lfg", "## Goal-backed run"): (
+# Host-specific section replacements, keyed by installed skill name, the
+# markdown file's path relative to the skill root, and the H2 heading to
+# replace. The replacement runs from that heading to the next H2.
+OVERRIDES: dict[tuple[str, str, str], str] = {
+    ("econ-lfg", "SKILL.md", "## Goal-backed run"): (
         "## Goal-backed run\n"
         "\n"
         "Claude Code has no goal primitive. Persist the loop with the built-in "
@@ -49,6 +52,32 @@ OVERRIDES: dict[tuple[str, str], str] = {
         "when an unresolved economics decision or access limit prevents progress. "
         "Continue independent authorised work; do not repeat failed actions or "
         "questions without new evidence.\n"
+    ),
+    ("econ-work", "references/delegation_reference.md", "## GPT worker selection"): (
+        "## GPT worker selection\n\n"
+        "GPT model IDs are not accepted by Claude-native worker tools. "
+        "Use the Claude worker selection policy below. Only use an external "
+        "GPT worker when explicitly authorised and supported by that tool.\n"
+    ),
+    ("econ-work", "references/delegation_reference.md", "## Host settings"): (
+        "## Host settings\n\n"
+        "Read the installed `Agent` tool contract before dispatch. Pass the "
+        "selected model explicitly using a supported full ID or a verified "
+        "alias. Do not assume the alias is the model that actually ran. "
+        "Check the returned model and effort where exposed; disclose any "
+        "unverified setting. Follow the version and availability checks above.\n\n"
+        "Use an independent effort setting only where exposed by the installed "
+        "tool. Otherwise verify and record inherited effort; never send "
+        "`reasoning_effort` to an unsupported parameter. Do not change the "
+        "coordinator's model or effort to configure a child.\n\n"
+        "Give each worker a self-contained evidence packet and use the "
+        "general-purpose worker rather than registering persona agents. "
+        "Preserve the user's permission boundary. Use background execution "
+        "for independent assignments when supported, and isolate writers "
+        "only when their file ownership requires it. Follow up with an "
+        "existing worker when possible; on capacity errors, wait for owned "
+        "work or continue locally. Create a separate user-owned task only "
+        "when requested.\n"
     ),
 }
 
@@ -194,10 +223,10 @@ def copy_skill(source: Path, destination: Path, installed_name: str) -> None:
         target = destination / relative
         if item.suffix == ".md":
             text = substitute(item.read_text(encoding="utf-8"))
+            for (skill, path, _heading), replacement in OVERRIDES.items():
+                if skill == installed_name and path == relative.as_posix():
+                    text = apply_section_override(text, replacement)
             if relative.as_posix() == "SKILL.md":
-                for (skill, _heading), replacement in OVERRIDES.items():
-                    if skill == installed_name:
-                        text = apply_section_override(text, replacement)
                 if installed_name in DISABLE_MODEL_INVOCATION:
                     text = inject_frontmatter(
                         text, {"disable-model-invocation": "true"}

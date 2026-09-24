@@ -65,9 +65,11 @@ activate the formal workflow. The coordinator retains the broader research task.
 Review lenses describe coverage, not a roster of child agents. The coordinator
 can cover them directly or delegate related checks together. The delegation
 reference in `skills/econ-work/references/delegation_reference.md` governs both
-work and review: Sol Low is a useful supporting default, Luna handles easy
-searches with effort chosen for the task, and stronger independent judgment is
-used selectively. Other hosts use available equivalents. Each run distinguishes
+planning, work, and review: `gpt-6-luna` handles lightweight assignments and
+`gpt-6-sol` handles implementation and harder bounded work, with effort chosen
+separately. Astra is reserved for selective independent challenge. Claude
+workers selected for Opus use `claude-opus-5-5` on a supported host. User
+overrides take precedence; unavailable models never trigger silent substitution. Each run distinguishes
 parent checks from independent checks and records worker settings and budgets.
 
 Reports use `econ-review-report/v3`; v2 reports must not be silently reinterpreted

@@ -21,7 +21,7 @@ validate_report = MODULE.validate_report
 
 def worker(wid: str, roles: list[str], state: str = "completed") -> dict:
     return {
-        "worker_id": wid, "roles": roles, "model": "gpt-5.6-sol",
+        "worker_id": wid, "roles": roles, "model": "gpt-6-sol",
         "effort": "low", "reason": "Trace a bounded code path.", "state": state,
     }
 
@@ -54,7 +54,7 @@ class ReviewExecutionTest(unittest.TestCase):
         report = valid_report()
         report["delegation"].update(max_starts=1, max_concurrent=1,
                                     workers=[worker("W1", ["inference"])])
-        report["delegation"]["workers"][0].update(model="gpt-5.6-luna", effort="high")
+        report["delegation"]["workers"][0].update(model="gpt-6-luna", effort="high")
         report["selected_roles"][0].update(review_method="independent", worker_ids=["W1"])
         validate_report(report)
 
