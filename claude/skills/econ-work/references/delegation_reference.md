@@ -2,9 +2,9 @@
 
 # Delegation reference
 
-Read this when an economics workflow delegates work. `econ-work` and `econ-review` use this same policy; loading this reference does not invoke the execution workflow. It holds the packet templates, the rule for choosing a worker's model and reasoning effort, and host notes. The coordinator retains responsibility for the research question, definitions, evidence assessment, priorities, and final conclusions.
+Read this when an economics workflow delegates work. `econ-plan`, `econ-work`, and `econ-review` use this same policy; loading this reference does not invoke the execution workflow. It holds the packet templates, the rule for choosing a worker's model and reasoning effort, and host notes. The coordinator retains responsibility for the research question, definitions, evidence assessment, priorities, and final conclusions.
 
-Use the user's selected coordinator model and effort. Respect their model preferences and the settings actually exposed by the host. The examples below are starting choices, not capability guarantees or mandatory tiers.
+Use the user's selected coordinator model and effort. Explicit user worker-model and effort overrides take precedence over these defaults. Respect the settings actually exposed by the host. The examples below are starting choices, not capability guarantees or mandatory tiers.
 
 ## Packet templates
 
@@ -50,18 +50,45 @@ settings. Workers may reason, challenge assumptions, and disagree; the parent
 checks decisive evidence and owns the synthesis. Decisions reserved for the
 researcher remain with the researcher.
 
-Where these models are available, use these defaults as a starting point:
+## GPT worker selection
 
-| Assignment | Starting choice | Adjustment |
-| --- | --- | --- |
-| Supporting investigation, code tracing, ordinary implementation and checks | GPT-5.6 Sol Low | Medium or High when interacting logic or unresolved failures justify it |
-| Easy searches, locating definitions, extracting specified information | GPT-5.6 Luna | Choose Low, Medium, High, or another supported effort based on the task; higher effort is reasonable for demanding but bounded checks |
-| Independent challenge to a consequential economic argument | GPT-6 Astra Low, selectively | Medium when difficult ambiguity warrants it |
-| Coordination and final research judgment | The user's selected model and effort | Do not silently change the coordinator |
+GPT model IDs are not accepted by Claude-native worker tools. Use the Claude worker selection policy below. Only use an external GPT worker when explicitly authorised and supported by that tool.
 
-On other hosts, choose available models with comparable roles rather than
-requesting unsupported names. A small model is not restricted to trivial
-reasoning, and a review label does not automatically justify an expensive one.
+## Claude worker selection
+
+For an Anthropic worker, use Claude Opus 5.5 (`claude-opus-5-5`) when Opus is
+selected for implementation or independent judgment. This is the latest Opus
+verified in the official documentation on 2026-09-24; it is not a mandate to
+send every lightweight search to Opus. Keep small searches local or use an
+explicitly authorised available lightweight model. Do not pass GPT IDs to
+Claude-native tools or substitute a different Anthropic family automatically.
+
+Claude Code requires version 2.1.280 or later for Opus 5.5. Check `claude --version`, the current tool contract, provider, and account availability before
+dispatch. Prefer the full ID where accepted; an `opus` alias is acceptable only
+when its resolved model is verified as the requested version. Older CLIs can
+accept a model-name argument without supporting that model. Report an upgrade
+requirement instead of launching an older Opus under the alias.
+
+Opus 5.5 supports `low`, `medium`, `high`, `xhigh`, and `max`. Choose effort for
+the assignment, starting with Medium for ordinary bounded work and High when
+harder judgment warrants it. Use only effort controls the installed tool
+actually exposes (for example subagent `effort` or CLI `--effort` on supported
+versions); do not pass `reasoning_effort` to a Claude tool that lacks it. If a
+child tool only accepts aliases or cannot set effort independently, verify
+alias resolution and inherited effort before dispatch, or disclose the limit
+and continue locally. Do not change the coordinator to configure a worker.
+
+## Unavailable models and overrides
+
+Never silently substitute GPT-5.6 models, an older Opus, an inherited model, or
+an expensive fallback when the selected worker model is unavailable. Honor an
+explicit user override, including an older model if deliberately requested.
+Otherwise report the unavailable model and continue locally where possible;
+ask for an alternative only if independent work is necessary to complete the
+assignment. Do not enable automatic fallback options. If the provider changes
+the actual model, disclose it and do not count that return as the requested
+independent check without resolving the mismatch.
+
 Assess cost per completed assignment, including retries and parent repairs;
 do not assume that matching model families shares a cache or guarantees savings.
 
@@ -97,25 +124,21 @@ Do not launch an unknown expensive fallback. Continue locally when appropriate.
 
 ## Host settings
 
-Read the host's current spawn-tool contract before setting model, effort, or
-context inheritance. Pass both `model` and reasoning effort explicitly in each spawn request when
-supported. For the collaboration tool, these are `model` and `reasoning_effort`;
-use `fork_turns: "none"` or a bounded history when needed to permit overrides.
-If full-history inheritance prevents overrides, use a self-contained assignment
-with the necessary context instead. Verify the returned settings where exposed;
-do not assume inheritance is a quality requirement. User-configured defaults
-are not a reason to block review. Inspect their effect and override only within
-the user's preferences. A different model or lower effort does not itself
-mean degraded coverage. No child may weaken the parent's permission boundary.
+Read the installed `Agent` tool contract before dispatch. Pass the selected model explicitly using a supported full ID or a verified alias. Do not assume the alias is the model that actually ran. Check the returned model and effort where exposed; disclose any unverified setting. Follow the version and availability checks above.
 
-Keep separate user-owned tasks distinct from subagents. Create a task only when
-the user requests one; a worker assignment normally uses child-agent tools.
+Use an independent effort setting only where exposed by the installed tool. Otherwise verify and record inherited effort; never send `reasoning_effort` to an unsupported parameter. Do not change the coordinator's model or effort to configure a child.
+
+Give each worker a self-contained evidence packet and use the general-purpose worker rather than registering persona agents. Preserve the user's permission boundary. Use background execution for independent assignments when supported, and isolate writers only when their file ownership requires it. Follow up with an existing worker when possible; on capacity errors, wait for owned work or continue locally. Create a separate user-owned task only when requested.
 
 ## Sources and maintenance
 
-Guidance checked 2026-09-07. The model examples should evolve with observed
+Guidance checked 2026-09-24 against the live GPT spawn-tool contract and local model catalogue, plus the official Anthropic documentation below. The model examples should evolve with observed
 completion quality and usage; they are not comparative benchmark results.
 
 - [OpenAI subagent guidance](https://learn.chatgpt.com/docs/agent-configuration/subagents): model and effort selection, context isolation, and delegation overhead.
 - [OpenAI model selection](https://developers.openai.com/api/docs/guides/model-selection): establish acceptable accuracy, then evaluate cheaper configurations.
 - [Practical multi-agent orchestration](https://x.com/pvncher/status/2080707291603407077): focused assignments, variable effort, and leaf-worker boundaries.
+
+- [Anthropic model catalogue](https://platform.claude.com/docs/en/models/overview): current Opus designation and full model ID.
+- [Claude Code model configuration](https://code.claude.com/docs/en/model-config): version requirements, provider aliases, effort controls, and fallback behavior.
+- [Claude Code subagents](https://code.claude.com/docs/en/sub-agents): supported child model and effort settings; verify the installed version's contract.
