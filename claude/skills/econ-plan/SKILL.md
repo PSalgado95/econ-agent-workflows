@@ -73,7 +73,7 @@ Saved plans use repo-relative paths for files, outputs, and evidence (`analysis/
 
 ### Stage 0 — Locate the planning surface
 - If an existing plan is referenced or obviously matches, read it; ask update-in-place vs new when ambiguous; revise only still-relevant sections (plans carry no execution progress log).
-- When the planning surface is a scope memo with `readiness: scoping-only` (from `econ-brainstorm`), upgrade that same document in place to a full plan rather than creating a new file.
+- When a scope memo with `readiness: scoping-only` exists, read it as source material and leave it unchanged. Write the full plan to a fresh `docs/plans/YYYY-MM-DD-<slug>-econ-plan.md` (or the repository's plan convention). Never relabel, rename, or overwrite the scope memo as the plan.
 - Discover the project backbone in order: a brief named in `README.md`/docs index → `PROJECT_BRIEF.md` → `RESEARCH_BRIEF.md` → paper outline, coauthor memo, or methods note → a dated plan only when it is clearly acting as the backbone.
 - Use `CLAUDE.md`/`README.md` for orientation only, never as the research plan. If no backbone exists, record that fact and plan from the available evidence. Recommend a compact `PROJECT_BRIEF.md` when future sessions need it, without making its creation a prerequisite; substantive backbone changes still need approval. A new project's `DEFINITIONS.md` can be seeded from the backbone's definitions section or a graduated scope memo.
 - If a GitHub issue is named (`#123`, `repo#123`, or a URL), read it as coordination context, summarise only the decision-relevant parts, add an `Issue coordination` section, and never create or update issues without approval.

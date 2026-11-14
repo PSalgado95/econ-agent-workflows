@@ -71,6 +71,23 @@ class PackagePortabilityTest(unittest.TestCase):
 
 class LocalAssetContractsTest(unittest.TestCase):
 
+    def test_brainstorm_is_optional_and_plan_preserves_scope_memo(self) -> None:
+        brainstorm = read(REPO / "skills" / "econ-brainstorm" / "SKILL.md")
+        scope_template = read(
+            REPO / "skills" / "econ-brainstorm" / "references" / "scope_memo_template.md"
+        )
+        plan = read(REPO / "skills" / "econ-plan" / "SKILL.md")
+
+        self.assertIn("Do not create a scope memo merely because brainstorming occurred", brainstorm)
+        self.assertIn("writes a fresh `-econ-plan.md`", brainstorm)
+        self.assertIn("the scope memo remains unchanged", scope_template)
+        self.assertIn("leave it unchanged", plan)
+        self.assertIn("Never relabel, rename, or overwrite the scope memo", plan)
+
+        combined = "\n".join((brainstorm, scope_template, plan)).lower()
+        self.assertNotIn("upgrade that same document in place", combined)
+        self.assertNotIn("upgrades the same document in place", combined)
+
     def test_every_active_local_reference_resolves_within_its_skill(self) -> None:
         markdown_link = re.compile(r"\[[^\]]+\]\(([^)]+)\)")
         package_path = re.compile(
