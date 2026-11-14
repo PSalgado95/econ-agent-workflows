@@ -158,7 +158,7 @@ review-specific private caller contract.
 - Fix `fix-now` findings and gaps through `econ-work` or a bounded local revision pass.
 - Revise `revise-plan-choice` findings or gaps when the new path remains inside the initial prompt's intent.
 - Pause for `ask-user` findings or gaps and write a decision memo when the decision is non-trivial.
-- Record `defer-with-rationale` and `advisory-only` findings and gaps in the final closeout; do not hide them. Items that affect trust must also land on a durable residual sink before delivery — the review bundle's residual section, a GitHub issue (with approval), or a dated `docs/residual-findings/<slug>.md` — with `F<n>` or `G<n>` IDs preserved. Never deliver with trust-affecting residuals recorded only in chat.
+- Record `defer-with-rationale` and `advisory-only` findings and gaps in the final closeout; do not hide them. Items that affect trust must also land on a durable residual sink before delivery — the review bundle's residual section, a GitHub issue (as the repository's instructions direct, or with approval when it has none), or a dated `docs/residual-findings/<slug>.md` — with `F<n>` or `G<n>` IDs preserved. Never deliver with trust-affecting residuals recorded only in chat.
 
 The direct-fix boundary, the researcher-level trigger list, and the decision-memo contract are defined in `references/review_resolution_reference.md`; apply them exactly.
 
@@ -207,11 +207,10 @@ If the autonomous run explicitly included compounding and produced a durable reu
 - Do not proceed from `econ-work` to delivery without `econ-review`, unless the saved plan or work closeout explicitly says no later review is needed.
 - Do not deliver with unprocessed review findings.
 - Do not deliver a promotion-tier result while its reviewer panel remains degraded without the researcher's explicit decision.
-- Do not stage, commit, or push unless the user explicitly requests that Git action.
+- Follow the repository's own instructions for Git and issues (branching, committing, pushing, issue and pull-request comments). Only when the repository has none, ask before committing, pushing, or posting.
 - Do not silently override researcher-anchored choices.
 - Do not make cross-language validation default-on.
-- Do not auto-create GitHub issues unless the user requested issue creation or update.
-- Do not add Compound Engineering PR, CI, browser-test, or deploy behavior to this workflow.
+- Do not import Compound Engineering PR, CI, browser-test, or deploy steps into this workflow; Git and pull-request actions follow the rule above.
 - Do not write durable learning notes unless the user explicitly asked for learning capture or the autonomous run explicitly includes compounding.
 
 ## Output

@@ -24,7 +24,7 @@ Use `econ-compound` for economics research and hybrid analysis lessons, includin
 Route elsewhere when appropriate:
 - pure software-only lessons -> current Compound Engineering compound skill;
 - writing-style preferences -> a personal writing-preference skill (such as `econ-writing`) when installed; otherwise record the preference in the closeout;
-- project-state updates -> current plan, issue, project backbone, note, or review finding, only with user approval;
+- project-state updates -> current plan, issue, project backbone, note, or review finding; issue comments follow the repository's own instructions (ask when it has none), other project-state updates only with user approval;
 - old memos, exploratory reports, externally supplied packages, or project briefs -> use as leads only unless they were explicitly reviewed or accepted for a defined purpose;
 - one-off closeout facts -> closeout only, not a durable learning note.
 

@@ -189,7 +189,7 @@ Also include when relevant:
 
 ## Issue checkpoint comment
 
-Use this only when the work is issue-linked and the user asked for or approved an issue update.
+Use this only when the work is issue-linked and the repository's own instructions or the user call for an issue update. When the repository has no such instructions, ask before posting.
 
 ```md
 ## Checkpoint
@@ -223,7 +223,7 @@ Use this as a completeness check, not a mandatory chat form. Lead the researcher
 10. reusable lesson checkpoint (one line, format below);
 11. recommended next command.
 
-Durable residual sink: deferred or advisory findings that affect trust must land on a durable surface before delivery — the review bundle's residual section, a GitHub issue (with approval), or a dated `docs/residual-findings/<slug>.md` — with finding IDs preserved. Never close out with trust-affecting residuals recorded only in chat.
+Durable residual sink: deferred or advisory findings that affect trust must land on a durable surface before delivery — the review bundle's residual section, a GitHub issue (as the repository's instructions direct, or with approval when it has none), or a dated `docs/residual-findings/<slug>.md` — with finding IDs preserved. Never close out with trust-affecting residuals recorded only in chat.
 
 For trivial one-off work, give the result or artefact, what was actually checked, and any material limitation. Do not invent a follow-up or reusable lesson merely to fill a field.
 
