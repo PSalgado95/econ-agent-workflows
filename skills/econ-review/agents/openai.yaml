@@ -2,5 +2,3 @@ interface:
   display_name: "Econ Review"
   short_description: "Assess research evidence and claims"
   default_prompt: "Use $econ-review to assess whether this research supports its claims and identify the corrections that matter."
-policy:
-  allow_implicit_invocation: false

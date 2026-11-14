@@ -1,6 +1,6 @@
 ---
 name: econ-lfg
-description: "Complete a bounded economics research task end to end when the user requests autonomous execution."
+description: "Run an agreed economics research task end to end without stopping: plan, work, one independent review, revision and delivery. Use only when the researcher explicitly asks for autonomous, hands-off or one-prompt execution. Not for open ideas (econ-brainstorm), a single stage (econ-plan, econ-work or econ-review) or pure software work (ce-work)."
 ---
 
 <!-- GENERATED FROM CODEX SOURCE - DO NOT EDIT. Edit the Codex sources and run build_claude.py. -->
@@ -9,9 +9,9 @@ description: "Complete a bounded economics research task end to end when the use
 
 Run an autonomous economics workflow without losing the research object, evidence trail, or review discipline.
 
-`econ-lfg` is not a replacement for `econ-plan`, `econ-work`, or `econ-review`. It orchestrates them under a goal-backed contract, then owns the review-resolution loop before final delivery.
+`econ-lfg` is not a replacement for `econ-plan`, `econ-work`, or `econ-review`. It orchestrates them under a goal-backed contract, has the finished work reviewed by one fresh-context reviewer that follows `econ-review`, then owns the review-resolution loop before final delivery.
 
-Read `references/review_resolution_reference.md` before classifying review findings, deciding whether to fix directly, writing a researcher-level decision memo, or choosing the targeted re-review surface.
+Read `references/review_resolution_reference.md` before briefing the reviewer, judging which findings hold, deciding whether to fix directly, writing a researcher-level decision memo, or choosing the re-review surface.
 
 ## Direct invocation contract
 
@@ -22,9 +22,9 @@ The required order is:
 1. attach to a goal-backed run;
 2. invoke `econ-plan`;
 3. invoke `econ-work`;
-4. invoke `econ-review`;
-5. resolve review findings through a revision pass;
-6. run targeted re-review when revisions or new evidence require it;
+4. review the finished work with one fresh-context reviewer subagent that follows `econ-review` (see "Reviewer subagent");
+5. resolve the findings that hold through a revision pass;
+6. run a targeted re-review when revisions or new evidence require it;
 7. deliver only when the result is resolved, consciously deferred, or genuinely blocked.
 
 Do not skip the saved-plan gate. For non-trivial tasks, `econ-plan` must produce or refresh a saved plan before `econ-work` begins.
@@ -42,6 +42,17 @@ Once the bounded task is agreed and the run begins, work autonomously. Return wi
 Claude Code has no goal primitive. Persist the loop with the built-in task list: one task per stage (plan, work, review, revise, re-review, deliver), with statuses kept current as the run advances. The session is the persistence boundary; if it ends, the loop does not survive on its own. Record session-local persistence in the execution record; mention it to the user when it limits completion or resumption. Do not claim a goal was created or promise work after the session ends.
 
 Treat the run as complete only when the final deliverable is produced and review-resolution is handled. Treat the affected branch as blocked when an unresolved economics decision or access limit prevents progress. Continue independent authorised work; do not repeat failed actions or questions without new evidence.
+
+## Reviewer subagent
+
+The review stage starts exactly one reviewer with the `Agent` tool:
+
+- fresh context: leave `subagent_type` at the general-purpose default and never use `fork`, which would inherit this conversation; the prompt is the filled-in brief from `references/review_resolution_reference.md` ("Reviewer brief");
+- `model`: pass the alias of the coordinator's own model explicitly (for example `opus` under an Opus coordinator). Never a smaller model and never `haiku`; omitting `model` may fall back to a smaller configured default. Set effort to the coordinator's where the tool exposes an effort setting; otherwise it is inherited. Do not pass `reasoning_effort`;
+- a leaf assignment: the reviewer starts no other agents and changes nothing, so no `isolation` is needed;
+- wait for its return before Stage 4. If it runs in the background, do not begin Stage 4 until its result has arrived.
+
+If the tool rejects the settings or the start fails, retry once. If the reviewer still cannot run, or its return does not follow the format in the brief after one `SendMessage` follow-up, carry out the same review yourself by following the single-reviewer section of `econ-review`, and record in the closeout that the review was not independent.
 
 ## Authority hierarchy
 
@@ -87,78 +98,26 @@ After it returns:
 - verify that work reached a valid closeout or named blocker;
 - capture what was inspected, changed, run, and regenerated; code role; outputs refreshed versus inherited or inspected-only; interpretation or note-brief status; review-bundle status; and residual risks;
 - if work paused for a user-level decision, pause the goal and return that decision;
-- if work completed with a recommended `econ-review` route, continue.
+- if work reached a valid closeout, continue to the review stage.
 
 Do not treat a script run, generated output, or partial closeout as enough to proceed.
 
 ### Stage 3: Review
 
-Invoke `econ-review` with one complete `econ-review-request/v1` object and the
-review route from the plan or work closeout. Set `invocation` to `nested`,
-`caller` to `econ-lfg/v1`, and `resolution_context` to `null` for this first
-review. Populate every other required request field, including the bounded
-scope, evidence manifest, triggers, timeout policy, and supplemental assessment
-declarations. Do not pass a persona choice or a private caller/report contract.
-Consume the returned `econ-review-report/v3` inline. This nested review creates no files
-and performs no fixes; this parent owns revision and re-review.
+Start the reviewer described in "Reviewer subagent" once the work stage has reached a valid closeout. Fill the reviewer brief from the saved plan and the work closeout: the research question, the deliverable, the settled choices the reviewer must not reopen as findings (researcher-anchored and plan-backed), and the evidence to read: plan, code, realised outputs, notes, and the execution record. Point the reviewer at the single-reviewer section of `econ-review`; resolve `../econ-review/SKILL.md` relative to this skill's directory and pass the absolute path. This explicitly requested end-to-end workflow authorises its review stage.
 
-Select review depth and scope from the actual research risks and `econ-review` triggers, not from a general preference for stricter review. When the triggers leave two depths equally defensible and the result is promotion-bound or will leave the workspace (a paper draft, a coauthor, a referee, a replication package), take the stricter one. Record the chosen depth, whether promotion was requested, and the reason in the execution record. The selected lenses define coverage, not mandatory child agents. Apply the shared delegation policy and preserve the broader research question. This explicitly requested end-to-end workflow authorises its nested formal review stage.
-
-Capture:
-- retained findings;
-- fix classes;
-- trust effects;
-- affected labels;
-- residual work;
-- missing diagnostic surfaces; and
-- whether the panel was degraded.
-
-Validate the response against `econ-review-report/v3` and require every selected
-role lifecycle, canonical finding field, diagnostic gap, assessment lifecycle,
-coverage field, verdict, safety record, canary, and promotion gate. Preserve and
-stop on an unknown report version. For missing or malformed worker returns, reassess whether a local check or a
-targeted follow-up can finish coverage; replacement starts count toward the
-delegation budget. Retry a malformed same-version parent envelope once. If a promotion-tier panel remains
-degraded, pause and ask whether to proceed with the named missing coverage; do
-not enter revision or delivery as though the review were complete. At quick or
-standard tier, carry degraded status and missing roles as explicit diagnostic
-gaps, and do not deliver while any resulting trust-affecting gap remains
-unresolved.
+The reviewer returns a short verdict, findings `R1`, `R2`, ... ranked by consequence, each with its evidence, consequence, fix, and whether it needs the researcher, and a list of what it could not inspect. Record the reviewer's model and effort, whether it ran independently, and its return in the execution record.
 
 ### Stage 4: Review-resolution pass
 
-Do not deliver immediately after review. Use
-`references/review_resolution_reference.md` to classify every retained finding
-and diagnostic gap. Review outputs are evidence for the loop, not orders to
-change the research object.
+Do not deliver immediately after review. Review findings are evidence for the loop, not orders to change the research object. Use `references/review_resolution_reference.md` for every finding:
 
-For every retained finding, inspect its finding ID, fix class, trust or
-promotion effect, issue origin, affected labels, evidence locations, issue
-follow-up type, user-judgement flag, confidence, missing diagnostic surfaces,
-and authority source. Then assign exactly one route token:
+1. **Check whether it holds.** Inspect the decisive evidence yourself: the code, definitions, tables, or outputs it cites, with their context and the settled decisions. A finding holds when that evidence supports it and it changes the result or its reading. Disagree on evidence, not on authority; the reviewer's confidence is an input, not a verdict.
+2. **Route it.** Give every finding exactly one route token: `fix-now`, `revise-plan-choice`, `ask-user`, `defer-with-rationale`, `advisory-only`, or `rejected` (does not hold, with the reason).
+3. **Act.** Fix `fix-now` findings through `econ-work` (with `caller_contract: econ-lfg/v1`, consuming `econ-work-for-caller/v1`) or a bounded local revision pass. Revise `revise-plan-choice` findings when the new path stays inside the initial prompt's intent. Pause on `ask-user` findings and write a decision memo when the decision is non-trivial.
+4. **Record which you took.** Keep one line per finding in the execution record: ID, holds or not, route, what was done, changed paths, and the verification run. Report `defer-with-rationale`, `advisory-only`, and `rejected` findings in the final closeout; do not hide them. Deferred findings that affect trust must also land on a durable residual sink before delivery — the review bundle's residual section, a GitHub issue (as the repository's instructions direct, or with approval when it has none), or a dated `docs/residual-findings/<slug>.md` — with their `R<n>` IDs preserved. Never deliver with trust-affecting residuals recorded only in chat.
 
-- `fix-now`: `safe-automatic`, mechanical, or plan-required work that should be handled before delivery;
-- `revise-plan-choice`: review evidence shows an agent-owned planning default should change;
-- `ask-user`: the fix would override a researcher-anchored choice or touch the researcher-level trigger list;
-- `defer-with-rationale`: legitimate follow-up outside the prompt or not needed for the requested output;
-- `advisory-only`: useful note that does not affect trust, promotion, or the requested output.
-
-For every diagnostic gap, inspect its gap ID, trust effect, issue origin,
-affected labels, prior evidence, recommended action, and authority source. Use
-the same route tokens: produce already-required evidence under `fix-now`, route
-researcher choices to `ask-user`, and retain deferred or advisory gaps with
-their `G<n>` IDs. Never treat a gap as resolved merely because no ordinary
-finding was returned.
-
-Apply this policy. Every revision-stage `econ-work` invocation includes
-`caller_contract: econ-lfg/v1` and consumes `econ-work-for-caller/v1`. Every
-targeted `econ-review` invocation instead uses a complete
-`econ-review-request/v1` and consumes `econ-review-report/v3`; there is no
-review-specific private caller contract.
-- Fix `fix-now` findings and gaps through `econ-work` or a bounded local revision pass.
-- Revise `revise-plan-choice` findings or gaps when the new path remains inside the initial prompt's intent.
-- Pause for `ask-user` findings or gaps and write a decision memo when the decision is non-trivial.
-- Record `defer-with-rationale` and `advisory-only` findings and gaps in the final closeout; do not hide them. Items that affect trust must also land on a durable residual sink before delivery — the review bundle's residual section, a GitHub issue (as the repository's instructions direct, or with approval when it has none), or a dated `docs/residual-findings/<slug>.md` — with `F<n>` or `G<n>` IDs preserved. Never deliver with trust-affecting residuals recorded only in chat.
+A "Not inspected" entry that could change the conclusion is a gap: produce the missing evidence when the plan already requires it and the inputs and authority are present (`fix-now`); otherwise route it like a finding.
 
 The direct-fix boundary, the researcher-level trigger list, and the decision-memo contract are defined in `references/review_resolution_reference.md`; apply them exactly.
 
@@ -170,26 +129,15 @@ If revisions materially change the plan's assumptions, record that divergence in
 
 ### Stage 5: Targeted re-review
 
-If the initial review is complete and no revision, new evidence, or unresolved coverage issue requires another pass, proceed to delivery. Do not manufacture a revision or repeat an unchanged review.
+If no finding was fixed or revised and no new evidence arrived, proceed to delivery. Do not manufacture a revision or repeat an unchanged review.
 
-After `fix-now` or `revise-plan-choice` revisions to findings or diagnostic
-gaps, run targeted `econ-review` on changed or previously problematic surfaces.
-Build another complete
-`econ-review-request/v1` with `invocation: nested`, `caller: econ-lfg/v1`, and a
-non-null `resolution_context`. That context names the prior run and carries
-`finding_outcomes` and `gap_outcomes` maps keyed by each resolved finding ID and
-diagnostic-gap ID. Each trace records the outcome (`fixed`,
-`researcher-rejected`, or `deferred`), affected labels, and prior evidence
-references; `fixed` also requires a changed path.
-The new request's normal surfaces, scope, manifest, and triggers still define
-what is reviewed; resolution context never suppresses new evidence or reuses
-the old roster blindly.
+After `fix-now` or `revise-plan-choice` revisions, start a new reviewer the same way on the changed or previously problematic surfaces. Its brief adds the earlier findings with what was done about each and the changed paths; it checks whether the fixes hold and whether they introduced new problems, and it may raise anything new on those surfaces. Earlier outcomes never stop it from reporting new evidence.
 
-Escalate to broader review only when revisions changed the baseline, sample, estimand, specification, inference, benchmark treatment, note argument, or primary output family.
+Widen the re-review beyond the changed surfaces only when revisions changed the baseline, sample, estimand, specification, inference, benchmark treatment, note argument, or primary output family.
 
 Repeat the review-resolution pass until:
-- no blocking or worth-fixing findings or diagnostic gaps remain;
-- remaining findings and gaps are consciously deferred with rationale;
+- no finding that holds and changes the result or its reading remains unaddressed;
+- remaining findings are consciously deferred with rationale or rejected with a reason;
 - a researcher-level decision prevents further meaningful work on the affected branch; or
 - external access or missing data prevents meaningful progress.
 
@@ -197,16 +145,17 @@ Repeat the review-resolution pass until:
 
 Lead the final closeout with the research outcome and usable deliverable. Explain what the evidence supports, what changed, and the limitations that matter for interpretation or reuse. Then give the saved plan and main output paths, what was actually regenerated versus only inspected, the validation result, and the review conclusion. Translate internal terms when explaining them to the researcher; do not lead with schemas, stages, or agent status.
 
-Keep detailed stage and code-role bookkeeping in the execution record, including the review depth chosen and any delegated worker's model, effort, and reason. Preserve finding and gap IDs for fixes and residuals, their targeted re-review outcomes, and durable residual paths. Disclose degraded coverage or a blocked promotion plainly; neither can be hidden by a shorter closeout. Include a decision memo or resume instruction only when one is needed. Do not create a follow-up merely to fill a final field.
+Keep detailed stage and code-role bookkeeping in the execution record, including the reviewer's model and effort, whether the review ran independently, and any delegated worker's model, effort, and reason. Preserve `R<n>` IDs with the route taken for each, their re-review outcomes, and durable residual paths. Disclose a review that did not run independently, and anything the reviewer could not inspect, plainly; neither can be hidden by a shorter closeout. Include a decision memo or resume instruction only when one is needed. Do not create a follow-up merely to fill a final field.
 
 If the autonomous run explicitly included compounding and produced a durable reusable lesson, invoke `econ-compound` after review-resolution. If compounding was in scope but no durable lesson emerged, report `Reusable lesson: none` and write nothing. When compounding was not in scope, keep any candidate in the closeout without interrupting the run or writing a learning note.
 
 ## Hard stops
 
 - Do not skip `econ-plan` for non-trivial tasks.
-- Do not proceed from `econ-work` to delivery without `econ-review`, unless the saved plan or work closeout explicitly says no later review is needed.
+- Do not proceed from `econ-work` to delivery without the review stage, unless the saved plan or work closeout explicitly says no later review is needed.
+- Do not review with a model smaller than the coordinator's, or with a panel of reviewers in place of the single reviewer.
 - Do not deliver with unprocessed review findings.
-- Do not deliver a promotion-tier result while its reviewer panel remains degraded without the researcher's explicit decision.
+- Do not present a review the coordinator carried out itself as independent.
 - Follow the repository's own instructions for Git and issues (branching, committing, pushing, issue and pull-request comments). Only when the repository has none, ask before committing, pushing, or posting.
 - Do not silently override researcher-anchored choices.
 - Do not make cross-language validation default-on.

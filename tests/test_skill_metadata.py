@@ -62,7 +62,7 @@ class SkillMetadataTest(unittest.TestCase):
                 self.assertTrue(interface["display_name"].strip())
                 self.assertTrue(25 <= len(interface["short_description"]) <= 64)
                 self.assertIn(f"${name}", interface["default_prompt"])
-                explicit_only = name in {"gpt-pro-handoff", "econ-review"}
+                explicit_only = name == "gpt-pro-handoff"
                 self.assertEqual(ui.get("policy", {}).get("allow_implicit_invocation", True), not explicit_only)
                 generated = REPO / "claude/skills" / name / "SKILL.md"
                 claude = metadata(generated.read_text(encoding="utf-8").split("---", 2)[1])

@@ -62,9 +62,14 @@ and figures. Reviewers do not create scripts or run new replications: they are
 report-only. Cross-language work is a targeted diagnostic, not a default
 requirement.
 
-Ask for `econ-review` when you want a formal review. It is also included in an
-`econ-lfg` run. During ordinary analysis or debugging, the agent checks its work
-without starting a separate review.
+Ask for `econ-review` when you want a formal review. In an `econ-lfg` run, one
+fresh-context reviewer on the lead agent's own model follows `econ-review` on the
+finished work and returns ranked findings: constructive and adversarial, big
+picture first, then the econometrics in depth, and only problems that change the
+result or its reading, each with its fix. `econ-lfg` checks which findings hold,
+fixes those within its authority, and records what it did with each. During
+ordinary analysis or debugging, the agent checks its work without starting a
+separate review.
 
 The lead agent remains responsible for the research question, interpretation,
 and final conclusions. It can delegate focused tasks—such as finding relevant

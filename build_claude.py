@@ -30,7 +30,7 @@ BANNER = (
 )
 REVIEWER_MODEL = "inherit"
 READ_ONLY_TOOLS = "Read, Grep, Glob"
-DISABLE_MODEL_INVOCATION = frozenset({"gpt-pro-handoff", "econ-review"})
+DISABLE_MODEL_INVOCATION = frozenset({"gpt-pro-handoff"})
 
 # Host-specific section replacements, keyed by installed skill name, the
 # markdown file's path relative to the skill root, and the H2 heading to
@@ -52,6 +52,33 @@ OVERRIDES: dict[tuple[str, str, str], str] = {
         "when an unresolved economics decision or access limit prevents progress. "
         "Continue independent authorised work; do not repeat failed actions or "
         "questions without new evidence.\n"
+    ),
+    ("econ-lfg", "SKILL.md", "## Reviewer subagent"): (
+        "## Reviewer subagent\n"
+        "\n"
+        "The review stage starts exactly one reviewer with the `Agent` tool:\n"
+        "\n"
+        "- fresh context: leave `subagent_type` at the general-purpose default "
+        "and never use `fork`, which would inherit this conversation; the "
+        "prompt is the filled-in brief from "
+        "`references/review_resolution_reference.md` (\"Reviewer brief\");\n"
+        "- `model`: pass the alias of the coordinator's own model explicitly "
+        "(for example `opus` under an Opus coordinator). Never a smaller model "
+        "and never `haiku`; omitting `model` may fall back to a smaller "
+        "configured default. Set effort to the coordinator's where the tool "
+        "exposes an effort setting; otherwise it is inherited. Do not pass "
+        "`reasoning_effort`;\n"
+        "- a leaf assignment: the reviewer starts no other agents and changes "
+        "nothing, so no `isolation` is needed;\n"
+        "- wait for its return before Stage 4. If it runs in the background, "
+        "do not begin Stage 4 until its result has arrived.\n"
+        "\n"
+        "If the tool rejects the settings or the start fails, retry once. If "
+        "the reviewer still cannot run, or its return does not follow the "
+        "format in the brief after one `SendMessage` follow-up, carry out the "
+        "same review yourself by following the single-reviewer section of "
+        "`econ-review`, and record in the closeout that the review was not "
+        "independent.\n"
     ),
     ("econ-work", "references/delegation_reference.md", "## GPT worker selection"): (
         "## GPT worker selection\n\n"
