@@ -17,9 +17,13 @@ The research code and data are read-only: no code changes, data mutation, or est
 
 ## Questions
 
-Ask one short question at a time using `request_user_input` when available, otherwise ordinary chat; never require a tool the host does not provide. Build on the fragments and answers already supplied rather than restarting the interview. Match the researcher's energy: casual, fragmentary answers are fine — organising them is the skill's job, not theirs. Every question carries the context that makes it answerable — why it matters for the direction, the plausible answers with their tradeoffs — and, where sensible, a suggested default. There is no question budget.
+Ask one question at a time, and only when the answer changes what happens next: the direction, the design, or which evidence to check. Do not ask what the conversation, project files, or a quick read-only check can settle.
 
-Ask what the researcher is already thinking before offering your own framings — their half-formed version carries context, and an early agent framing is easy to fixate on.
+Before each question, write its context in plain, readable prose so the researcher can decide from the text alone: what the choice is; why it matters for the research; what each option implies for the question, design, or data; and your recommendation with its reason. Then ask. Option boxes (`request_user_input`, when the host provides it) are fine for the answer itself; their labels are short names for options the prose has already explained, never a substitute for that explanation. Without such a tool, ask in ordinary chat; never require a tool the host does not provide.
+
+Build on the fragments and answers already supplied rather than restarting the interview. Match the researcher's energy: casual, fragmentary answers are fine — organising them is the skill's job, not theirs.
+
+Ask what the researcher is already thinking before offering your own framings — their half-formed version carries context, and an early agent framing is easy to fixate on. For such open questions, give the context but hold back a recommendation; recommend once there is a real choice between options.
 
 The hidden engine: move the researcher's unknown-knowns into stated form — the population they picture, the comparison they assume, the data they trust, the result they secretly expect — and run a blindspot pass for what they have not considered at all.
 
