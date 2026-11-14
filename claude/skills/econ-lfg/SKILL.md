@@ -39,7 +39,7 @@ Once the bounded task is agreed and the run begins, work autonomously. Return wi
 
 ## Goal-backed run
 
-Claude Code has no goal primitive. Persist the loop with the built-in task list: one task per stage (plan, work, review, revise, re-review, deliver), with statuses kept current as the run advances. The session is the persistence boundaryâ€”if it ends, the loop does not survive on its own. Record session-local persistence in the execution record; mention it to the user when it limits completion or resumption. Do not claim a goal was created or promise work after the session ends.
+Claude Code has no goal primitive. Persist the loop with the built-in task list: one task per stage (plan, work, review, revise, re-review, deliver), with statuses kept current as the run advances. The session is the persistence boundary; if it ends, the loop does not survive on its own. Record session-local persistence in the execution record; mention it to the user when it limits completion or resumption. Do not claim a goal was created or promise work after the session ends.
 
 Treat the run as complete only when the final deliverable is produced and review-resolution is handled. Treat the affected branch as blocked when an unresolved economics decision or access limit prevents progress. Continue independent authorised work; do not repeat failed actions or questions without new evidence.
 

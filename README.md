@@ -70,8 +70,11 @@ without starting a separate review.
 The lead agent remains responsible for the research question, interpretation,
 and final conclusions. It can delegate focused tasks—such as finding relevant
 code or checking a particular result—to supporting agents, choosing their model
-and reasoning effort to suit the work. Reviews can combine related checks, with
-independent scrutiny reserved for questions that benefit from it.
+and reasoning effort to suit the work. Judgment work (review, assessment,
+drafting and economic reasoning) runs on the lead agent's own model; a smaller
+model is used only for mechanical work whose result can be checked, and never a
+Haiku-class model. Reviews can combine related checks, with independent scrutiny
+reserved for questions that benefit from it.
 
 ## Installation
 
@@ -132,10 +135,12 @@ exact checkout that should become active. Do not edit generated files under
 ### Delegation and review reports
 
 The [delegation reference](skills/econ-work/references/delegation_reference.md)
-guides model selection and budgets for planning, work, and review. Sol Low is a
-useful supporting default; Luna can handle bounded tasks with reasoning effort chosen
-for the work. Stronger independent judgment is used selectively. Other hosts
-use available equivalents.
+guides model selection and budgets for planning, work, and review. Judgment
+work runs on the coordinator's own model. Mechanical work with a checkable result
+may use a smaller model: `gpt-6-luna` or `gpt-6-sol` with effort chosen for the
+task, or Sonnet in Claude Code. Opus workers use `claude-opus-5-5` on a supported
+host. Haiku is never used. User overrides take precedence; unavailable models
+never trigger silent substitution.
 
 Review lenses define the checks to cover; they do not each require a separate
 agent. Reports distinguish checks performed by the lead agent from independent
