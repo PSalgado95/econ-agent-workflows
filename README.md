@@ -3,7 +3,7 @@
 Research workflows for economists, inspired by
 [Compound Engineering](https://github.com/EveryInc/compound-engineering-plugin).
 
-It consists of a set of skills that structure the use of AI agents across the
+The skills structure the use of AI agents across the
 full research process, from developing an idea and writing a plan to carrying
 out the analysis, reviewing the evidence, and revising the work. Verified
 lessons from completed projects are carried into later work, allowing
@@ -18,6 +18,11 @@ construction, estimation, figures, tables, research notes, and replication.
 The skills can also be used for computational and theory-based research,
 although these applications have received less testing.
 
+The skills are designed to give capable models such as Astra and Fable room to
+exercise judgment. They provide guidance on research decisions, evidence, and
+economic interpretation, while leaving routine implementation choices to the
+agent.
+
 ## The research workflow
 
 The five core skills cover distinct parts of this process. They can be used
@@ -31,8 +36,7 @@ separately or combined as the research develops.
 | Review the research | `econ-review` | Checks the design, evidence, results, and claims |
 | Carry lessons into later work | `econ-compound` | Retains verified lessons from completed research for use in later projects |
 
-Two additional skills support the core workflow. `econ-debug` investigates
-unexpected empirical or computational results. `econ-lfg` coordinates the full
+An additional skill, `econ-lfg`, coordinates the full
 cycle for a defined research task, pausing when a decision would change the
 research question, empirical design, interpretation, or scope.
 
@@ -58,22 +62,23 @@ and figures. Reviewers do not create scripts or run new replications: they are
 report-only. Cross-language work is a targeted diagnostic, not a default
 requirement.
 
-The researcher explicitly selects `econ-review`, or requests an end-to-end
-`econ-lfg` run that includes it. Ordinary checking and debugging do not silently
-activate the formal workflow. The coordinator retains the broader research task.
+Ask for `econ-review` when you want a formal review. In an `econ-lfg` run, one
+fresh-context reviewer on the lead agent's own model follows `econ-review` on the
+finished work and returns ranked findings: constructive and adversarial, big
+picture first, then the econometrics in depth, and only problems that change the
+result or its reading, each with its fix. `econ-lfg` checks which findings hold,
+fixes those within its authority, and records what it did with each. During
+ordinary analysis or debugging, the agent checks its work without starting a
+separate review.
 
-Review lenses describe coverage, not a roster of child agents. The coordinator
-can cover them directly or delegate related checks together. The delegation
-reference in `skills/econ-work/references/delegation_reference.md` governs both
-planning, work, and review: `gpt-6-luna` handles lightweight assignments and
-`gpt-6-sol` handles implementation and harder bounded work, with effort chosen
-separately. Astra is reserved for selective independent challenge. Claude
-workers selected for Opus use `claude-opus-5-5` on a supported host. User
-overrides take precedence; unavailable models never trigger silent substitution. Each run distinguishes
-parent checks from independent checks and records worker settings and budgets.
-
-Reports use `econ-review-report/v3`; v2 reports must not be silently reinterpreted
-because their coverage does not distinguish parent and worker checks.
+The lead agent remains responsible for the research question, interpretation,
+and final conclusions. It can delegate focused tasks—such as finding relevant
+code or checking a particular result—to supporting agents, choosing their model
+and reasoning effort to suit the work. Judgment work (review, assessment,
+drafting and economic reasoning) runs on the lead agent's own model; a smaller
+model is used only for mechanical work whose result can be checked, and never a
+Haiku-class model. Reviews can combine related checks, with independent scrutiny
+reserved for questions that benefit from it.
 
 ## Installation
 
@@ -109,12 +114,11 @@ skills/                         # canonical skill source
     references/
       personas/                 # internal specialist review perspectives
       *-schema.json             # review contracts
-  econ-debug/
   econ-lfg/
   econ-compound/
   auxiliary/
     gpt-pro-handoff/
-tests/                          # contract and installation tests
+tests/                          # installer, package, and report validation tests
 claude/
   skills/                       # generated Claude Code skills; do not edit
 build_claude.py                 # builds and checks claude/
@@ -127,13 +131,40 @@ The repository is the source of truth. Installed skill directories are runtime
 copies and do not update automatically when the repository changes.
 
 Edit the source under `skills/`, regenerate the committed Claude output when
-needed, run the tests, and then install from the exact checkout that should
-become active. Do not edit generated files under `claude/` directly.
+needed, run the relevant maintenance checks below, and then install from the
+exact checkout that should become active. Do not edit generated files under
+`claude/` directly.
+
+### Delegation and review reports
+
+The [delegation reference](skills/econ-work/references/delegation_reference.md)
+guides model selection and budgets for planning, work, and review. Judgment
+work runs on the coordinator's own model. Mechanical work with a checkable result
+may use a smaller model: `gpt-6-luna` or `gpt-6-sol` with effort chosen for the
+task, or Sonnet in Claude Code. Opus workers use `claude-opus-5-5` on a supported
+host. Haiku is never used. User overrides take precedence; unavailable models
+never trigger silent substitution.
+
+Review lenses define the checks to cover; they do not each require a separate
+agent. Reports distinguish checks performed by the lead agent from independent
+checks and record worker settings and budgets.
+
+Reports use `econ-review-report/v3`. Older v2 reports do not distinguish parent
+and worker checks and must not be silently treated as v3 reports.
 
 ### Verification
 
-Run the contract suite and verify the generated Claude package from the
-repository root:
+These checks are for a coding agent or contributor changing this repository.
+They are not run when a researcher invokes a skill. They check installation and
+migration, package files and metadata, and the schemas and Python validator used
+for review reports. They do not evaluate the quality of an agent's research or
+require particular prose, model recommendations, or reviewer combinations.
+
+Run the suite when changing the installer, builder, or report contracts. For a
+prose-only skill edit, inspect the instructions and linked references, regenerate
+the Claude package, and run `python build_claude.py --check`.
+
+Run the maintenance suite from the repository root:
 
 ```text
 python -m pip install jsonschema

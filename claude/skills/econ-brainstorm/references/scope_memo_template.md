@@ -2,7 +2,7 @@
 
 # Scope Memo Template
 
-The scope memo is the brainstorm's session state and its only durable output. Save it at `docs/plans/YYYY-MM-DD-<slug>-scope.md` (or the repo's plan convention). Brainstorms resume by reading it; `econ-plan` graduates it by upgrading the same document in place to a full plan, keyed on `readiness: scoping-only`.
+A scope memo preserves a substantial brainstorm for later resumption. Do not create one for a routine discussion whose direction and open questions fit safely in the inline closeout. Save it at `docs/plans/YYYY-MM-DD-<slug>-scope.md` (or the repo's plan convention). If planning follows, `econ-plan` reads the memo as source material and writes a separate `-econ-plan.md`; the scope memo remains unchanged.
 
 Keep entries short — one line each is normal. An honest `unknown` beats an invented answer.
 
@@ -43,7 +43,7 @@ in the session — record it even when declined, marked `(declined)`.>
 
 ## Field rules
 
-- `readiness: scoping-only` stays until `econ-plan` upgrades the document; the brainstorm never changes it.
+- `readiness: scoping-only` is permanent for this artifact; neither `econ-brainstorm` nor `econ-plan` converts it into a plan.
 - **Data requirements** carry a `verified`/`assumed` tag on every line; `verified` names how (the file, register, or listing read). No untagged requirement.
 - **Identification candidates** keep the session's non-obvious alternative on record, marked `(declined)` when the researcher set it aside.
 - **Kill criteria** must be concrete enough to check later — "no register coverage before 2005" rather than "data problems".

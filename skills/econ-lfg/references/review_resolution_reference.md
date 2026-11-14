@@ -1,51 +1,65 @@
 # Econ LFG Review Resolution Reference
 
-Use this reference during `econ-lfg` Stage 4 after `econ-review` returns retained
-findings or diagnostic gaps. Review outputs are evidence for the loop; they are
-not orders to change the research object.
+Use this reference during `econ-lfg` Stages 3 to 5: to brief the single
+reviewer, to judge which of its findings hold, and to route and record them.
+Review findings are evidence for the loop; they are not orders to change the
+research object.
 
-## Classification Inputs
+## Reviewer brief
 
-For every retained finding, inspect these fields before choosing a route:
+Send the reviewer this brief, filled in, as its whole prompt. It has no other
+context, so every path is absolute and every settled choice is stated.
 
-- finding ID;
-- fix class: `safe-automatic`, `gated`, `manual`, or `advisory`;
-- trust effect or promotion effect;
-- issue origin;
-- affected labels, such as plan labels, output IDs, bundle IDs, branch/worktree names, or evidence IDs;
-- evidence locations and whether they are strong enough to act on;
-- missing diagnostic surfaces, if any;
-- whether the finding conflicts with a researcher-anchored, plan-backed, agent-owned, or execution-discovered choice.
+```md
+mode: single-reviewer
 
-If a finding has no evidence path, do not act on it unless the issue is a visible bundle-metadata gap. Treat unsupported findings as degraded or advisory and record that limitation in the closeout.
+You are the one independent reviewer of finished economics work. Read
+<absolute path to econ-review/SKILL.md> and follow its "Single-reviewer mode"
+section: stance, boundary, and return format.
 
-For every diagnostic gap, inspect its parent-owned gap ID, trust effect, issue
-origin, affected labels, evidence references, recommended action, and authority
-source. Apply the same route tokens. A plan-required missing diagnostic with
-available inputs may be `fix-now`; a gap that changes the research object is
-`ask-user`; a gap outside the requested output may be deferred only with its
-`G<n>` ID and rationale preserved.
+- Research question:
+- Deliverable and its reader:
+- Settled choices (researcher-anchored or plan-backed). Do not reopen them as
+  ordinary findings; challenge one only through a finding marked
+  "Needs the researcher: yes":
+- Evidence to read, with paths: saved plan; code entrypoints; realised outputs
+  (tables, figures, logs); note or memo; execution record:
+- Regenerated in this run versus only inspected:
+- Re-review only: earlier findings, what was done about each, changed paths:
+
+Read only. Start no other agents. Return only the review, in the stated format.
+```
+
+## Judging whether a finding holds
+
+For every finding `R<n>`, inspect the decisive evidence yourself before acting:
+the cited code, definitions, tables, figures, or outputs, with their context and
+the settled decisions. A finding holds when that evidence supports it and it
+changes the result or how it should be read. A finding without usable evidence
+does not hold unless you can confirm it from the cited surface. Low reviewer
+confidence calls for a closer check, not automatic rejection; high confidence
+does not replace the check. When you reject a finding, record the evidence that
+contradicts it.
+
+For every "Not inspected" entry that could change the conclusion, treat the gap
+like a finding: produce the evidence when the plan already requires it and the
+inputs and authority are present, otherwise route it and keep it visible.
 
 ## Canonical Route Tokens
 
-Use these route tokens exactly in the review-resolution closeout:
+Use these route tokens exactly in the review-resolution record:
 
 | Route token | Use when | Typical examples |
 | --- | --- | --- |
-| `fix-now` | The fix is `safe-automatic`, mechanical, or missing work already required by the saved plan, and it does not touch the researcher-level trigger list. | Path repair, stale cross-reference, missing metadata, stale bundle manifest, validator rerun, missing diagnostic already required by the plan. |
-| `revise-plan-choice` | Review evidence shows an agent-owned plan or work default should change, and the better path remains inside the initial task intent. | Diagnostic order, figure priority, note framing, implementation route, wording that narrows a claim to accepted evidence. |
-| `ask-user` | The fix touches the researcher-level trigger list or would override a researcher-anchored choice. | Baseline, sample, estimand, identification, benchmark treatment, output promotion, claim budget, substantive interpretation. |
-| `defer-with-rationale` | The finding is legitimate but outside the prompt, not needed for trust in the requested output, or better handled as follow-up work. | Optional robustness extension, future package audit, non-blocking broader cleanup. |
-| `advisory-only` | The finding is useful context but does not affect trust, promotion, or the requested output. | FYI note, non-blocking ergonomics suggestion, future wording improvement. |
+| `fix-now` | The finding holds, the fix is mechanical or work the saved plan already requires, and it does not touch the researcher-level trigger list. | Coding error in a defined variable, path repair, stale cross-reference, mislabelled table, missing diagnostic already required by the plan, claim wording that overstates accepted evidence. |
+| `revise-plan-choice` | The finding holds and shows an agent-owned plan or work default should change, and the better path remains inside the initial task intent. | Diagnostic order, figure priority, note framing, implementation route. |
+| `ask-user` | The finding holds and its fix touches the researcher-level trigger list, overrides a researcher-anchored choice, or the reviewer marked it "Needs the researcher: yes" and you agree. | Baseline, sample, estimand, identification, benchmark treatment, output promotion, claim budget, substantive interpretation. |
+| `defer-with-rationale` | The finding holds but is outside the prompt, not needed for trust in the requested output, or better handled as follow-up work. | Extension beyond the requested output, broader package audit. |
+| `advisory-only` | The point is useful context but does not change the result or its reading. | Future wording improvement. |
+| `rejected` | The finding does not hold on the evidence. | The cited line does not do what the finding says; the concern is already handled elsewhere. |
 
-## Mapping From econ-review Fix Classes
-
-- `safe-automatic` usually maps to `fix-now`, unless the authority test shows the edit would change a researcher-level choice.
-- `gated` maps to `ask-user` when it changes what gets promoted, shown, emphasized, or treated as the main output. If it is outside the requested output, map it to `defer-with-rationale`.
-- `manual` usually maps to `ask-user`. It may map to `fix-now` only when the missing work is already required by the saved plan, the needed inputs and rerun authority are present, and no researcher-level trigger is touched.
-- `advisory` maps to `advisory-only` or `defer-with-rationale`.
-
-Choose the more conservative route when fix class, trust effect, and authority source disagree.
+When the reviewer's "Needs the researcher" flag and the trigger list disagree,
+take the more conservative route.
 
 ## What the Agent May Fix Without Asking
 
@@ -62,9 +76,9 @@ The agent may fix directly when the finding stays inside the saved plan, the ini
 - missing diagnostic surfaces already required by the saved plan, when the inputs and rerun authority are present;
 - agent-owned planning or work defaults, such as diagnostic order, figure priority, note framing, implementation route, or review-bundle organisation.
 
-Each direct fix must leave a compact trace: `F<n>` or `G<n>` ID, prior evidence
-reference, route token, fix performed, changed path, verification run, and
-targeted re-review surface.
+Each direct fix must leave a compact trace: `R<n>` ID, the evidence you
+checked, route token, fix performed, changed path, verification run, and
+re-review surface.
 
 ## Researcher-Level Trigger List
 
@@ -124,20 +138,24 @@ The need for a memo depends on the evidence synthesis and trade-offs, not only o
 
 ## Re-Review and Closeout
 
-After `fix-now` or `revise-plan-choice`, run targeted `econ-review` on the
-changed or previously problematic surface. Supply non-duplicable outcome maps
-keyed by fixed finding and diagnostic-gap IDs, with prior evidence references;
-every `fixed` trace also names at least one changed path.
+After `fix-now` or `revise-plan-choice`, start a new single reviewer on the
+changed or previously problematic surfaces, with the re-review line of the brief
+filled in: each earlier finding, what was done about it, and the changed paths.
 
-Escalate from targeted to broader review only when the revision changes the baseline, sample, estimand, specification, inference, benchmark treatment, note argument, primary output family, or another researcher-level research-object boundary.
+Widen the re-review beyond the changed surfaces only when the revision changes
+the baseline, sample, estimand, specification, inference, benchmark treatment,
+note argument, primary output family, or another researcher-level boundary of
+the research object.
 
 Repeat review resolution until:
 
-- no blocking or worth-fixing findings or diagnostic gaps remain;
-- remaining findings and gaps are `defer-with-rationale` or `advisory-only`;
+- no finding that holds and changes the result or its reading remains unaddressed;
+- remaining findings are `defer-with-rationale`, `advisory-only`, or `rejected`;
 - a researcher-level decision blocks the loop;
 - external access or missing data prevents meaningful progress.
 
-The final closeout must list fixed and deferred/advisory `F<n>` and `G<n>` IDs,
-decision memo path if one was written, targeted re-review result, verification
-performed, remaining risk, and resume route if blocked.
+The final closeout lists every `R<n>` with its route and outcome (fixed,
+deferred, advisory, rejected with reason, or awaiting the researcher), the
+decision memo path if one was written, the re-review result, the verification
+performed, whether the review ran independently, remaining risk, and the resume
+route if blocked.

@@ -43,11 +43,20 @@ cost more than doing it directly. Delegate separable investigations with clear
 ownership; avoid duplicate searches and overlapping writers.
 
 For each proposed worker, identify the question, evidence, expected return,
-completion check, model and effort, and why delegation helps. Select model and
-effort separately according to difficulty, consequences of error, and how the
-return will be checked. Judgment work and review do not require the parent's
-settings. Workers may reason, challenge assumptions, and disagree; the parent
-checks decisive evidence and owns the synthesis. Decisions reserved for the
+completion check, model and effort, and why delegation helps. The model rule is
+fixed by the kind of work:
+
+- **Judgment work** — review, assessment, drafting, economic reasoning,
+  interpretation, and independent challenge — runs on the coordinator's own
+  model and effort, never a smaller model.
+- **Mechanical work with a checkable result** — locating files or definitions,
+  extracting specified information, running a named command, or a bounded edit
+  whose return the parent can verify — may use a smaller model, with effort
+  chosen for the task.
+- Never use a Haiku-class model for any economics assignment.
+
+Workers may reason, challenge assumptions, and disagree; the parent checks
+decisive evidence and owns the synthesis. Decisions reserved for the
 researcher remain with the researcher.
 
 ## GPT worker selection
@@ -56,12 +65,13 @@ GPT model IDs are not accepted by Claude-native worker tools. Use the Claude wor
 
 ## Claude worker selection
 
-For an Anthropic worker, use Claude Opus 5.5 (`claude-opus-5-5`) when Opus is
-selected for implementation or independent judgment. This is the latest Opus
-verified in the official documentation on 2026-09-24; it is not a mandate to
-send every lightweight search to Opus. Keep small searches local or use an
-explicitly authorised available lightweight model. Do not pass GPT IDs to
-Claude-native tools or substitute a different Anthropic family automatically.
+For an Anthropic judgment worker, use the coordinator's own model: Claude Opus
+5.5 (`claude-opus-5-5`, the latest Opus verified in the official documentation
+on 2026-09-24) under an Opus coordinator, or the coordinator's own model when it
+is another. Mechanical work with a checkable result may use Sonnet; never use
+Haiku. Keep small searches local when dispatch would cost more than doing them.
+Do not pass GPT IDs to Claude-native tools or substitute a different Anthropic
+family automatically.
 
 Claude Code requires version 2.1.280 or later for Opus 5.5. Check `claude --version`, the current tool contract, provider, and account availability before
 dispatch. Prefer the full ID where accepted; an `opus` alias is acceptable only
@@ -124,7 +134,7 @@ Do not launch an unknown expensive fallback. Continue locally when appropriate.
 
 ## Host settings
 
-Read the installed `Agent` tool contract before dispatch. Pass the selected model explicitly using a supported full ID or a verified alias. Do not assume the alias is the model that actually ran. Check the returned model and effort where exposed; disclose any unverified setting. Follow the version and availability checks above.
+Read the installed `Agent` tool contract before dispatch. Pass the selected model explicitly using a supported full ID or a verified alias on every start: for judgment work, the alias or ID of the coordinator's own model (for example `opus` under an Opus coordinator); for mechanical work with a checkable result, `sonnet` is acceptable. Never pass `haiku`. Omitting `model` may fall back to a configured default subagent model, so do not rely on inheritance. Do not assume the alias is the model that actually ran. Check the returned model and effort where exposed; disclose any unverified setting. Follow the version and availability checks above.
 
 Use an independent effort setting only where exposed by the installed tool. Otherwise verify and record inherited effort; never send `reasoning_effort` to an unsupported parameter. Do not change the coordinator's model or effort to configure a child.
 

@@ -30,7 +30,7 @@ BANNER = (
 )
 REVIEWER_MODEL = "inherit"
 READ_ONLY_TOOLS = "Read, Grep, Glob"
-DISABLE_MODEL_INVOCATION = frozenset({"gpt-pro-handoff", "econ-review"})
+DISABLE_MODEL_INVOCATION = frozenset({"gpt-pro-handoff"})
 
 # Host-specific section replacements, keyed by installed skill name, the
 # markdown file's path relative to the skill root, and the H2 heading to
@@ -42,7 +42,7 @@ OVERRIDES: dict[tuple[str, str, str], str] = {
         "Claude Code has no goal primitive. Persist the loop with the built-in "
         "task list: one task per stage (plan, work, review, revise, re-review, "
         "deliver), with statuses kept current as the run advances. The session "
-        "is the persistence boundaryâ€”if it ends, the loop does not survive on "
+        "is the persistence boundary; if it ends, the loop does not survive on "
         "its own. Record session-local persistence in the execution record; "
         "mention it to the user when it limits completion or resumption. "
         "Do not claim a goal was created or promise work after the session ends.\n"
@@ -52,6 +52,33 @@ OVERRIDES: dict[tuple[str, str, str], str] = {
         "when an unresolved economics decision or access limit prevents progress. "
         "Continue independent authorised work; do not repeat failed actions or "
         "questions without new evidence.\n"
+    ),
+    ("econ-lfg", "SKILL.md", "## Reviewer subagent"): (
+        "## Reviewer subagent\n"
+        "\n"
+        "The review stage starts exactly one reviewer with the `Agent` tool:\n"
+        "\n"
+        "- fresh context: leave `subagent_type` at the general-purpose default "
+        "and never use `fork`, which would inherit this conversation; the "
+        "prompt is the filled-in brief from "
+        "`references/review_resolution_reference.md` (\"Reviewer brief\");\n"
+        "- `model`: pass the alias of the coordinator's own model explicitly "
+        "(for example `opus` under an Opus coordinator). Never a smaller model "
+        "and never `haiku`; omitting `model` may fall back to a smaller "
+        "configured default. Set effort to the coordinator's where the tool "
+        "exposes an effort setting; otherwise it is inherited. Do not pass "
+        "`reasoning_effort`;\n"
+        "- a leaf assignment: the reviewer starts no other agents and changes "
+        "nothing, so no `isolation` is needed;\n"
+        "- wait for its return before Stage 4. If it runs in the background, "
+        "do not begin Stage 4 until its result has arrived.\n"
+        "\n"
+        "If the tool rejects the settings or the start fails, retry once. If "
+        "the reviewer still cannot run, or its return does not follow the "
+        "format in the brief after one `SendMessage` follow-up, carry out the "
+        "same review yourself by following the single-reviewer section of "
+        "`econ-review`, and record in the closeout that the review was not "
+        "independent.\n"
     ),
     ("econ-work", "references/delegation_reference.md", "## GPT worker selection"): (
         "## GPT worker selection\n\n"
@@ -63,7 +90,12 @@ OVERRIDES: dict[tuple[str, str, str], str] = {
         "## Host settings\n\n"
         "Read the installed `Agent` tool contract before dispatch. Pass the "
         "selected model explicitly using a supported full ID or a verified "
-        "alias. Do not assume the alias is the model that actually ran. "
+        "alias on every start: for judgment work, the alias or ID of the "
+        "coordinator's own model (for example `opus` under an Opus "
+        "coordinator); for mechanical work with a checkable result, "
+        "`sonnet` is acceptable. Never pass `haiku`. Omitting `model` may "
+        "fall back to a configured default subagent model, so do not rely on "
+        "inheritance. Do not assume the alias is the model that actually ran. "
         "Check the returned model and effort where exposed; disclose any "
         "unverified setting. Follow the version and availability checks above.\n\n"
         "Use an independent effort setting only where exposed by the installed "

@@ -1,6 +1,6 @@
 ---
 name: econ-work
-description: "Carry out economics research from an agreed plan or clear execution request."
+description: "Carry out economics research from a saved plan, an issue or a clear request: write and run analysis or server-stage code, inspect the realised outputs, interpret them and hand over the result. Use after econ-plan or for agent issues. Not for planning (econ-plan), memos from results in hand (econ-html-memo) or pure software work (ce-work)."
 ---
 
 <!-- GENERATED FROM CODEX SOURCE - DO NOT EDIT. Edit the Codex sources and run build_claude.py. -->
@@ -16,7 +16,7 @@ Treat the arguments passed with this invocation, or the user's current request, 
 - **Trivial one-off** — a narrow check, inspection, or mechanical edit with low empirical stakes. Proceed compactly: no task list, no review bundle, a compact closeout. This is the expected path for small work; do not force the full workflow onto it.
 - **Saved plan** — read it as the decision artifact (not a progress log) and execute its stages; record divergence in the task tracker or closeout rather than rewriting the plan body.
 - **Bare empirical request** — clear task, no plan. Scan the work surface, then write a short execution outline before any non-trivial edit or rerun.
-- **Issue-linked work** — read the issue as coordination context only (objective, done-when, linked branches). Record whether issue updates are requested, approved, or out of scope.
+- **Issue-linked work** — read the issue as coordination context only (objective, done-when, linked branches). Post issue updates as the repository's own instructions direct; when it has none, ask before posting.
 - **Unclear work object** — inspect the available surface, then ask only for the unresolved choice that prevents useful authorised work. Continue independent parts of the task.
 
 Route pure software work to the current Compound Engineering work skill (`compound-engineering:ce-work` when available). If the user asked for advice rather than execution, label the response advice-only. Do not start code changes, reruns, output promotion, or note drafting until the task, research object, scope, and rerun authority are sufficiently understood.
@@ -115,7 +115,7 @@ Only after Stage 3. Draft from the note brief, interpretation brief, output-cons
 
 Use the verification ladder in `references/execution_reference.md` to cover the economic failure modes affected by this work. Reuse checks already completed on the same inputs and code; repeat them only after a relevant change or new concern. A formatting-only edit does not require re-estimation. Changes to timing, units, sample, weights, inference, calibration, or numerical solution do require the corresponding checks and affected-output inspection. Add software tests only for a real workflow, interface, or failure mode. Build or refresh the review bundle (minimum structure in the reference) only when the closeout routes to `econ-review` on a bundle or mixed surface, or the work goes to a coauthor or external reviewer — otherwise skip it. Ordinary verification stays within this workflow. Do not automatically invoke `econ-review` after execution, debugging, or output inspection. Set `review_route` to `none` unless the user explicitly selected the formal review workflow or an already-authorised end-to-end caller includes it. Such a caller owns invocation; a route recommendation does not itself launch review. Preserve the broader research assignment when formal review is only one component.
 
-Account for the applicable closeout items in `references/execution_reference.md`, combining them rather than reproducing a fixed form; the run is complete only when the research outcome, evidence status, and unresolved risks are clear — a script run, a generated file, or one passing check is not completion. Route any durable lesson to the lightest surface (issue comment when issue-linked and approved; a drafted project-backbone update applied only on approval; a dated follow-up plan; or closeout-only). Old memos, exploratory reports, and externally supplied packages are leads, not authority, until traced to the underlying source, output, script, or review finding.
+Account for the applicable closeout items in `references/execution_reference.md`, combining them rather than reproducing a fixed form; the run is complete only when the research outcome, evidence status, and unresolved risks are clear — a script run, a generated file, or one passing check is not completion. Route any durable lesson to the lightest surface (issue comment when issue-linked and the repository's instructions or the user allow it; a drafted project-backbone update applied only on approval; a dated follow-up plan; or closeout-only). Old memos, exploratory reports, and externally supplied packages are leads, not authority, until traced to the underlying source, output, script, or review finding.
 
 ## Internal return to `econ-lfg`
 
@@ -127,7 +127,7 @@ Each is a named failure this workflow exists to prevent; the stage close-conditi
 
 - Do not write the note or memo before the realised outputs are inspected and the interpretation brief exists (and the note brief when reporting is live).
 - Do not let old or inherited outputs be presented as freshly regenerated.
-- Do not stage, commit, or push unless the user explicitly requests that Git action.
+- Follow the repository's own instructions for Git and issues (branching, committing, pushing, issue and pull-request comments). Only when the repository has none, ask before committing, pushing, or posting.
 - Do not treat GitHub issue text as analytical evidence without checking the actual plan, outputs, code, or bundle.
 - Do not silently change the baseline, sample, estimand, benchmark treatment, or note scope beyond the user’s or approved plan’s authority — unresolved Class A choices require a question.
 - Do not write a durable learning or project-state update (including `PROJECT_BRIEF.md`, `CLAUDE.md`, or `README.md`) without its evidence paths and scope, or without approval for a substantive backbone change.

@@ -68,7 +68,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument(
         "--skip-auxiliary",
         action="store_true",
-        help="Install only the seven core skills; skip gpt-pro-handoff.",
+        help="Install only the six core skills; skip gpt-pro-handoff.",
     )
     parser.add_argument(
         "--check",

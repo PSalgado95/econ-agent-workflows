@@ -41,38 +41,50 @@ cost more than doing it directly. Delegate separable investigations with clear
 ownership; avoid duplicate searches and overlapping writers.
 
 For each proposed worker, identify the question, evidence, expected return,
-completion check, model and effort, and why delegation helps. Select model and
-effort separately according to difficulty, consequences of error, and how the
-return will be checked. Judgment work and review do not require the parent's
-settings. Workers may reason, challenge assumptions, and disagree; the parent
-checks decisive evidence and owns the synthesis. Decisions reserved for the
+completion check, model and effort, and why delegation helps. The model rule is
+fixed by the kind of work:
+
+- **Judgment work** — review, assessment, drafting, economic reasoning,
+  interpretation, and independent challenge — runs on the coordinator's own
+  model and effort, never a smaller model.
+- **Mechanical work with a checkable result** — locating files or definitions,
+  extracting specified information, running a named command, or a bounded edit
+  whose return the parent can verify — may use a smaller model, with effort
+  chosen for the task.
+- Never use a Haiku-class model for any economics assignment.
+
+Workers may reason, challenge assumptions, and disagree; the parent checks
+decisive evidence and owns the synthesis. Decisions reserved for the
 researcher remain with the researcher.
 
 ## GPT worker selection
 
 | Assignment | Model ID | Effort choice |
 | --- | --- | --- |
-| Easy searches, locating definitions, extracting specified information | `gpt-6-luna` | Low for straightforward retrieval; Medium or High for harder bounded checks |
-| Supporting investigation, code tracing, implementation and more demanding bounded work | `gpt-6-sol` | Low for routine work; Medium or High for interacting logic, uncertainty, or unresolved failures |
-| Independent challenge to a consequential economic argument | `gpt-6-astra`, selectively | Low initially; Medium when difficult ambiguity warrants it |
+| Mechanical: easy searches, locating definitions, extracting specified information | `gpt-6-luna` | Low for straightforward retrieval; Medium or High for harder bounded checks |
+| Mechanical: code tracing, bounded implementation, or running named checks, each with a result the parent will verify | `gpt-6-sol` | Low for routine work; Medium or High for interacting logic or unresolved failures |
+| Judgment: review, assessment, drafting, economic reasoning, independent challenge | The coordinator's own model | The coordinator's effort |
 | Coordination and final research judgment | The user's selected model | Preserve the user's selected effort |
 
-Select effort separately from model. The current host exposes `low`, `medium`,
+Use Luna or Sol only when they are smaller than or equal to the coordinator's
+model; never route judgment work to them from a stronger coordinator. Select
+effort separately from model. The current host exposes `low`, `medium`,
 `high`, `xhigh`, and `max` for Luna; Sol and Astra also expose `ultra`.
 These are supported values, not recommended escalation steps. Reserve higher
 levels for a concrete need; avoid modes that automatically delegate when the
 assignment requires a leaf worker. Recheck the live tool contract before use.
-Astra remains a specialised, justified challenge option, never an automatic
-fallback for Luna or Sol. A review label alone does not justify an expensive model.
+A model stronger than the coordinator, such as `gpt-6-astra` under a Sol
+coordinator, is used only when the researcher asks for it.
 
 ## Claude worker selection
 
-For an Anthropic worker, use Claude Opus 5.5 (`claude-opus-5-5`) when Opus is
-selected for implementation or independent judgment. This is the latest Opus
-verified in the official documentation on 2026-09-24; it is not a mandate to
-send every lightweight search to Opus. Keep small searches local or use an
-explicitly authorised available lightweight model. Do not pass GPT IDs to
-Claude-native tools or substitute a different Anthropic family automatically.
+For an Anthropic judgment worker, use the coordinator's own model: Claude Opus
+5.5 (`claude-opus-5-5`, the latest Opus verified in the official documentation
+on 2026-09-24) under an Opus coordinator, or the coordinator's own model when it
+is another. Mechanical work with a checkable result may use Sonnet; never use
+Haiku. Keep small searches local when dispatch would cost more than doing them.
+Do not pass GPT IDs to Claude-native tools or substitute a different Anthropic
+family automatically.
 
 Claude Code requires version 2.1.280 or later for Opus 5.5. Check `claude --version`, the current tool contract, provider, and account availability before
 dispatch. Prefer the full ID where accepted; an `opus` alias is acceptable only
@@ -140,11 +152,11 @@ context inheritance. Pass both `model` and reasoning effort explicitly in each s
 supported. For the collaboration tool, these are `model` and `reasoning_effort`;
 use `fork_turns: "none"` or a bounded history when needed to permit overrides.
 If full-history inheritance prevents overrides, use a self-contained assignment
-with the necessary context instead. Verify the returned settings where exposed;
-do not assume inheritance is a quality requirement. User-configured defaults
-are not a reason to block review. Inspect their effect and override only within
-the user's preferences. A different model or lower effort does not itself
-mean degraded coverage. No child may weaken the parent's permission boundary.
+with the necessary context instead. Verify the returned settings where exposed.
+A judgment worker must run on the coordinator's own model; a configured default
+subagent model that is smaller does not satisfy that rule, so pass the model
+explicitly. For mechanical work, a different model or lower effort does not
+itself mean degraded coverage. No child may weaken the parent's permission boundary.
 
 Keep separate user-owned tasks distinct from subagents. Create a task only when
 the user requests one; a worker assignment normally uses child-agent tools.
