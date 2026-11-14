@@ -11,7 +11,7 @@ testing overlap. An acceptable result can use no skill for a trivial request.
 | Plan the analysis for this household panel; do not run it yet. | econ-plan |
 | Execute the agreed panel analysis and produce the results table. | econ-work |
 | Does this event-study evidence support the paper's claim? | Coordinator assessment; no automatic formal review |
-| The sample halved after merging the mortgage records. Find out why. | econ-debug |
+| The sample halved after merging the mortgage records. Find out why. | econ-work |
 | Take this replication task through planning, execution, review, corrections, and delivery. | econ-lfg |
 | Have we already learned how to handle this register's missing-value codes? | econ-compound, search mode |
 | Remember this verified register-coding lesson for future research. | econ-compound, capture mode |

@@ -36,8 +36,7 @@ separately or combined as the research develops.
 | Review the research | `econ-review` | Checks the design, evidence, results, and claims |
 | Carry lessons into later work | `econ-compound` | Retains verified lessons from completed research for use in later projects |
 
-Two additional skills support the core workflow. `econ-debug` investigates
-unexpected empirical or computational results. `econ-lfg` coordinates the full
+An additional skill, `econ-lfg`, coordinates the full
 cycle for a defined research task, pausing when a decision would change the
 research question, empirical design, interpretation, or scope.
 
@@ -110,7 +109,6 @@ skills/                         # canonical skill source
     references/
       personas/                 # internal specialist review perspectives
       *-schema.json             # review contracts
-  econ-debug/
   econ-lfg/
   econ-compound/
   auxiliary/

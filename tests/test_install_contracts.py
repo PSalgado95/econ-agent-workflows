@@ -45,6 +45,7 @@ EXPECTED_STALE_REFERENCES = (
     "research-code-quality.md",
     "r-defaults.md",
 )
+EXPECTED_STALE_SKILL_DIRS = ("econ-reviewer", "econ-debug")
 EXPECTED_STALE_COMMANDS = (
     "econ-brainstorm.md",
     "econ-plan.md",
@@ -101,11 +102,12 @@ class InstallContractsTest(unittest.TestCase):
     def seed_home(self, root: Path, runtime: str) -> dict[str, str]:
         agents = root / "agents"
         references = root / "references" / "econ-agent-workflows"
-        retired_skill = root / "skills" / "econ-reviewer"
         agents.mkdir(parents=True)
         references.mkdir(parents=True)
-        retired_skill.mkdir(parents=True)
-        (retired_skill / "legacy.txt").write_text("legacy", encoding="utf-8")
+        for retired in EXPECTED_STALE_SKILL_DIRS:
+            retired_skill = root / "skills" / retired
+            retired_skill.mkdir(parents=True)
+            (retired_skill / "legacy.txt").write_text("legacy", encoding="utf-8")
 
         if runtime == "codex":
             stale_agents = EXPECTED_STALE_AGENTS
@@ -173,7 +175,8 @@ class InstallContractsTest(unittest.TestCase):
                 for name in EXPECTED_STALE_REFERENCES
             )
         )
-        self.assertTrue((root / "skills" / "econ-reviewer").is_dir())
+        for retired in EXPECTED_STALE_SKILL_DIRS:
+            self.assertTrue((root / "skills" / retired).is_dir())
         if runtime == "claude":
             self.assertTrue(
                 all((root / "commands" / name).is_file() for name in EXPECTED_STALE_COMMANDS)
@@ -197,7 +200,8 @@ class InstallContractsTest(unittest.TestCase):
                 for name in EXPECTED_STALE_REFERENCES
             )
         )
-        self.assertFalse((root / "skills" / "econ-reviewer").exists())
+        for retired in EXPECTED_STALE_SKILL_DIRS:
+            self.assertFalse((root / "skills" / retired).exists())
         if runtime == "claude":
             self.assertTrue(
                 all(
@@ -224,7 +228,7 @@ class InstallContractsTest(unittest.TestCase):
             install_claude.STALE_COMMAND_FILES,
             EXPECTED_STALE_COMMANDS,
         )
-        self.assertEqual(install.STALE_SKILL_DIRS, ("econ-reviewer",))
+        self.assertEqual(install.STALE_SKILL_DIRS, EXPECTED_STALE_SKILL_DIRS)
 
         explicitly_preserved = {
             "econ-review-readonly-transport.toml",

@@ -10,7 +10,7 @@ import shutil
 from pathlib import Path
 
 
-# The public package is seven core workflows plus one explicitly invoked
+# The public package is six core workflows plus one explicitly invoked
 # auxiliary handoff. build_claude.py imports these tuples so both runtimes stay
 # in lockstep.
 CORE_SKILLS = (
@@ -18,7 +18,6 @@ CORE_SKILLS = (
     ("econ-plan", "econ-plan"),
     ("econ-work", "econ-work"),
     ("econ-review", "econ-review"),
-    ("econ-debug", "econ-debug"),
     ("econ-lfg", "econ-lfg"),
     ("econ-compound", "econ-compound"),
 )
@@ -53,7 +52,7 @@ STALE_AGENT_FILES = (
 # Separate exact inventories for other package-owned surfaces retired by prior
 # releases. Every unknown file is outside package ownership and must survive a
 # forced upgrade.
-STALE_SKILL_DIRS = ("econ-reviewer",)
+STALE_SKILL_DIRS = ("econ-reviewer", "econ-debug")
 STALE_REFERENCE_FILES = (
     "code-taste.md",
     "code-taste-preference-log.md",
@@ -209,7 +208,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument(
         "--skip-auxiliary",
         action="store_true",
-        help="Install only the seven core skills; skip gpt-pro-handoff.",
+        help="Install only the six core skills; skip gpt-pro-handoff.",
     )
     parser.add_argument(
         "--check",

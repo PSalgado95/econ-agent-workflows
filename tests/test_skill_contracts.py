@@ -14,7 +14,6 @@ ACTIVE_SKILLS = (
     "econ-plan",
     "econ-work",
     "econ-review",
-    "econ-debug",
     "econ-lfg",
     "econ-compound",
 )
