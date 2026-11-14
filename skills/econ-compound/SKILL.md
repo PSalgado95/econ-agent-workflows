@@ -1,6 +1,6 @@
 ---
 name: econ-compound
-description: "Capture, find, or update reusable lessons from economics research."
+description: "Capture, find or update a verified lesson from economics research that later projects should reuse (a method, data trap, definition or workflow fix). Use when the researcher asks to record or look up a research lesson, or an autonomous run explicitly includes compounding. Not for one-off closeout facts, project-state updates or software-only lessons (ce-compound)."
 ---
 
 # Economist Compound

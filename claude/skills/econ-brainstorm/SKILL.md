@@ -1,6 +1,6 @@
 ---
 name: econ-brainstorm
-description: "Clarify an economics research idea before planning the analysis."
+description: "Talk through an economics research idea that is not yet a design (what to learn, which comparison, which data, what would kill it). Use when the researcher brings a question, hunch or seminar comment with no agreed design. Not for writing the analysis plan (econ-plan), running work (econ-work) or software ideation (ce-brainstorm)."
 ---
 
 <!-- GENERATED FROM CODEX SOURCE - DO NOT EDIT. Edit the Codex sources and run build_claude.py. -->

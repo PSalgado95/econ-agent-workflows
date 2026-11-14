@@ -1,6 +1,6 @@
 ---
 name: econ-work
-description: "Carry out economics research from an agreed plan or clear execution request."
+description: "Carry out economics research from a saved plan, an issue or a clear request: write and run analysis or server-stage code, inspect the realised outputs, interpret them and hand over the result. Use after econ-plan or for agent issues. Not for planning (econ-plan), memos from results in hand (econ-html-memo) or pure software work (ce-work)."
 ---
 
 # Economist Execution Workflow

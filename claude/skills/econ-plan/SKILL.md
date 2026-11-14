@@ -1,6 +1,6 @@
 ---
 name: econ-plan
-description: "Plan empirical or computational economics research from a question, brief, or issue."
+description: "Write the saved plan for an economics analysis, data build, server stage or model computation once the question is agreed: estimand, sample, specification, outputs, checks and the stages econ-work runs. Use when the researcher or an agent issue asks for a plan, or to turn a brainstorm into a plan. Not for open idea exploration (econ-brainstorm), execution (econ-work) or pure software planning (ce-plan)."
 ---
 
 <!-- GENERATED FROM CODEX SOURCE - DO NOT EDIT. Edit the Codex sources and run build_claude.py. -->
