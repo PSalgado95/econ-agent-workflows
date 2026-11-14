@@ -87,6 +87,54 @@ class LocalAssetContractsTest(unittest.TestCase):
         self.assertNotIn("upgrade that same document in place", combined)
         self.assertNotIn("upgrades the same document in place", combined)
 
+    def test_econ_debug_is_retired_from_the_package(self) -> None:
+        import sys
+
+        sys.path.insert(0, str(REPO))
+        import install
+
+        self.assertNotIn("econ-debug", {name for _source, name in install.CORE_SKILLS})
+        self.assertIn("econ-debug", install.STALE_SKILL_DIRS)
+        self.assertFalse((REPO / "skills" / "econ-debug").exists())
+        self.assertFalse((REPO / "claude" / "skills" / "econ-debug").exists())
+        for root in ALL_SKILL_SOURCES:
+            for path in root.rglob("*.md"):
+                with self.subTest(path=path.relative_to(REPO)):
+                    self.assertNotIn("econ-debug", read(path))
+
+    def test_git_and_issue_actions_follow_repository_instructions(self) -> None:
+        rule = "Follow the repository's own instructions for Git and issues"
+        for name in ("econ-work", "econ-lfg"):
+            text = read(REPO / "skills" / name / "SKILL.md")
+            with self.subTest(skill=name):
+                self.assertIn(rule, text)
+                self.assertNotIn("Do not stage, commit, or push unless", text)
+        plan = read(REPO / "skills" / "econ-plan" / "SKILL.md")
+        self.assertNotIn("never create or update issues without approval", plan)
+
+    def test_judgment_work_runs_on_the_coordinator_model(self) -> None:
+        reference = read(
+            REPO / "skills" / "econ-work" / "references" / "delegation_reference.md"
+        )
+        self.assertNotIn("do not require the parent's settings", reference)
+        self.assertIn("runs on the coordinator's own", reference)
+        self.assertIn("Never use a Haiku-class model", reference)
+
+    def test_econ_lfg_reviews_with_one_fresh_context_reviewer(self) -> None:
+        lfg = read(REPO / "skills" / "econ-lfg" / "SKILL.md")
+        resolution = read(
+            REPO / "skills" / "econ-lfg" / "references" / "review_resolution_reference.md"
+        )
+        review = read(REVIEW / "SKILL.md")
+        self.assertIn("## Reviewer subagent", lfg)
+        self.assertIn("## Reviewer brief", resolution)
+        self.assertIn("mode: single-reviewer", resolution)
+        self.assertIn("## Single-reviewer mode", review)
+        for retired in ("econ-review-request/v1", "econ-review-report/v3", "panel remains degraded"):
+            with self.subTest(retired=retired):
+                self.assertNotIn(retired, lfg)
+                self.assertNotIn(retired, resolution)
+
     def test_every_active_local_reference_resolves_within_its_skill(self) -> None:
         markdown_link = re.compile(r"\[[^\]]+\]\(([^)]+)\)")
         package_path = re.compile(

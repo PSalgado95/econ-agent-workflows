@@ -34,6 +34,19 @@ class BuildClaudeDenyScanTest(unittest.TestCase):
             self.assertNotIn("Original.", reference)
             self.assertIn("Original.", (root / "out/SKILL.md").read_text(encoding="utf-8"))
 
+    def test_lfg_reviewer_uses_claude_agent_tool_and_review_is_invocable(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            out = Path(temporary) / "claude"
+            build_claude.build_tree(REPO, out)
+            lfg = (out / "skills/econ-lfg/SKILL.md").read_text(encoding="utf-8")
+            section = lfg.split("## Reviewer subagent", 1)[1].split("\n## ", 1)[0]
+            self.assertIn("`Agent` tool", section)
+            self.assertIn("never use `fork`", section)
+            self.assertNotIn("fork_turns", section)
+            review = (out / "skills/econ-review/SKILL.md").read_text(encoding="utf-8")
+            self.assertNotIn("disable-model-invocation", review.split("---", 2)[1])
+            self.assertFalse((out / "skills/econ-debug").exists())
+
     def test_invalid_utf8_is_a_deterministic_violation(self) -> None:
         with tempfile.TemporaryDirectory() as temporary:
             root = Path(temporary)
